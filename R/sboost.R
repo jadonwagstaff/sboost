@@ -72,5 +72,9 @@ make_classifier <- function(features, outcomes, iterations) {
 }
 
 
-
+# TODO: Classifier assessment
+# TODO: Classifier validation
+# TODO: Categorical features
+# TODO: Regression
+# TODO: Visualization
 
