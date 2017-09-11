@@ -62,11 +62,10 @@ make_classifier <- function(features, outcomes, iterations) {
   }
   rm(temp_order)
 
-  # ITERATION LOOP
+  # CALL C++ CODE
   # --------------------------------------------------------------------------------
-  for (i in 1:iterations) {
-    classifier[i, ] <- adaboost(features, outcome_index, outcomes, weights)
-  }
+  classifier <- adaboost(features, outcome_index, outcomes, weights, iterations)
+
 
   return(classifier)
 }

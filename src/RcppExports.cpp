@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // adaboost
-NumericVector adaboost(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector& weights);
-RcppExport SEXP _sboost_adaboost(SEXP featuresSEXP, SEXP outcome_indexSEXP, SEXP outcomesSEXP, SEXP weightsSEXP) {
+NumericMatrix adaboost(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector& weights, int iterations);
+RcppExport SEXP _sboost_adaboost(SEXP featuresSEXP, SEXP outcome_indexSEXP, SEXP outcomesSEXP, SEXP weightsSEXP, SEXP iterationsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -15,13 +15,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type outcome_index(outcome_indexSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type outcomes(outcomesSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type weights(weightsSEXP);
-    rcpp_result_gen = Rcpp::wrap(adaboost(features, outcome_index, outcomes, weights));
+    Rcpp::traits::input_parameter< int >::type iterations(iterationsSEXP);
+    rcpp_result_gen = Rcpp::wrap(adaboost(features, outcome_index, outcomes, weights, iterations));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_sboost_adaboost", (DL_FUNC) &_sboost_adaboost, 4},
+    {"_sboost_adaboost", (DL_FUNC) &_sboost_adaboost, 5},
     {NULL, NULL, 0}
 };
 
