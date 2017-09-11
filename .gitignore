@@ -5,3 +5,8 @@
 src/*.o
 src/*.so
 src/*.dll
+
+# testing
+.features.csv
+.outcomes.csv
+.testing.R

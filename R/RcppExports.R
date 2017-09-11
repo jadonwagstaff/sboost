@@ -2,10 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 adaboost <- function(features, outcome_index, outcomes, weights) {
-    .Call('sboost_adaboost', PACKAGE = 'sboost', features, outcome_index, outcomes, weights)
-}
-
-find_stump <- function(features, outcome_index, outcomes, weights) {
-    .Call('sboost_find_stump', PACKAGE = 'sboost', features, outcome_index, outcomes, weights)
+    .Call('_sboost_adaboost', PACKAGE = 'sboost', features, outcome_index, outcomes, weights)
 }
 

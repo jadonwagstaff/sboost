@@ -3,8 +3,15 @@
 #include <cmath>
 using namespace Rcpp;
 
+Stump::Stump() {
+  feature = 0;
+  split = 0;
+  direction = 0;
+  vote = 0;
+}
 
-NumericVector find_stump(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector weights) {
+
+void Stump::find_stump(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector weights) {
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
@@ -78,10 +85,43 @@ NumericVector find_stump(NumericMatrix features, NumericMatrix outcome_index, Nu
 
   }
 
-  output(0) = best_feature;
-  output(1) = best_split;
-  output(2) = best_direction;
-  return output;
+  feature = best_feature;
+  split = best_split;
+  direction = best_direction;
 
 }
+
+
+void Stump::set_vote(double v) {
+  vote = v;
+}
+
+
+int Stump::get_feature() const {
+  return feature;
+}
+
+
+double Stump::get_split() const {
+  return split;
+}
+
+
+int Stump::get_direction() const{
+  return direction;
+}
+
+
+double Stump::get_vote() const{
+  return vote;
+}
+
+
+
+
+
+
+
+
+
 

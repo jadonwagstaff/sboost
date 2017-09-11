@@ -72,6 +72,7 @@ make_classifier <- function(features, outcomes, iterations) {
 }
 
 
+# TODO: deal with missing values
 # TODO: Classifier assessment
 # TODO: Classifier validation
 # TODO: Categorical features

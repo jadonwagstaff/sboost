@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // adaboost
 NumericVector adaboost(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector& weights);
-RcppExport SEXP sboost_adaboost(SEXP featuresSEXP, SEXP outcome_indexSEXP, SEXP outcomesSEXP, SEXP weightsSEXP) {
+RcppExport SEXP _sboost_adaboost(SEXP featuresSEXP, SEXP outcome_indexSEXP, SEXP outcomesSEXP, SEXP weightsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,24 +19,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// find_stump
-NumericVector find_stump(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector weights);
-RcppExport SEXP sboost_find_stump(SEXP featuresSEXP, SEXP outcome_indexSEXP, SEXP outcomesSEXP, SEXP weightsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type features(featuresSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type outcome_index(outcome_indexSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type outcomes(outcomesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
-    rcpp_result_gen = Rcpp::wrap(find_stump(features, outcome_index, outcomes, weights));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"sboost_adaboost", (DL_FUNC) &sboost_adaboost, 4},
-    {"sboost_find_stump", (DL_FUNC) &sboost_find_stump, 4},
+    {"_sboost_adaboost", (DL_FUNC) &_sboost_adaboost, 4},
     {NULL, NULL, 0}
 };
 

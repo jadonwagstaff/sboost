@@ -19,7 +19,7 @@ NumericVector adaboost(NumericMatrix features, NumericMatrix outcome_index, Nume
   NumericVector prediction(features.nrow());
 
   // feature, split, direction, vote
-  NumericVector stump(3);
+  Stump stump;
   NumericVector output(4);
 
 
@@ -27,7 +27,7 @@ NumericVector adaboost(NumericMatrix features, NumericMatrix outcome_index, Nume
   // FIND BEST DECISION STUMP
   // --------------------------------------------------------------------------------
 
-  stump = find_stump(features, outcome_index, outcomes, weights);
+  stump.find_stump(features, outcome_index, outcomes, weights);
 
 
   // PERFORM ADABOOST
@@ -35,15 +35,15 @@ NumericVector adaboost(NumericMatrix features, NumericMatrix outcome_index, Nume
 
   // find prediction, error, and vote
   for (int i = 0; i < features.nrow(); i++) {
-    index = outcome_index(i, stump(0));
-    if (features(i, stump(0)) < stump(1)) {
-      if (stump(2) == 1) {
+    index = outcome_index(i, stump.get_feature());
+    if (features(i, stump.get_feature()) < stump.get_split()) {
+      if (stump.get_direction() == 1) {
         prediction(index) = -1;
       } else {
         prediction(index) = 1;
       }
     } else {
-      if (stump(2) == 1) {
+      if (stump.get_direction() == 1) {
         prediction(index) = 1;
       } else {
         prediction(index) = -1;
@@ -53,6 +53,7 @@ NumericVector adaboost(NumericMatrix features, NumericMatrix outcome_index, Nume
   }
   error = .5 - .5 * error;
   vote = .5 * log((1 - error) / error);
+  stump.set_vote(vote);
 
   // update weights
   for (int i = 0; i < weights.size(); i++) {
@@ -67,10 +68,10 @@ NumericVector adaboost(NumericMatrix features, NumericMatrix outcome_index, Nume
   // CREATE CLASSIFIER OUTPUT
   // --------------------------------------------------------------------------------
 
-  output(0) = stump(0) + 1;
-  output(1) = stump(1);
-  output(2) = stump(2);
-  output(3) = vote;
+  output(0) = stump.get_feature();
+  output(1) = stump.get_split();
+  output(2) = stump.get_direction();
+  output(3) = stump.get_vote();
 
   return output;
 }
