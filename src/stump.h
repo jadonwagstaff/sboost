@@ -9,6 +9,7 @@ class Stump
 {
 public:
   Stump();
+  Stump(int feature_in, double split_in, int direction_in, double vote_in);
 
   // Stump initiator function
   // Parameters: feature matrix, corresponding outcomes, weights for each row of feature matrix

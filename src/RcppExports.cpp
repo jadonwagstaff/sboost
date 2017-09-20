@@ -20,9 +20,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// find_classifier_contingency
+NumericMatrix find_classifier_contingency(NumericMatrix features, NumericVector outcomes, NumericMatrix classifier);
+RcppExport SEXP _sboost_find_classifier_contingency(SEXP featuresSEXP, SEXP outcomesSEXP, SEXP classifierSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type features(featuresSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type outcomes(outcomesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type classifier(classifierSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_classifier_contingency(features, outcomes, classifier));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_sboost_adaboost", (DL_FUNC) &_sboost_adaboost, 5},
+    {"_sboost_find_classifier_contingency", (DL_FUNC) &_sboost_find_classifier_contingency, 3},
     {NULL, NULL, 0}
 };
 

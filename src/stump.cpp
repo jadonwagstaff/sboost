@@ -10,6 +10,13 @@ Stump::Stump() {
   vote = 0;
 }
 
+Stump::Stump(int feature_in, double split_in, int direction_in, double vote_in) {
+  feature = feature_in;
+  split = split_in;
+  direction = direction_in;
+  vote = vote_in;
+}
+
 
 void Stump::find_stump(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector weights) {
 
@@ -115,9 +122,6 @@ int Stump::get_direction() const{
 double Stump::get_vote() const{
   return vote;
 }
-
-
-
 
 
 

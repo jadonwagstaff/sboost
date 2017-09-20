@@ -5,3 +5,7 @@ adaboost <- function(features, outcome_index, outcomes, weights, iterations) {
     .Call('_sboost_adaboost', PACKAGE = 'sboost', features, outcome_index, outcomes, weights, iterations)
 }
 
+find_classifier_contingency <- function(features, outcomes, classifier) {
+    .Call('_sboost_find_classifier_contingency', PACKAGE = 'sboost', features, outcomes, classifier)
+}
+

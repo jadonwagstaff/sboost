@@ -71,7 +71,7 @@ NumericMatrix adaboost(NumericMatrix features, NumericMatrix outcome_index, Nume
 
   // CREATE CLASSIFIER OUTPUT
   // --------------------------------------------------------------------------------
-  for (int i; i < iterations; i++) {
+  for (int i = 0; i < iterations; i++) {
     output(i, 0) = stumps[i].get_feature();
     output(i, 1) = stumps[i].get_split();
     output(i, 2) = stumps[i].get_direction();
