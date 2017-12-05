@@ -50,21 +50,15 @@ make_classifier <- function(features, outcomes, iterations) {
   # --------------------------------------------------------------------------------
 
   # create variables
-  outcome_index <- matrix(NA, nrow = nrow(features), ncol = ncol(features))
-  weights <- rep(1/nrow(features), nrow(features))
-  classifier <- matrix(NA, nrow = iterations, ncol = 4)
-
-  # sort features and outcome_index
+  ordered_index <- matrix(NA, nrow = nrow(features), ncol = ncol(features))
   for (i in 1:ncol(features)) {
-    temp_order <- order(features[, i])
-    features[, i] <- features[, i][temp_order]
-    outcome_index[, i] <- temp_order - 1
+    ordered_index[, i] <- order(features[, i]) - 1
   }
-  rm(temp_order)
+  classifier <- matrix(NA, nrow = iterations, ncol = 4)
 
   # CALL C++ CODE
   # --------------------------------------------------------------------------------
-  classifier <- adaboost(features, outcome_index, outcomes, weights, iterations)
+  classifier <- adaboost(features, ordered_index, outcomes, iterations)
 
 
   return(classifier)

@@ -4,29 +4,33 @@
 using namespace Rcpp;
 
 
-// adaboost is the central function for adaptive boosting of decision stumps
+// adaboost is the central function for adaptive boosting of decision classifier
 // Param: feature matrix, corresponding outcomes, weights for each row of feature matrix
 // Return: classifier as a stump with a vote, and updates weights vector
 // [[Rcpp::export]]
-NumericMatrix adaboost(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector &weights, int iterations) {
+NumericMatrix adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, int iterations) {
 
 
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
-  int index = 0;
   double error = 0, vote = 0, weight_sum = 0;
   NumericVector prediction(features.nrow());
 
+  NumericVector weights(outcomes.size());
+  for (int i = 0; i < outcomes.size(); i++) {
+    weights(i) = double(1) / outcomes.size();
+  }
+
   // feature, split, direction, vote
-  std::vector<Stump> stumps(iterations);
+  std::vector<Stump> classifier(iterations);
   NumericMatrix output(iterations, 4);
 
 
   for (int k = 0; k < iterations; k++) {
   // FIND BEST DECISION STUMP
   // --------------------------------------------------------------------------------
-    stumps[k].find_stump(features, outcome_index, outcomes, weights);
+    classifier[k].find_stump(features, ordered_index, outcomes, weights);
 
 
 
@@ -37,25 +41,24 @@ NumericMatrix adaboost(NumericMatrix features, NumericMatrix outcome_index, Nume
     error = 0;
     weight_sum = 0;
     for (int i = 0; i < features.nrow(); i++) {
-      index = outcome_index(i, stumps[k].get_feature());
-      if (features(i, stumps[k].get_feature()) < stumps[k].get_split()) {
-        if (stumps[k].get_direction() == 1) {
-          prediction(index) = -1;
+      if (features(i, classifier[k].get_feature()) < classifier[k].get_split()) {
+        if (classifier[k].get_direction() == 1) {
+          prediction(i) = -1;
         } else {
-          prediction(index) = 1;
+          prediction(i) = 1;
         }
       } else {
-        if (stumps[k].get_direction() == 1) {
-          prediction(index) = 1;
+        if (classifier[k].get_direction() == 1) {
+          prediction(i) = 1;
         } else {
-          prediction(index) = -1;
+          prediction(i) = -1;
         }
       }
-      error = error + weights(index) * outcomes(index) * prediction(index);
+      error = error + weights(i) * outcomes(i) * prediction(i);
     }
     error = .5 - .5 * error;
     vote = .5 * log((1 - error) / error);
-    stumps[k].set_vote(vote);
+    classifier[k].set_vote(vote);
 
     // update weights
     for (int i = 0; i < weights.size(); i++) {
@@ -72,10 +75,10 @@ NumericMatrix adaboost(NumericMatrix features, NumericMatrix outcome_index, Nume
   // CREATE CLASSIFIER OUTPUT
   // --------------------------------------------------------------------------------
   for (int i = 0; i < iterations; i++) {
-    output(i, 0) = stumps[i].get_feature();
-    output(i, 1) = stumps[i].get_split();
-    output(i, 2) = stumps[i].get_direction();
-    output(i, 3) = stumps[i].get_vote();
+    output(i, 0) = classifier[i].get_feature();
+    output(i, 1) = classifier[i].get_split();
+    output(i, 2) = classifier[i].get_direction();
+    output(i, 3) = classifier[i].get_vote();
   }
 
   return output;

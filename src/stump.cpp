@@ -18,7 +18,7 @@ Stump::Stump(int feature_in, double split_in, int direction_in, double vote_in) 
 }
 
 
-void Stump::find_stump(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector weights) {
+void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& weights) {
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
@@ -43,25 +43,25 @@ void Stump::find_stump(NumericMatrix features, NumericMatrix outcome_index, Nume
     positive_ahead = 0;
     negative_ahead = 0;
     for (int i = 0; i < features.nrow(); i++) {
-      if (outcomes(outcome_index(i, j)) == 1) {
-        positive_ahead += weights(outcome_index(i, j));
+      if (outcomes(ordered_index(i, j)) == 1) {
+        positive_ahead += weights(ordered_index(i, j));
       } else {
-        negative_ahead += weights(outcome_index(i, j));
+        negative_ahead += weights(ordered_index(i, j));
       }
     }
     // find best gain for this features
     for (int i = 1; i < features.nrow(); i++) {
       // update counting variables
-      if (outcomes(outcome_index(i - 1, j)) == 1) {
-        positive_behind += weights(outcome_index(i - 1, j));
-        positive_ahead += -1 * weights(outcome_index(i - 1, j));
+      if (outcomes(ordered_index(i - 1, j)) == 1) {
+        positive_behind += weights(ordered_index(i - 1, j));
+        positive_ahead += -1 * weights(ordered_index(i - 1, j));
       } else {
-        negative_behind += weights(outcome_index(i - 1, j));
-        negative_ahead += -1 * weights(outcome_index(i - 1, j));
+        negative_behind += weights(ordered_index(i - 1, j));
+        negative_ahead += -1 * weights(ordered_index(i - 1, j));
       }
 
       // find gain if this and the last sample were different for this feature, compare to feature gain
-      if (features(i - 1, j) != features(i, j) ) {
+      if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j) ) {
 
         if (positive_ahead + negative_behind > negative_ahead + positive_behind) {
           gain = positive_ahead + negative_behind;
@@ -72,7 +72,7 @@ void Stump::find_stump(NumericMatrix features, NumericMatrix outcome_index, Nume
 
         if (gain > feature_gain) {
           feature_gain = gain;
-          feature_split = (features(i - 1, j) + features(i, j)) / 2;
+          feature_split = (features(ordered_index(i - 1, j), j) + features(ordered_index(i, j), j)) / 2;
           if (positive_ahead + negative_behind > negative_ahead + positive_behind) {
             feature_direction = 1;
           } else {

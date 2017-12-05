@@ -13,7 +13,7 @@ public:
 
   // Stump initiator function
   // Parameters: feature matrix, corresponding outcomes, weights for each row of feature matrix
-  void find_stump(NumericMatrix features, NumericMatrix outcome_index, NumericVector outcomes, NumericVector weights);
+  void find_stump(NumericMatrix& features, NumericMatrix& outcome_index, NumericVector& outcomes, NumericVector& weights);
   void set_vote(double v);
 
   int get_feature() const;
