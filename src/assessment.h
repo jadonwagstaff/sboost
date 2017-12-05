@@ -8,11 +8,10 @@ using namespace Rcpp;
 class Assessment
 {
 public:
-  Assessment();
-  Assessment(NumericMatrix features_in, NumericVector outcomes_in);
+  Assessment(int size);
 
-  void update_predictions(Stump classifier);
-  void update_contingency();
+  void update_predictions(Stump& classifier, NumericMatrix& features, NumericVector& outcomes);
+  void update_contingency(NumericMatrix& features, NumericVector& outcomes);
 
   int get_true_positive() const;
   int get_false_negative() const;
@@ -20,8 +19,6 @@ public:
   int get_false_positive() const;
 
 private:
-  NumericMatrix features;
-  NumericVector outcomes;
   NumericVector predictions;
   int true_positive;
   int false_negative;

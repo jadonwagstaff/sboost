@@ -4,11 +4,8 @@
 #include <cmath>
 using namespace Rcpp;
 
-Assessment::Assessment(NumericMatrix features_in, NumericVector outcomes_in) {
-  NumericVector predictions_in(features_in.nrow());
-
-  features = features_in;
-  outcomes = outcomes_in;
+Assessment::Assessment(int size) {
+  NumericVector predictions_in(size);
   predictions = predictions_in;
   true_positive = 0;
   false_negative = 0;
@@ -16,7 +13,7 @@ Assessment::Assessment(NumericMatrix features_in, NumericVector outcomes_in) {
   false_positive = 0;
 }
 
-void Assessment::update_predictions(Stump classifier) {
+void Assessment::update_predictions(Stump& classifier, NumericMatrix& features, NumericVector& outcomes) {
   for (int i = 0; i < features.nrow(); i++) {
     if (features(i, classifier.get_feature()) < classifier.get_split()) {
       if (classifier.get_direction() == 1) {
@@ -34,7 +31,7 @@ void Assessment::update_predictions(Stump classifier) {
   }
 }
 
-void Assessment::update_contingency() {
+void Assessment::update_contingency(NumericMatrix& features, NumericVector& outcomes) {
   true_positive = 0;
   false_negative = 0;
   true_negative = 0;
