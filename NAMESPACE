@@ -2,5 +2,6 @@
 
 export(assess_classifier)
 export(sboost)
+export(validate)
 importFrom(Rcpp,sourceCpp)
 useDynLib(sboost)

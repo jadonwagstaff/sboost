@@ -2,8 +2,8 @@
 # TESTS AND PREPARES FEATURES
 process_features <- function(features) {
 
-  if (!is.data.frame(features)) {
-    message("ERROR: Features must be data frame.")
+  if (!is.data.frame(features) & !is.matrix(features)) {
+    message("ERROR: Features must be data frame or matrix.")
     return(NULL)
   }
 
