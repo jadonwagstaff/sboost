@@ -16,16 +16,13 @@ sboost <- function(features, outcomes, iterations = 1) {
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
 
-  # test and prepare features and outcomes
+  # test and prepare features, outcomes, and categorical
+  categorical <- find_categorical(features)
   features <- process_features(features)
-  if (is.null(features)) {
-    return(NULL)
-  }
   outcomes <- process_outcomes(outcomes, features)
-  if (is.null(outcomes)) {
+  if (is.null(outcomes) || is.null(features)) {
     return(NULL)
   }
-
 
   # DEVELOPE CLASSIFIER
   # --------------------------------------------------------------------------------
@@ -66,8 +63,6 @@ make_classifier <- function(features, outcomes, iterations) {
 
 
 # TODO: deal with missing values
-# TODO: Classifier assessment
-# TODO: Classifier validation
 # TODO: Categorical features
 # TODO: Regression
 # TODO: Visualization

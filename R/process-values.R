@@ -8,8 +8,16 @@ process_features <- function(features) {
   }
 
   for (i in seq_along(features)) {
-    if (!is.numeric(features[[i]])) {
-      message("ERROR: All data.frame columns must be numeric.")
+    if (is.logical(features[[i]])) {
+      features[[i]] <- as.numeric(features[[i]])
+    } else if (is.character(features[[i]])) {
+      features[[i]] <- factor(features[[i]])
+    }
+
+    if (is.factor(features[[i]])) {
+      features[[i]] <- as.numeric(features[[i]])
+    } else if (!is.numeric(features[[i]])) {
+      message(paste("ERROR: Unknown data type in column ", i))
       return(NULL)
     }
   }
@@ -49,5 +57,25 @@ process_outcomes <- function(outcomes, features) {
     return(NULL)
   }
 
-  return(outcomes)
+  return(as.numeric(outcomes))
 }
+
+
+
+# --------------------------------------------------------------------------------
+# FIND CATEGORICAL VECTOR
+find_categorical <- function(features) {
+  categorical <- rep(0, ncol(features))
+
+  for (i in seq_along(features)) {
+    if (is.logical(features[[i]]) || is.character(features[[i]]) || is.factor(features[[i]])) {
+      categorical[[i]] <- 1
+    }
+  }
+
+  return(categorical)
+}
+
+
+
+
