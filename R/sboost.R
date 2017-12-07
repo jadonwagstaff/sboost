@@ -28,7 +28,6 @@ sboost <- function(features, outcomes, iterations = 1) {
   # --------------------------------------------------------------------------------
   classifier <- make_classifier(processed_features, processed_outcomes, categorical, iterations)
 
-
   # PREPARE OUTPUT
   # --------------------------------------------------------------------------------
   classifier <- prepare_classifier(classifier, features, outcomes)

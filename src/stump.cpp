@@ -189,12 +189,12 @@ int Stump::split_size() const {
 }
 
 
-List Stump::make_list() const{
-  return List::create(Named("feature") = feature,
-                      Named("direction") = direction,
-                      Named("vote") = vote,
-                      Named("categorical") = is_categorical,
-                      Named("split") = split);
+NumericVector Stump::make_vector() const{
+  NumericVector output = NumericVector::create(double(feature), double(direction), double(vote), double(is_categorical));
+  for (int i = 0; i < split.size(); i++) {
+    output.push_back(split[i]);
+  }
+  return(output);
 }
 
 

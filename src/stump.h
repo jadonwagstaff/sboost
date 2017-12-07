@@ -21,7 +21,7 @@ public:
   double get_split() const;
   double get_split(int index) const;
   int split_size() const;
-  List make_list() const;
+  NumericVector make_vector() const;
 
 private:
   int feature;

@@ -100,7 +100,7 @@ List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVect
   // CREATE CLASSIFIER OUTPUT
   // --------------------------------------------------------------------------------
   for (int i = 0; i < iterations; i++) {
-    output[i] = classifier[i].make_list();
+    output[i] = classifier[i].make_vector();
   }
 
   return output;

@@ -147,10 +147,12 @@ prepare_classifier <- function(classifier, features, outcomes) {
   otcm_possibilities <- sort(unique(outcomes))
 
   for (i in seq_along(classifier)) {
-    feature <- classifier[[i]]$feature + 1
-    direction <- classifier[[i]]$direction
-    categorical <- classifier[[i]]$categorical
-    split <- classifier[[i]]$split
+    feature <- classifier[[i]][[1]]
+    direction <- classifier[[i]][[2]]
+    vote <- classifier[[i]][[3]]
+    categorical <- classifier[[i]][[4]]
+    split <- classifier[[i]][c(-1, -2, -3, -4)]
+    classifier[[i]] <- list()
 
     # Change stump name
     names(classifier)[[i]] <- i
@@ -168,18 +170,24 @@ prepare_classifier <- function(classifier, features, outcomes) {
     }
 
     # Change categorical value
-    if (classifier[[i]]$categorical == 1) {
+    if (categorical == 1) {
       classifier[[i]]$categorical <- TRUE
     } else {
       classifier[[i]]$categorical <- FALSE
     }
 
+    # Change vote
+    classifier[[i]]$vote <- vote
+
     # change split
     if (categorical == 1) {
+      classifier[[i]]$split <- rep(0, length(split))
       feature_levels <- levels(factor(features[[feature]]))
-      for (j in seq_along(split)) {
+      for (j in 1:length(classifier[[i]]$split)) {
         classifier[[i]]$split[[j]] <- feature_levels[[split[[j]]]]
       }
+    } else {
+      classifier[[i]]$split <- split
     }
   }
 
