@@ -1,82 +1,139 @@
 #include "stump.h"
 #include <Rcpp.h>
 #include <cmath>
+#include <vector>
 using namespace Rcpp;
 
 Stump::Stump() {
   feature = 0;
-  split = 0;
   direction = 0;
   vote = 0;
+  is_categorical = 0;
+  split.push_back(0);
 }
 
-Stump::Stump(int feature_in, double split_in, int direction_in, double vote_in) {
-  feature = feature_in;
-  split = split_in;
-  direction = direction_in;
-  vote = vote_in;
+Stump::Stump(NumericVector stump_in) {
+  feature = stump_in(0);
+  direction = stump_in(1);
+  vote = stump_in(2);
+  is_categorical = stump_in(3);
+  for (int i = 4; i < stump_in.size(); i++) {
+    split.push_back(stump_in(i));
+  }
 }
 
 
-void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& weights) {
+void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& weights, NumericVector& categorical) {
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
 
-  // stump
-  NumericVector output(3); // feature, split, direction, vote
+  // categorical
+  std::vector<double> positive, negative;
+  int index = 0;
+
+  // continous
   double positive_behind = 0, negative_behind = 0, positive_ahead = 0, negative_ahead = 0;
-  double gain = 0, feature_gain = 0, feature_split = 0, feature_direction = 0;
+  double gain = 0;
 
-  double best_feature = 0, best_split = 0, best_direction = 0, max_gain = 0;
+  // both
+  double feature_gain = 0, feature_direction = 0, max_gain = 0;
+  std::vector<double> feature_split;
+  int feature_categorical = 0;
 
 
-  // STUMP
-  // --------------------------------------------------------------------------------
 
-  // go through each feature and find best gain
   for (int j = 0; j < features.ncol(); j++) {
+    feature_split.clear();
     feature_gain = 0;
-    // initialize counting variables
-    positive_behind = 0;
-    negative_behind = 0;
-    positive_ahead = 0;
-    negative_ahead = 0;
-    for (int i = 0; i < features.nrow(); i++) {
-      if (outcomes(ordered_index(i, j)) == 1) {
-        positive_ahead += weights(ordered_index(i, j));
-      } else {
-        negative_ahead += weights(ordered_index(i, j));
-      }
-    }
-    // find best gain for this features
-    for (int i = 1; i < features.nrow(); i++) {
-      // update counting variables
-      if (outcomes(ordered_index(i - 1, j)) == 1) {
-        positive_behind += weights(ordered_index(i - 1, j));
-        positive_ahead += -1 * weights(ordered_index(i - 1, j));
-      } else {
-        negative_behind += weights(ordered_index(i - 1, j));
-        negative_ahead += -1 * weights(ordered_index(i - 1, j));
-      }
 
-      // find gain if this and the last sample were different for this feature, compare to feature gain
-      if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j) ) {
+    if (categorical(j) > 1) {
+      // Categorical
+      feature_categorical = 1;
+      positive.clear();
+      negative.clear();
+      for (int k = 0; k < categorical(j); k++) {
+        negative.push_back(0);
+        positive.push_back(0);
+      }
+      if (outcomes(ordered_index(0, j)) == 1) {
+        positive[0] += weights(ordered_index(0, j));
+      } else {
+        negative[0] += weights(ordered_index(0, j));
+      }
+      index = 0;
 
-        if (positive_ahead + negative_behind > negative_ahead + positive_behind) {
-          gain = positive_ahead + negative_behind;
+
+      for (int i = 1; i < features.nrow(); i++) {
+        if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j)) {
+          index++;
+        }
+        if (outcomes(ordered_index(i, j)) == 1) {
+          positive[index] += weights(ordered_index(i, j));
         } else {
-          gain = negative_ahead + positive_behind;
+          negative[index] += weights(ordered_index(i, j));
+        }
+      }
+
+      for (int k = 0; k < categorical(j); k++) {
+        if (positive[k] > negative[k]) {
+          feature_gain += positive[k];
+          feature_split.push_back(k + 1);
+        } else {
+          feature_gain += negative[k];
+        }
+      }
+      if (feature_split.size() == 0 || feature_split.size() == categorical(j)) {
+        feature_gain =  0;
+      }
+      feature_direction = 1;
+
+
+    } else if (categorical(j) < 1) {
+
+      // Continuous
+      feature_categorical = 0;
+      feature_split.push_back(0);
+      positive_behind = 0;
+      negative_behind = 0;
+      positive_ahead = 0;
+      negative_ahead = 0;
+      for (int i = 0; i < features.nrow(); i++) {
+        if (outcomes(ordered_index(i, j)) == 1) {
+          positive_ahead += weights(ordered_index(i, j));
+        } else {
+          negative_ahead += weights(ordered_index(i, j));
+        }
+      }
+      // find best gain for this features
+      for (int i = 1; i < features.nrow(); i++) {
+        // update counting variables
+        if (outcomes(ordered_index(i - 1, j)) == 1) {
+          positive_behind += weights(ordered_index(i - 1, j));
+          positive_ahead += -1 * weights(ordered_index(i - 1, j));
+        } else {
+          negative_behind += weights(ordered_index(i - 1, j));
+          negative_ahead += -1 * weights(ordered_index(i - 1, j));
         }
 
+        // find gain if this and the last sample were different for this feature, compare to feature gain
+        if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j) ) {
 
-        if (gain > feature_gain) {
-          feature_gain = gain;
-          feature_split = (features(ordered_index(i - 1, j), j) + features(ordered_index(i, j), j)) / 2;
           if (positive_ahead + negative_behind > negative_ahead + positive_behind) {
-            feature_direction = 1;
+            gain = positive_ahead + negative_behind;
           } else {
-            feature_direction = -1;
+            gain = negative_ahead + positive_behind;
+          }
+
+
+          if (gain > feature_gain) {
+            feature_gain = gain;
+            feature_split[0] = (features(ordered_index(i - 1, j), j) + features(ordered_index(i, j), j)) / 2;
+            if (positive_ahead + negative_behind > negative_ahead + positive_behind) {
+              feature_direction = 1;
+            } else {
+              feature_direction = -1;
+            }
           }
         }
       }
@@ -85,16 +142,12 @@ void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, Nu
     // if this features gain is the best, update maxGain and best Feature
     if (feature_gain > max_gain) {
       max_gain = feature_gain;
-      best_feature = j;
-      best_split = feature_split;
-      best_direction = feature_direction;
+      feature = j;
+      direction = feature_direction;
+      is_categorical = feature_categorical;
+      split = feature_split;
     }
-
   }
-
-  feature = best_feature;
-  split = best_split;
-  direction = best_direction;
 
 }
 
@@ -109,11 +162,6 @@ int Stump::get_feature() const {
 }
 
 
-double Stump::get_split() const {
-  return split;
-}
-
-
 int Stump::get_direction() const{
   return direction;
 }
@@ -123,7 +171,31 @@ double Stump::get_vote() const{
   return vote;
 }
 
+int Stump::get_categorical() const {
+  return is_categorical;
+}
 
+
+double Stump::get_split() const {
+  return split[0];
+}
+
+double Stump::get_split(int index) const {
+  return split[index];
+}
+
+int Stump::split_size() const {
+  return split.size();
+}
+
+
+List Stump::make_list() const{
+  return List::create(Named("feature") = feature,
+                      Named("direction") = direction,
+                      Named("vote") = vote,
+                      Named("categorical") = is_categorical,
+                      Named("split") = split);
+}
 
 
 

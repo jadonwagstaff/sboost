@@ -17,12 +17,10 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
+  categorical <- find_categorical(features)
   features <- process_features(features)
-  if (is.null(features)) {
-    return(NULL)
-  }
   outcomes <- process_outcomes(outcomes, features)
-  if (is.null(outcomes)) {
+  if (is.null(outcomes) || is.null(features)) {
     return(NULL)
   }
 
@@ -37,6 +35,7 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
   for (i in 1:k_fold) {
     classifier_list[[i]] <- make_classifier(features[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows), ],
                                             outcomes[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)],
+                                            categorical,
                                             iterations)
   }
 

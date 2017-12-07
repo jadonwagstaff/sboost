@@ -13,19 +13,17 @@ assess_classifier <- function(features, outcomes, classifier) {
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
-  features <- process_features(features)
-  if (is.null(features)) {
-    return(NULL)
-  }
-  outcomes <- process_outcomes(outcomes, features)
-  if (is.null(outcomes)) {
+  classifier <- process_classifier(classifier, features, outcomes)
+  new_features <- process_features(features)
+  new_outcomes <- process_outcomes(outcomes, features)
+  if (is.null(outcomes) || is.null(features) || is.null(classifier)) {
     return(NULL)
   }
 
 
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier_assessment <- find_classifier_contingency(features, outcomes, classifier)
+  classifier_assessment <- find_classifier_contingency(new_features, new_outcomes, classifier)
   colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
 
   classifier_assessment <- data.frame(classifier_assessment)

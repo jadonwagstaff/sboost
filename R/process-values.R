@@ -8,9 +8,7 @@ process_features <- function(features) {
   }
 
   for (i in seq_along(features)) {
-    if (is.logical(features[[i]])) {
-      features[[i]] <- as.numeric(features[[i]])
-    } else if (is.character(features[[i]])) {
+    if (is.logical(features[[i]]) || is.character(features[[i]])) {
       features[[i]] <- factor(features[[i]])
     }
 
@@ -63,13 +61,140 @@ process_outcomes <- function(outcomes, features) {
 
 
 # --------------------------------------------------------------------------------
+# TESTS AND PREPARES CLASSIFIER INPUT
+process_classifier <- function(classifier, features, outcomes) {
+
+  if (!is.list(classifier)) {
+    message("ERROR: Classifier must be a list.")
+    return(NULL)
+  }
+
+  new_classifier = list()
+
+  # determine outcomes
+  if(is.data.frame(outcomes)) {
+    outcomes <- outcomes[[1]]
+  }
+  otcm_possibilities <- sort(unique(outcomes))
+
+  for (i in seq_along(classifier)) {
+    # feature, direction, vote, split
+    if (length(classifier[[i]]$feature) != 1 ||
+        length(classifier[[i]]$direction) != 1 ||
+        length(classifier[[i]]$vote) != 1 ||
+        length(classifier[[i]]$categorical) != 1 ||
+        length(classifier[[i]]$split) < 1) {
+      message("ERROR: Classifier not valid.")
+      return(NULL)
+    }
+    feature <- classifier[[i]]$feature
+    direction <- classifier[[i]]$direction
+    categorical <- classifier[[i]]$categorical
+    vote <- classifier[[i]]$vote
+    split <- classifier[[i]]$split
+
+    # Change feature
+    feature <- match(feature, colnames(features))[[1]] - 1
+
+    # Change direction
+    if (categorical == TRUE) {
+      direction <- 1
+    } else {
+      if (substr(direction, 1, 2) == "->") {
+        direction <- substr(direction, 4, nchar(direction))
+        if (match(otcm_possibilities, direction)[[1]] == 1) {
+          direction <- 1
+        } else {
+          direction <- -1
+        }
+      } else {
+        direction <- substr(direction, 4, nchar(direction))
+        if (match(direction, otcm_possibilities)[[1]] == 1) {
+          direction <- -1
+        } else {
+          direction <- 1
+        }
+      }
+    }
+
+    # Change categorical
+    categorical <- as.numeric(categorical)
+
+    # Change split
+    if (categorical == 1) {
+      feature_levels <- levels(factor(features[[feature + 1]]))
+      for (j in seq_along(split)) {
+        split[[j]] <- match(split[[j]], feature_levels)
+      }
+    }
+
+    new_classifier[[i]] <- as.numeric(c(feature, direction, vote, categorical, split))
+  }
+
+  return(new_classifier)
+}
+
+
+# --------------------------------------------------------------------------------
+# PREPARES CLASSIFIER OUTPUT
+prepare_classifier <- function(classifier, features, outcomes) {
+
+  # determine outcomes
+  if(is.data.frame(outcomes)) {
+    outcomes <- outcomes[[1]]
+  }
+  otcm_possibilities <- sort(unique(outcomes))
+
+  for (i in seq_along(classifier)) {
+    feature <- classifier[[i]]$feature + 1
+    direction <- classifier[[i]]$direction
+    categorical <- classifier[[i]]$categorical
+    split <- classifier[[i]]$split
+
+    # Change stump name
+    names(classifier)[[i]] <- i
+
+    # Change feature name
+    classifier[[i]]$feature <- colnames(features)[[feature]]
+
+    # Change direction
+    if (categorical == 1) {
+      classifier[[i]]$direction <- paste0("split <- ", otcm_possibilities[[1]])
+    } else if (direction == 1) {
+      classifier[[i]]$direction <- paste0("-> ", otcm_possibilities[[1]])
+    } else {
+      classifier[[i]]$direction <- paste0("<- ", otcm_possibilities[[1]])
+    }
+
+    # Change categorical value
+    if (classifier[[i]]$categorical == 1) {
+      classifier[[i]]$categorical <- TRUE
+    } else {
+      classifier[[i]]$categorical <- FALSE
+    }
+
+    # change split
+    if (categorical == 1) {
+      feature_levels <- levels(factor(features[[feature]]))
+      for (j in seq_along(split)) {
+        classifier[[i]]$split[[j]] <- feature_levels[[split[[j]]]]
+      }
+    }
+  }
+
+  return(classifier)
+}
+
+
+
+# --------------------------------------------------------------------------------
 # FIND CATEGORICAL VECTOR
 find_categorical <- function(features) {
   categorical <- rep(0, ncol(features))
 
   for (i in seq_along(features)) {
     if (is.logical(features[[i]]) || is.character(features[[i]]) || is.factor(features[[i]])) {
-      categorical[[i]] <- 1
+      categorical[[i]] <- length(unique(features[[i]]))
     }
   }
 

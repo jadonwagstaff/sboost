@@ -18,15 +18,20 @@ sboost <- function(features, outcomes, iterations = 1) {
 
   # test and prepare features, outcomes, and categorical
   categorical <- find_categorical(features)
-  features <- process_features(features)
-  outcomes <- process_outcomes(outcomes, features)
+  processed_features <- process_features(features)
+  processed_outcomes <- process_outcomes(outcomes, features)
   if (is.null(outcomes) || is.null(features)) {
     return(NULL)
   }
 
-  # DEVELOPE CLASSIFIER
+  # DEVELOP CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier <- make_classifier(features, outcomes, iterations)
+  classifier <- make_classifier(processed_features, processed_outcomes, categorical, iterations)
+
+
+  # PREPARE OUTPUT
+  # --------------------------------------------------------------------------------
+  classifier <- prepare_classifier(classifier, features, outcomes)
 
 
   return(classifier)
@@ -41,7 +46,7 @@ sboost <- function(features, outcomes, iterations = 1) {
 # Param: outcomes - a numerical vector of outcomes
 # Param: iterations to call appropriate functions
 # Return: classifier consisting of a linear combination of decision stumps
-make_classifier <- function(features, outcomes, iterations) {
+make_classifier <- function(features, outcomes, categorical, iterations) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -55,15 +60,16 @@ make_classifier <- function(features, outcomes, iterations) {
 
   # CALL C++ CODE
   # --------------------------------------------------------------------------------
-  classifier <- adaboost(features, ordered_index, outcomes, iterations)
+  classifier <- adaboost(features, ordered_index, outcomes, categorical, iterations)
 
 
   return(classifier)
 }
 
 
-# TODO: deal with missing values
-# TODO: Categorical features
+# TODO: Clean up output
+# TODO: Deal with missing values
+# TODO: Categorical results
 # TODO: Regression
 # TODO: Visualization
 
