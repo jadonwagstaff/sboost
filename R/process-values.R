@@ -83,6 +83,7 @@ process_classifier <- function(classifier) {
     new_classifier[[i]] <- c(classifier[[i]]$feature,
                              classifier[[i]]$direction,
                              classifier[[i]]$vote,
+                             classifier[[i]]$categorical,
                              classifier[[i]]$split)
   }
 

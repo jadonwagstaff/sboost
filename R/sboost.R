@@ -62,8 +62,9 @@ make_classifier <- function(features, outcomes, categorical, iterations) {
 }
 
 
-# TODO: deal with missing values
-# TODO: Categorical features
+# TODO: Clean up output
+# TODO: Deal with missing values
+# TODO: Categorical results
 # TODO: Regression
 # TODO: Visualization
 

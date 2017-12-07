@@ -8,6 +8,7 @@ Stump::Stump() {
   feature = 0;
   direction = 0;
   vote = 0;
+  is_categorical = 0;
   split.push_back(0);
 }
 
@@ -15,7 +16,8 @@ Stump::Stump(NumericVector stump_in) {
   feature = stump_in(0);
   direction = stump_in(1);
   vote = stump_in(2);
-  for (int i = 3; i < stump_in.size(); i++) {
+  is_categorical = stump_in(3);
+  for (int i = 4; i < stump_in.size(); i++) {
     split.push_back(stump_in(i));
   }
 }
@@ -74,7 +76,6 @@ void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, Nu
       }
 
       for (int k = 0; k < categorical(j); k++) {
-        Rcout << k + 1 << " " << positive[k] << " " << negative[k] << "\n";
         if (positive[k] > negative[k]) {
           feature_gain += positive[k];
           feature_split.push_back(k + 1);
@@ -137,7 +138,7 @@ void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, Nu
         }
       }
     }
-    Rcout << feature_gain << "\n\n";
+
     // if this features gain is the best, update maxGain and best Feature
     if (feature_gain > max_gain) {
       max_gain = feature_gain;

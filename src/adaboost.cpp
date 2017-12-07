@@ -94,7 +94,6 @@ List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVect
     for (int i = 0; i < weights.size(); i++) {
       weights(i) = weights(i) / weight_sum;
     }
-    Rcout << weights << "\n";
 
   }
 

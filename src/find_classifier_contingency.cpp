@@ -11,6 +11,7 @@ NumericMatrix find_classifier_contingency(NumericMatrix& features, NumericVector
   NumericMatrix contingencies(classifier.size(), 4);
   Assessment classifier_assessment(outcomes.size());
   Stump classifier_stump;
+  NumericVector temp;
 
   for (int i = 0; i < classifier.size(); i++) {
     NumericVector temp = classifier[i];
