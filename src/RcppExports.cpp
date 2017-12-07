@@ -6,35 +6,36 @@
 using namespace Rcpp;
 
 // adaboost
-NumericMatrix adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, int iterations);
-RcppExport SEXP _sboost_adaboost(SEXP featuresSEXP, SEXP ordered_indexSEXP, SEXP outcomesSEXP, SEXP iterationsSEXP) {
+List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations);
+RcppExport SEXP _sboost_adaboost(SEXP featuresSEXP, SEXP ordered_indexSEXP, SEXP outcomesSEXP, SEXP categoricalSEXP, SEXP iterationsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix& >::type features(featuresSEXP);
     Rcpp::traits::input_parameter< NumericMatrix& >::type ordered_index(ordered_indexSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type outcomes(outcomesSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type categorical(categoricalSEXP);
     Rcpp::traits::input_parameter< int >::type iterations(iterationsSEXP);
-    rcpp_result_gen = Rcpp::wrap(adaboost(features, ordered_index, outcomes, iterations));
+    rcpp_result_gen = Rcpp::wrap(adaboost(features, ordered_index, outcomes, categorical, iterations));
     return rcpp_result_gen;
 END_RCPP
 }
 // find_classifier_contingency
-NumericMatrix find_classifier_contingency(NumericMatrix& features, NumericVector& outcomes, NumericMatrix& classifier);
+NumericMatrix find_classifier_contingency(NumericMatrix& features, NumericVector& outcomes, List& classifier);
 RcppExport SEXP _sboost_find_classifier_contingency(SEXP featuresSEXP, SEXP outcomesSEXP, SEXP classifierSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix& >::type features(featuresSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type outcomes(outcomesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix& >::type classifier(classifierSEXP);
+    Rcpp::traits::input_parameter< List& >::type classifier(classifierSEXP);
     rcpp_result_gen = Rcpp::wrap(find_classifier_contingency(features, outcomes, classifier));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_sboost_adaboost", (DL_FUNC) &_sboost_adaboost, 4},
+    {"_sboost_adaboost", (DL_FUNC) &_sboost_adaboost, 5},
     {"_sboost_find_classifier_contingency", (DL_FUNC) &_sboost_find_classifier_contingency, 3},
     {NULL, NULL, 0}
 };

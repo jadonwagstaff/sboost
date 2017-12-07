@@ -13,12 +13,10 @@ assess_classifier <- function(features, outcomes, classifier) {
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
+  classifier <- process_classifier(classifier)
   features <- process_features(features)
-  if (is.null(features)) {
-    return(NULL)
-  }
   outcomes <- process_outcomes(outcomes, features)
-  if (is.null(outcomes)) {
+  if (is.null(outcomes) || is.null(features) || is.null(classifier)) {
     return(NULL)
   }
 

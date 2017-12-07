@@ -8,9 +8,7 @@ process_features <- function(features) {
   }
 
   for (i in seq_along(features)) {
-    if (is.logical(features[[i]])) {
-      features[[i]] <- as.numeric(features[[i]])
-    } else if (is.character(features[[i]])) {
+    if (is.logical(features[[i]]) || is.character(features[[i]])) {
       features[[i]] <- factor(features[[i]])
     }
 
@@ -63,13 +61,44 @@ process_outcomes <- function(outcomes, features) {
 
 
 # --------------------------------------------------------------------------------
+# TESTS AND PREPARES CLASSIFIER
+process_classifier <- function(classifier) {
+
+  if (!is.list(classifier)) {
+    message("ERROR: Classifier must be a list.")
+    return(NULL)
+  }
+
+  new_classifier = list()
+
+  for (i in seq_along(classifier)) {
+    # feature, direction, vote, split
+    if (length(classifier[[i]]$feature) != 1 ||
+        length(classifier[[i]]$direction) != 1 ||
+        length(classifier[[i]]$vote) != 1 ||
+        length(classifier[[i]]$split) < 1) {
+      message("ERROR: Classifier not valid.")
+      return(NULL)
+    }
+    new_classifier[[i]] <- c(classifier[[i]]$feature,
+                             classifier[[i]]$direction,
+                             classifier[[i]]$vote,
+                             classifier[[i]]$split)
+  }
+
+  return(new_classifier)
+}
+
+
+
+# --------------------------------------------------------------------------------
 # FIND CATEGORICAL VECTOR
 find_categorical <- function(features) {
   categorical <- rep(0, ncol(features))
 
   for (i in seq_along(features)) {
     if (is.logical(features[[i]]) || is.character(features[[i]]) || is.factor(features[[i]])) {
-      categorical[[i]] <- 1
+      categorical[[i]] <- length(unique(features[[i]]))
     }
   }
 

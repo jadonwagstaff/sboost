@@ -26,7 +26,7 @@ sboost <- function(features, outcomes, iterations = 1) {
 
   # DEVELOPE CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier <- make_classifier(features, outcomes, iterations)
+  classifier <- make_classifier(features, outcomes, categorical, iterations)
 
 
   return(classifier)
@@ -41,7 +41,7 @@ sboost <- function(features, outcomes, iterations = 1) {
 # Param: outcomes - a numerical vector of outcomes
 # Param: iterations to call appropriate functions
 # Return: classifier consisting of a linear combination of decision stumps
-make_classifier <- function(features, outcomes, iterations) {
+make_classifier <- function(features, outcomes, categorical, iterations) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ make_classifier <- function(features, outcomes, iterations) {
 
   # CALL C++ CODE
   # --------------------------------------------------------------------------------
-  classifier <- adaboost(features, ordered_index, outcomes, iterations)
+  classifier <- adaboost(features, ordered_index, outcomes, categorical, iterations)
 
 
   return(classifier)
