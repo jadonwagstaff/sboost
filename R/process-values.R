@@ -129,6 +129,7 @@ process_classifier <- function(classifier, features, outcomes) {
     }
 
     new_classifier[[i]] <- as.numeric(c(feature, direction, vote, categorical, split))
+
   }
 
   return(new_classifier)
