@@ -16,8 +16,10 @@ NumericMatrix find_classifier_contingency(NumericMatrix& features, NumericVector
   for (int i = 0; i < classifier.size(); i++) {
     NumericVector temp = classifier[i];
     classifier_stump = Stump(temp);
-    classifier_assessment.update_predictions(classifier_stump, features, outcomes);
-    classifier_assessment.update_contingency(features, outcomes);
+    if (!std::isnan(classifier_stump.get_vote())) {
+      classifier_assessment.update_predictions(classifier_stump, features, outcomes);
+      classifier_assessment.update_contingency(features, outcomes);
+    }
     contingencies(i, 0) = classifier_assessment.get_true_positive();
     contingencies(i, 1) = classifier_assessment.get_false_negative();
     contingencies(i, 2) = classifier_assessment.get_true_negative();

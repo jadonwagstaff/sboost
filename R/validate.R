@@ -44,9 +44,9 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
 
   # training
   for (i in 1:k_fold) {
-    assessment_list[[i]] <- assess_classifier(features[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows), ],
-                                              outcomes[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)],
-                                              classifier_list[[i]])
+    assessment_list[[i]] <- assess_classifier_internal(features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
+                                                       outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
+                                                       classifier_list[[i]])
   }
 
   for (i in 1:k_fold) {
@@ -58,9 +58,9 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
 
   # testing
   for (i in 1:k_fold) {
-    assessment_list[[i]] <- assess_classifier(features[(((i - 1) / k_fold) * rows):((i / k_fold) * rows), ],
-                                              outcomes[(((i - 1) / k_fold) * rows):((i / k_fold) * rows)],
-                                              classifier_list[[i]])
+    assessment_list[[i]] <- assess_classifier_internal(features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
+                                                       outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
+                                                       classifier_list[[i]])
   }
 
   for (i in 1:k_fold) {

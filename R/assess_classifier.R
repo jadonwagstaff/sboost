@@ -14,8 +14,8 @@ assess_classifier <- function(features, outcomes, classifier) {
 
   # test and prepare features and outcomes
   classifier <- process_classifier(classifier, features, outcomes)
-  new_features <- process_features(features)
-  new_outcomes <- process_outcomes(outcomes, features)
+  features <- process_features(features)
+  outcomes <- process_outcomes(outcomes, features)
   if (is.null(outcomes) || is.null(features) || is.null(classifier)) {
     return(NULL)
   }
@@ -23,17 +23,26 @@ assess_classifier <- function(features, outcomes, classifier) {
 
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier_assessment <- find_classifier_contingency(new_features, new_outcomes, classifier)
-  colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
-
-  classifier_assessment <- data.frame(classifier_assessment)
-  classifier_assessment <- dplyr::mutate(classifier_assessment,
-                accuracy = (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative),
-                recall = true_positive / (true_positive + false_negative),
-                specificity = true_negative / (true_negative + false_positive),
-                precision = true_positive / (true_positive + false_positive),
-                f1 = (2 * precision * recall) / (precision + recall))
+  classifier_assessment <- assess_classifier_internal(features, outcomes, classifier)
 
 
   return(classifier_assessment)
 }
+
+
+# classifier, features, and outcomes must already be processed
+assess_classifier_internal <- function(features, outcomes, classifier) {
+  classifier_assessment <- find_classifier_contingency(features, outcomes, classifier)
+  colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
+
+  classifier_assessment <- data.frame(classifier_assessment)
+  classifier_assessment <- dplyr::mutate(classifier_assessment,
+                                         accuracy = (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative),
+                                         recall = true_positive / (true_positive + false_negative),
+                                         specificity = true_negative / (true_negative + false_positive),
+                                         precision = true_positive / (true_positive + false_positive),
+                                         f1 = (2 * precision * recall) / (precision + recall))
+
+  return(classifier_assessment)
+}
+

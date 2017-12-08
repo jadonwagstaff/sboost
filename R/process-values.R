@@ -147,7 +147,7 @@ prepare_classifier <- function(classifier, features, outcomes) {
   otcm_possibilities <- sort(unique(outcomes))
 
   for (i in seq_along(classifier)) {
-    feature <- classifier[[i]][[1]]
+    feature <- classifier[[i]][[1]] + 1
     direction <- classifier[[i]][[2]]
     vote <- classifier[[i]][[3]]
     categorical <- classifier[[i]][[4]]

@@ -14,15 +14,19 @@ Assessment::Assessment(int size) {
 }
 
 void Assessment::update_predictions(Stump& stump, NumericMatrix& features, NumericVector& outcomes) {
+  bool in_split = false;
   if (stump.get_categorical() == 1) {
     for (int i = 0; i < features.nrow(); i++) {
-      predictions(i) += -1 * stump.get_vote();
+      in_split = false;
       for (int k = 0; k < stump.split_size(); k++) {
-        Rcout << stump.get_split(k);
         if (features(i, stump.get_feature()) == stump.get_split(k)) {
-          predictions(i) += 2 * stump.get_vote();
+          predictions(i) += stump.get_vote();
+          in_split = true;
           break;
         }
+      }
+      if (in_split == false) {
+        predictions(i) += -1 * stump.get_vote();
       }
     }
   } else {
@@ -42,7 +46,6 @@ void Assessment::update_predictions(Stump& stump, NumericMatrix& features, Numer
       }
     }
   }
-  Rcout << "\n";
 }
 
 void Assessment::update_contingency(NumericMatrix& features, NumericVector& outcomes) {
