@@ -13,7 +13,7 @@ process_features <- function(features) {
     }
 
     if (is.factor(features[[i]])) {
-      features[[i]] <- as.numeric(features[[i]])
+      features[[i]] <- as.numeric(addNA(features[[i]]))
     } else if (!is.numeric(features[[i]])) {
       message(paste("ERROR: Unknown data type in column ", i))
       return(NULL)
@@ -122,7 +122,7 @@ process_classifier <- function(classifier, features, outcomes) {
 
     # Change split
     if (categorical == 1) {
-      feature_levels <- levels(factor(features[[feature + 1]]))
+      feature_levels <- levels(addNA(factor(features[[feature + 1]])))
       for (j in seq_along(split)) {
         split[[j]] <- match(split[[j]], feature_levels)
       }
@@ -182,7 +182,7 @@ prepare_classifier <- function(classifier, features, outcomes) {
     # change split
     if (categorical == 1) {
       classifier[[i]]$split <- rep(0, length(split))
-      feature_levels <- levels(factor(features[[feature]]))
+      feature_levels <- levels(addNA(factor(features[[feature]])))
       for (j in 1:length(classifier[[i]]$split)) {
         classifier[[i]]$split[[j]] <- feature_levels[[split[[j]]]]
       }

@@ -6,6 +6,9 @@ NULL
 #'
 #' This algorithm is a machine learning algorithm using
 #' adaboost on decision stumps.
+#'
+#' Missing values are treated as their own category for categorical,
+#' and divided randomly on the best split for numeric.
 #' @param feature feature set data.frame
 #' @param outcomes outcomes corresponding to the features
 #' @param iterations is the number of boosts
@@ -66,6 +69,7 @@ make_classifier <- function(features, outcomes, categorical, iterations) {
 }
 
 
+# TODO: Improve documentation
 # TODO: Clean up output
 # TODO: Deal with missing values
 # TODO: Categorical results

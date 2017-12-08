@@ -20,5 +20,9 @@ classifier
 This algorithm is a machine learning algorithm using
 adaboost on decision stumps.
 }
+\details{
+Missing values are treated as their own category for categorical,
+and divided randomly on the best split for numeric.
+}
 \keyword{boost}
 \keyword{stump,}

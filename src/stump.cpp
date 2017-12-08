@@ -93,6 +93,7 @@ void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, Nu
 
       // Continuous
       feature_categorical = 0;
+      gain = 0;
       feature_split.push_back(0);
       positive_behind = 0;
       negative_behind = 0;
@@ -119,13 +120,44 @@ void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, Nu
         // find gain if this and the last sample were different for this feature, compare to feature gain
         if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j) ) {
 
+          // deal with NA: randomly distribute over best split
+          if (std::isnan(features(ordered_index(i, j), j))) {
+            if (gain != 0) {
+              for (int newi = i; newi < features.nrow(); newi++) {
+                if (rand() % 2 == 0) {
+                  if (outcomes(ordered_index(newi - 1, j)) == 1) {
+                    if (feature_direction != 1) {
+                      feature_gain += weights(ordered_index(newi - 1, j));
+                    }
+                  } else {
+                    if (feature_direction == 1) {
+                      feature_gain += weights(ordered_index(newi - 1, j));
+                    }
+                  }
+                } else {
+                  if (outcomes(ordered_index(newi - 1, j)) == 1) {
+                    if (feature_direction == 1) {
+                      feature_gain += weights(ordered_index(newi - 1, j));
+                    }
+                  } else {
+                    if (feature_direction != 1) {
+                      feature_gain += weights(ordered_index(newi - 1, j));
+                    }
+                  }
+                }
+              }
+            }
+            break;
+          }
+
+          // determine gain
           if (positive_ahead + negative_behind > negative_ahead + positive_behind) {
             gain = positive_ahead + negative_behind;
           } else {
             gain = negative_ahead + positive_behind;
           }
 
-
+          // see if gain is best
           if (gain > feature_gain) {
             feature_gain = gain;
             feature_split[0] = (features(ordered_index(i - 1, j), j) + features(ordered_index(i, j), j)) / 2;
