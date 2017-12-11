@@ -5,6 +5,10 @@ adaboost <- function(features, ordered_index, outcomes, categorical, iterations)
     .Call('_sboost_adaboost', PACKAGE = 'sboost', features, ordered_index, outcomes, categorical, iterations)
 }
 
+adaboost_regression <- function(features, ordered_index, outcomes, categorical, iterations) {
+    .Call('_sboost_adaboost_regression', PACKAGE = 'sboost', features, ordered_index, outcomes, categorical, iterations)
+}
+
 find_classifier_contingency <- function(features, outcomes, classifier) {
     .Call('_sboost_find_classifier_contingency', PACKAGE = 'sboost', features, outcomes, classifier)
 }

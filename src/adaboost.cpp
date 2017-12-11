@@ -6,7 +6,7 @@ using namespace Rcpp;
 
 // adaboost is the central function for adaptive boosting of decision classifier
 // Param: feature matrix, corresponding outcomes, weights for each row of feature matrix
-// Return: classifier as a stump with a vote, and updates weights vector
+// Return: classifier as stumps with a vote
 // [[Rcpp::export]]
 List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations) {
 
@@ -102,6 +102,19 @@ List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVect
   for (int i = 0; i < iterations; i++) {
     output[i] = classifier[i].make_vector();
   }
+
+  return output;
+}
+
+
+
+// adaboost_regression is the central function for adaptive boosting of regression classifer
+// Param: feature matrix, corresponding outcomes, weights for each row of feature matrix
+// Return: classifier as stumps with a vote
+// [[Rcpp::export]]
+List adaboost_regression(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations) {
+
+  List output(iterations);
 
   return output;
 }

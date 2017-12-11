@@ -62,7 +62,11 @@ make_classifier <- function(features, outcomes, categorical, iterations) {
 
   # CALL C++ CODE
   # --------------------------------------------------------------------------------
-  classifier <- adaboost(features, ordered_index, outcomes, categorical, iterations)
+  if (length(unique(outcomes)) > 2) {
+    classifier <- adaboost_regression(features, ordered_index, outcomes, categorical, iterations)
+  } else {
+    classifier <- adaboost(features, ordered_index, outcomes, categorical, iterations)
+  }
 
 
   return(classifier)

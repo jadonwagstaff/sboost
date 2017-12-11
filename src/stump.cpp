@@ -184,8 +184,28 @@ void Stump::find_stump(NumericMatrix& features, NumericMatrix& ordered_index, Nu
 }
 
 
+void Stump::set_feature(int f) {
+  feature = f;
+}
+
+
+void Stump::set_direction(int d) {
+  direction = d;
+}
+
+
 void Stump::set_vote(double v) {
   vote = v;
+}
+
+
+void Stump::set_categorical(int c) {
+  is_categorical = c;
+}
+
+
+void Stump::add_split(double s) {
+  split.push_back(s);
 }
 
 

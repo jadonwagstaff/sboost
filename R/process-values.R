@@ -51,7 +51,9 @@ process_outcomes <- function(outcomes, features) {
       }
     }
   } else {
-    message("Error: There are not exactly two distinct outcomes.")
+    if (length(otcm_possibilities) < 2 || !is.numeric(outcomes)) {
+      message("Error: There are not exactly two distinct outcomes\n or outcomes are not numeric.")
+    }
     return(NULL)
   }
 
