@@ -1,4 +1,5 @@
 #include "stump.h"
+#include "line.h"
 #include <Rcpp.h>
 #include <cmath>
 using namespace Rcpp;
@@ -114,7 +115,70 @@ List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVect
 // [[Rcpp::export]]
 List adaboost_regression(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations) {
 
+  // CREATE VARIABLES
+  // --------------------------------------------------------------------------------
+  double error = 0, vote = 0, weight_sum = 0, max_error = 0;
+  NumericVector prediction(features.nrow());
+
+  NumericVector weights(outcomes.size());
+  for (int i = 0; i < outcomes.size(); i++) {
+    weights(i) = double(1) / outcomes.size();
+  }
+
+  // feature, split, direction, vote
+  std::vector<Line> classifier(iterations);
   List output(iterations);
+
+
+
+  std::vector<double> p;
+  double votesum = 0, votetotal = 0;
+  int count;
+
+
+  for (int k = 0; k < iterations; k++) {
+    // FIND BEST DECISION STUMP
+    // --------------------------------------------------------------------------------
+    classifier[k].find_line(features, ordered_index, outcomes, weights, categorical);
+
+
+    // PERFORM ADABOOST
+    // --------------------------------------------------------------------------------
+
+    // find prediction, error, and vote
+    error = 0;
+    weight_sum = 0;
+    max_error = 0;
+    for (int i = 0; i < features.nrow(); i++) {
+      prediction(i) = classifier[k].prediction(features(i, classifier[k].feature()));
+      if (std::abs(outcomes(i) - prediction(i)) > max_error) {
+        max_error = std::abs(outcomes(i) - prediction(i));
+      }
+    }
+    max_error = pow(max_error, 2);
+    for (int i = 0; i < features.nrow(); i++) {
+      prediction(i) = pow(outcomes(i) - prediction(i), 2) / max_error;
+      error = error + weights(i) * prediction(i);
+    }
+    vote = error / (1 - error);
+    classifier[k].set_vote(log(1 / vote));
+
+    // update weights
+    for (int i = 0; i < weights.size(); i++) {
+      weights(i) = weights(i) * pow(vote, 1 - prediction(i));
+      weight_sum += weights(i);
+    }
+    for (int i = 0; i < weights.size(); i++) {
+      weights(i) = weights(i) / weight_sum;
+    }
+
+  }
+
+  // CREATE CLASSIFIER OUTPUT
+  // --------------------------------------------------------------------------------
+  for (int i = 0; i < iterations; i++) {
+    output[i] = classifier[i].vector();
+  }
 
   return output;
 }
