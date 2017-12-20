@@ -48,11 +48,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// find_regressor_contingency
+NumericMatrix find_regressor_contingency(NumericMatrix& features, NumericVector& outcomes, List& regressor);
+RcppExport SEXP _sboost_find_regressor_contingency(SEXP featuresSEXP, SEXP outcomesSEXP, SEXP regressorSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type features(featuresSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type outcomes(outcomesSEXP);
+    Rcpp::traits::input_parameter< List& >::type regressor(regressorSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_regressor_contingency(features, outcomes, regressor));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_sboost_adaboost_class", (DL_FUNC) &_sboost_adaboost_class, 5},
     {"_sboost_adaboost_regress", (DL_FUNC) &_sboost_adaboost_regress, 5},
     {"_sboost_find_classifier_contingency", (DL_FUNC) &_sboost_find_classifier_contingency, 3},
+    {"_sboost_find_regressor_contingency", (DL_FUNC) &_sboost_find_regressor_contingency, 3},
     {NULL, NULL, 0}
 };
 

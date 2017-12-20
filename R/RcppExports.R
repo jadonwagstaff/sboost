@@ -13,3 +13,7 @@ find_classifier_contingency <- function(features, outcomes, classifier) {
     .Call('_sboost_find_classifier_contingency', PACKAGE = 'sboost', features, outcomes, classifier)
 }
 
+find_regressor_contingency <- function(features, outcomes, regressor) {
+    .Call('_sboost_find_regressor_contingency', PACKAGE = 'sboost', features, outcomes, regressor)
+}
+

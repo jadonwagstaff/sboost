@@ -37,7 +37,7 @@ assess_model <- function(features, outcomes, model) {
   if (!is.null(classifier)) {
     model_assessment <- assess_classifier(processed_features, processed_outcomes, classifier)
   } else if (!is.null(regressor)) {
-    print(regressor)
+    model_assessment <- assess_regressor(processed_features, processed_outcomes, regressor)
   }
 
 
@@ -59,5 +59,18 @@ assess_classifier <- function(features, outcomes, classifier) {
                                          f1 = (2 * precision * recall) / (precision + recall))
 
   return(classifier_assessment)
+}
+
+# classifier, features, and outcomes must already be processed
+assess_regressor <- function(features, outcomes, regressor) {
+  regressor_assessment <- find_regressor_contingency(features, outcomes, regressor)
+  sse <- rep(0, length(regressor))
+  ssto <- sum((outcomes - mean(outcomes))^2)
+  for (i in 1:ncol(regressor_assessment)) {
+    sse[[i]] <- sum((outcomes - regressor_assessment[,i])^2)
+  }
+  output <- data.frame(MSE = sse / length(outcomes), R2 = 1 - sse / ssto)
+
+  return(output)
 }
 
