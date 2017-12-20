@@ -8,6 +8,7 @@ class Line
 {
 public:
   Line();
+  Line(NumericVector line_in);
 
   void find_line(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& weights, NumericVector& categorical);
   void set_vote(double vote);

@@ -91,10 +91,9 @@ make_regressor <- function(features, outcomes, categorical, iterations) {
 }
 
 
+# TODO: Make predictions
 # TODO: Improve documentation
-# TODO: Clean up output
 # TODO: Deal with missing values
 # TODO: Categorical results
-# TODO: Regression
 # TODO: Visualization
 

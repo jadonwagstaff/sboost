@@ -1,37 +1,52 @@
-#' assess_classifier
+#' assess_model
 #'
-#' This function finds determines how well a set of stump classifiers fit a given dataset
+#' This function finds determines how well a model fits a given dataset
 #' @param feature feature set
 #' @param outcomes index corresponding to the features
-#' @param classifier must be output from sboost
-#' @return Assessment after each additional stump is included in classifier
-#' @keywords stump, assess, assessment, f1, accuracy
+#' @param model must be output from sboost
+#' @return Assessment after each additional line in the model
+#' @keywords assess, assessment, f1, accuracy
 #' @export
-assess_classifier <- function(features, outcomes, classifier) {
+assess_model <- function(features, outcomes, model) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
-  classifier <- process_classifier(classifier, features, outcomes)
-  features <- process_features(features)
-  outcomes <- process_outcomes(outcomes, features)
-  if (is.null(outcomes) || is.null(features) || is.null(classifier)) {
+  processed_features <- process_features(features)
+  processed_outcomes <- process_outcomes(outcomes, features)
+  if (is.null(outcomes) || is.null(features)) {
     return(NULL)
   }
 
+  # test and prepare classifier or regressor
+  if (ncol(model) == 5) {
+    classifier <- process_classifier(model, features, outcomes)
+    regressor <- NULL
+  } else if (ncol(model) == 6) {
+    regressor <- process_regressor(model, features, outcomes)
+    classifier <- NULL
+  } else {
+    message("ERROR: Model is not in correct format.")
+    return(NULL)
+  }
 
-  # ASSESS CLASSIFIER
+  # ASSESS MODEL
   # --------------------------------------------------------------------------------
-  classifier_assessment <- assess_classifier_internal(features, outcomes, classifier)
+  model_assessment <- NULL
+  if (!is.null(classifier)) {
+    model_assessment <- assess_classifier(processed_features, processed_outcomes, classifier)
+  } else if (!is.null(regressor)) {
+    print(regressor)
+  }
 
 
-  return(classifier_assessment)
+  return(model_assessment)
 }
 
 
 # classifier, features, and outcomes must already be processed
-assess_classifier_internal <- function(features, outcomes, classifier) {
+assess_classifier <- function(features, outcomes, classifier) {
   classifier_assessment <- find_classifier_contingency(features, outcomes, classifier)
   colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
 

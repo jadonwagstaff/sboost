@@ -64,8 +64,8 @@ process_outcomes <- function(outcomes, features) {
 # TESTS AND PREPARES CLASSIFIER INPUT
 process_classifier <- function(classifier, features, outcomes) {
 
-  if (!is.list(classifier)) {
-    message("ERROR: Classifier must be a list.")
+  if (!is.data.frame(classifier)) {
+    message("ERROR: Classifier must be a data frame.")
     return(NULL)
   }
 
@@ -77,21 +77,17 @@ process_classifier <- function(classifier, features, outcomes) {
   }
   otcm_possibilities <- sort(unique(outcomes))
 
-  for (i in seq_along(classifier)) {
-    # feature, direction, vote, split
-    if (length(classifier[[i]]$feature) != 1 ||
-        length(classifier[[i]]$direction) != 1 ||
-        length(classifier[[i]]$vote) != 1 ||
-        length(classifier[[i]]$categorical) != 1 ||
-        length(classifier[[i]]$split) < 1) {
-      message("ERROR: Classifier not valid.")
-      return(NULL)
+  for (i in 1:nrow(classifier)) {
+    feature <- classifier$feature[i]
+    vote <- classifier$vote[i]
+    direction <- classifier$direction[i]
+    if (is.na(classifier$split[i])) {
+      categorical <- 1
+      split <- strsplit(classifier$categories[i], "; ")[[1]]
+    } else {
+      categorical <- 0
+      split <- classifier$split[i]
     }
-    feature <- classifier[[i]]$feature
-    direction <- classifier[[i]]$direction
-    categorical <- classifier[[i]]$categorical
-    vote <- classifier[[i]]$vote
-    split <- classifier[[i]]$split
 
     # Change feature
     feature <- match(feature, colnames(features))[[1]] - 1
@@ -117,9 +113,6 @@ process_classifier <- function(classifier, features, outcomes) {
       }
     }
 
-    # Change categorical
-    categorical <- as.numeric(categorical)
-
     # Change split
     if (categorical == 1) {
       feature_levels <- levels(addNA(factor(features[[feature + 1]])))
@@ -134,6 +127,51 @@ process_classifier <- function(classifier, features, outcomes) {
 
   return(new_classifier)
 }
+
+
+
+# --------------------------------------------------------------------------------
+# TESTS AND PREPARES REGRESSOR INPUT
+process_regressor <- function(regressor, features, outcomes) {
+
+  if (!is.data.frame(regressor)) {
+    message("ERROR: Classifier must be a data frame.")
+    return(NULL)
+  }
+
+  new_regressor = list()
+
+  for (i in 1:nrow(regressor)) {
+    # Change feature
+    feature <- match(regressor$feature[i], colnames(features))[[1]] - 1
+    if (is.na(feature)) {
+      message(paste0("ERROR: Feature for row ", i, " not found."))
+      return(NULL)
+    }
+    vote <- regressor$vote[i]
+    if (is.na(regressor$slope[i])) {
+      categorical <- 1
+      a <- 0
+      categories <- strsplit(regressor$categories[i], "; ")[[1]]
+      values <- strsplit(regressor$values[i], "; ")[[1]]
+      feature_levels <- levels(addNA(factor(features[[feature + 1]])))
+      b <- rep(NA, length(values))
+      for (j in 1:length(values)) {
+        b[[j]] <- values[[match(categories[[j]], feature_levels)[[1]]]]
+      }
+    } else {
+      categorical <- 0
+      a <- regressor$slope[i]
+      b <- regressor$intercept[i]
+    }
+
+    new_regressor[[i]] <- as.numeric(c(feature, vote, categorical, a, b))
+
+  }
+
+  return(new_regressor)
+}
+
 
 
 # --------------------------------------------------------------------------------
@@ -218,7 +256,7 @@ prepare_regressor <- function(regressor, features, outcomes) {
     if (categorical == 1) {
       output$slope[i] <- NA
       output$intercept[i] <- NA
-      feature_levels <- levels(addNA(factor(features[[feature]])))
+      feature_levels <- levels(addNA(factor(features[[feature]])))[1:length(b)]
       output$categories[i] <- paste(feature_levels, collapse = "; ")
       output$values[i] <- paste(b, collapse = "; ")
     } else {

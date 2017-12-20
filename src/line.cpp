@@ -9,6 +9,16 @@ Line::Line() {
   a = 0;
 }
 
+Line::Line(NumericVector line_in) {
+  f = line_in(0);
+  v = line_in(1);
+  c = line_in(2);
+  a = line_in(3);
+  for (int i = 4; i < line_in.size(); i++) {
+    b.push_back(line_in(i));
+  }
+}
+
 
 void Line::find_line(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& weights, NumericVector& categorical) {
   // CREATE VARIABLES
@@ -28,7 +38,7 @@ void Line::find_line(NumericMatrix& features, NumericMatrix& ordered_index, Nume
     y_mean = 0;
     x_mean = 0;
     w_total = 0;
-    if (categorical(j) == 1) {
+    if (categorical(j) > 0) {
       // categorical test
       y_mean = outcomes(ordered_index(0, j));
       for (int i = 1; i < n; i++) {
