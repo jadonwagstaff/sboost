@@ -5,11 +5,11 @@
 using namespace Rcpp;
 
 
-// adaboost is the central function for adaptive boosting of decision classifier
+// adaboost_class is the central function for adaptive boosting of decision stumps
 // Param: feature matrix, corresponding outcomes, weights for each row of feature matrix
 // Return: classifier as stumps with a vote
 // [[Rcpp::export]]
-List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations) {
+List adaboost_class(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations) {
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
@@ -95,7 +95,6 @@ List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVect
     for (int i = 0; i < weights.size(); i++) {
       weights(i) = weights(i) / weight_sum;
     }
-
   }
 
   // CREATE CLASSIFIER OUTPUT
@@ -109,11 +108,11 @@ List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVect
 
 
 
-// adaboost_regression is the central function for adaptive boosting of regression classifer
+// adaboost_regress is the central function for adaptive boosting of regression model
 // Param: feature matrix, corresponding outcomes, weights for each row of feature matrix
 // Return: classifier as stumps with a vote
 // [[Rcpp::export]]
-List adaboost_regression(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations) {
+List adaboost_regress(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations) {
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
@@ -128,13 +127,6 @@ List adaboost_regression(NumericMatrix& features, NumericMatrix& ordered_index, 
   // feature, split, direction, vote
   std::vector<Line> classifier(iterations);
   List output(iterations);
-
-
-
-  std::vector<double> p;
-  double votesum = 0, votetotal = 0;
-  int count;
-
 
   for (int k = 0; k < iterations; k++) {
     // FIND BEST DECISION STUMP
@@ -171,7 +163,6 @@ List adaboost_regression(NumericMatrix& features, NumericMatrix& ordered_index, 
     for (int i = 0; i < weights.size(); i++) {
       weights(i) = weights(i) / weight_sum;
     }
-
   }
 
   // CREATE CLASSIFIER OUTPUT

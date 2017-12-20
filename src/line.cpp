@@ -111,7 +111,11 @@ double Line::vote() const {
 
 
 NumericVector Line::vector() const {
-  return NumericVector::create(f, v, a, b[0]);
+  NumericVector output = NumericVector::create(double(f), v, double(c), a);
+  for (int i = 0; i < b.size(); i++) {
+    output.push_back(b[i]);
+  }
+  return(output);
 }
 
 

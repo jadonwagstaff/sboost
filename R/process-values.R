@@ -50,10 +50,8 @@ process_outcomes <- function(outcomes, features) {
         outcomes[[i]] <- 1
       }
     }
-  } else {
-    if (length(otcm_possibilities) < 2 || !is.numeric(outcomes)) {
-      message("Error: There are not exactly two distinct outcomes\n or outcomes are not numeric.")
-    }
+  } else if (length(otcm_possibilities) < 2 || !is.numeric(outcomes)) {
+    message("Error: There are not exactly two distinct outcomes\n or outcomes are not numeric.")
     return(NULL)
   }
 
@@ -142,58 +140,96 @@ process_classifier <- function(classifier, features, outcomes) {
 # PREPARES CLASSIFIER OUTPUT
 prepare_classifier <- function(classifier, features, outcomes) {
 
+  # create output data frame
+  output <- data.frame(matrix(ncol = 5, nrow = length(classifier)))
+  colnames(output) <- c("feature", "vote", "direction", "split", "categories")
+
   # determine outcomes
   if(is.data.frame(outcomes)) {
     outcomes <- outcomes[[1]]
   }
   otcm_possibilities <- sort(unique(outcomes))
 
+  # set output values
   for (i in seq_along(classifier)) {
     feature <- classifier[[i]][[1]] + 1
     direction <- classifier[[i]][[2]]
     vote <- classifier[[i]][[3]]
     categorical <- classifier[[i]][[4]]
     split <- classifier[[i]][c(-1, -2, -3, -4)]
-    classifier[[i]] <- list()
-
-    # Change stump name
-    names(classifier)[[i]] <- i
 
     # Change feature name
-    classifier[[i]]$feature <- colnames(features)[[feature]]
+    output$feature[i] <- colnames(features)[[feature]]
+
+    # Change vote
+    output$vote[i] <- vote
 
     # Change direction
     if (categorical == 1) {
-      classifier[[i]]$direction <- paste0("split <- ", otcm_possibilities[[1]])
+      output$direction[i] <- paste0("categories <- ", otcm_possibilities[[1]])
     } else if (direction == 1) {
-      classifier[[i]]$direction <- paste0("-> ", otcm_possibilities[[1]])
+      output$direction[i] <- paste0("-> ", otcm_possibilities[[1]])
     } else {
-      classifier[[i]]$direction <- paste0("<- ", otcm_possibilities[[1]])
+      output$direction[i] <- paste0("<- ", otcm_possibilities[[1]])
     }
-
-    # Change categorical value
-    if (categorical == 1) {
-      classifier[[i]]$categorical <- TRUE
-    } else {
-      classifier[[i]]$categorical <- FALSE
-    }
-
-    # Change vote
-    classifier[[i]]$vote <- vote
 
     # change split
     if (categorical == 1) {
-      classifier[[i]]$split <- rep(0, length(split))
+      temp_split <- rep(NA, length(split))
       feature_levels <- levels(addNA(factor(features[[feature]])))
-      for (j in 1:length(classifier[[i]]$split)) {
-        classifier[[i]]$split[[j]] <- feature_levels[[split[[j]]]]
+      for (j in 1:length(split)) {
+        temp_split[[j]] <- feature_levels[[split[[j]]]]
       }
+      output$categories[i] <- paste(temp_split, collapse = "; ")
+      output$split[i] <- NA
     } else {
-      classifier[[i]]$split <- split
+      output$split[i] <- split
+      output$categories[i] <- NA
     }
   }
 
-  return(classifier)
+  return(output)
+}
+
+
+
+# --------------------------------------------------------------------------------
+# PREPARES REGRESSOR OUTPUT
+prepare_regressor <- function(regressor, features, outcomes) {
+  # create output data frame
+  output <- data.frame(matrix(ncol = 6, nrow = length(regressor)))
+  colnames(output) <- c("feature", "vote", "slope", "intercept", "categories", "values")
+
+  # set output values
+  for (i in seq_along(regressor)) {
+    feature <- regressor[[i]][[1]] + 1
+    vote <- regressor[[i]][[2]]
+    categorical <- regressor[[i]][[3]]
+    a <- regressor[[i]][[4]]
+    b <- regressor[[i]][c(-1, -2, -3, -4)]
+
+    # Change feature name
+    output$feature[i] <- colnames(features)[[feature]]
+
+    # Change vote
+    output$vote[i] <- vote
+
+    # change remainder of variables
+    if (categorical == 1) {
+      output$slope[i] <- NA
+      output$intercept[i] <- NA
+      feature_levels <- levels(addNA(factor(features[[feature]])))
+      output$categories[i] <- paste(feature_levels, collapse = "; ")
+      output$values[i] <- paste(b, collapse = "; ")
+    } else {
+      output$slope[i] <- a
+      output$intercept[i] <- b
+      output$categories[i] <- NA
+      output$values[i] <- NA
+    }
+  }
+
+  return(output)
 }
 
 
