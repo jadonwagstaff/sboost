@@ -24,5 +24,6 @@ adaboost on decision stumps.
 Missing values are treated as their own category for categorical,
 and divided randomly on the best split for numeric.
 }
-\keyword{boost}
+\keyword{boost,}
+\keyword{classifier}
 \keyword{stump,}

@@ -1,7 +1,5 @@
 #include "assessment.h"
-#include "predictor.h"
 #include "stump.h"
-#include "line.h"
 #include <Rcpp.h>
 #include <cmath>
 using namespace Rcpp;
@@ -31,29 +29,5 @@ NumericMatrix find_classifier_contingency(NumericMatrix& features, NumericVector
   return contingencies;
 }
 
-// Param: feature matrix, corresponding outcomes, classifier
-// Return: matrix with columns containing predictions for each additional line
-// [[Rcpp::export]]
-NumericMatrix find_regressor_contingency(NumericMatrix& features, NumericVector& outcomes, List& regressor) {
-  // create variables
-  NumericMatrix predictions(outcomes.size(), regressor.size());
-  Line regressor_line;
-  NumericVector temp;
-  std::vector<Predictor> predictors;
-  for (int i = 0; i < outcomes.size(); i++) {
-    predictors.push_back(Predictor(features(i, _), outcomes(i)));
-  }
 
-  // make predictions
-  for (int j = 0; j < regressor.size(); j++) {
-    NumericVector temp = regressor[j];
-    regressor_line = Line(temp);
-    for (int i = 0; i < predictors.size(); i++) {
-      predictors[i].update_prediction(regressor_line);
-      predictions(i, j) = predictors[i].prediction();
-    }
-  }
-
-  return predictions;
-}
 
