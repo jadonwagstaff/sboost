@@ -104,7 +104,7 @@ process_classifier <- function(classifier, features, outcomes) {
     } else {
       if (substr(direction, 1, 2) == "->") {
         direction <- substr(direction, 4, nchar(direction))
-        if (match(otcm_possibilities, direction)[[1]] == 1) {
+        if (!is.na(match(otcm_possibilities, direction)[[1]])) {
           direction <- 1
         } else {
           direction <- -1

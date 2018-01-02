@@ -9,7 +9,7 @@ NULL
 #'
 #' Missing values are treated as their own category for categorical,
 #' and divided randomly on the best split for numeric.
-#' @param feature feature set data.frame
+#' @param features feature set data.frame
 #' @param outcomes outcomes corresponding to the features
 #' @param iterations is the number of boosts
 #' @return classifier
@@ -62,7 +62,7 @@ make_classifier <- function(features, outcomes, categorical, iterations) {
 
 
 
-# TODO: Make predictions
+# TODO: Feature selection
 # TODO: Improve documentation
 # TODO: Deal with missing values
 # TODO: Categorical results

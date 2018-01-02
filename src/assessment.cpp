@@ -13,7 +13,7 @@ Assessment::Assessment(int size) {
   false_positive = 0;
 }
 
-void Assessment::update_predictions(Stump& stump, NumericMatrix& features, NumericVector& outcomes) {
+void Assessment::update_predictions(const Stump& stump, const NumericMatrix& features) {
   bool in_split = false;
   if (stump.get_categorical() == 1) {
     for (int i = 0; i < features.nrow(); i++) {
@@ -48,7 +48,7 @@ void Assessment::update_predictions(Stump& stump, NumericMatrix& features, Numer
   }
 }
 
-void Assessment::update_contingency(NumericMatrix& features, NumericVector& outcomes) {
+void Assessment::update_contingency(const NumericMatrix& features, const NumericVector& outcomes) {
   true_positive = 0;
   false_negative = 0;
   true_negative = 0;
@@ -84,5 +84,9 @@ int Assessment::get_true_negative() const {
 
 int Assessment::get_false_positive() const {
   return false_positive;
+}
+
+NumericVector Assessment::get_predictions() const {
+  return predictions;
 }
 

@@ -20,7 +20,7 @@ assess_classifier <- function(features, outcomes, classifier) {
     return(NULL)
   }
 
-  # ASSESS MODEL
+  # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
   classifier_assessment <- assess_classifier_internal(processed_features, processed_outcomes, classifier)
 

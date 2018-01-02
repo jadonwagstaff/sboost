@@ -7,11 +7,11 @@
 sboost(features, outcomes, iterations = 1)
 }
 \arguments{
+\item{features}{feature set data.frame}
+
 \item{outcomes}{outcomes corresponding to the features}
 
 \item{iterations}{is the number of boosts}
-
-\item{feature}{feature set data.frame}
 }
 \value{
 classifier

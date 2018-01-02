@@ -10,13 +10,14 @@ class Assessment
 public:
   Assessment(int size);
 
-  void update_predictions(Stump& classifier, NumericMatrix& features, NumericVector& outcomes);
-  void update_contingency(NumericMatrix& features, NumericVector& outcomes);
+  void update_predictions(const Stump& classifier, const NumericMatrix& features);
+  void update_contingency(const NumericMatrix& features, const NumericVector& outcomes);
 
   int get_true_positive() const;
   int get_false_negative() const;
   int get_true_negative() const;
   int get_false_positive() const;
+  NumericVector get_predictions() const;
 
 private:
   NumericVector predictions;
