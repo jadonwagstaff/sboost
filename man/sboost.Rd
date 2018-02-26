@@ -2,7 +2,7 @@
 % Please edit documentation in R/sboost.R
 \name{sboost}
 \alias{sboost}
-\title{sboost learning algorithm}
+\title{sboost Learning Algorithm}
 \usage{
 sboost(features, outcomes, iterations = 1)
 }
@@ -11,19 +11,22 @@ sboost(features, outcomes, iterations = 1)
 
 \item{outcomes}{outcomes corresponding to the features}
 
-\item{iterations}{is the number of boosts}
+\item{iterations}{number of boosts}
 }
 \value{
-classifier
+Classifier where each row is a stump.
 }
 \description{
-This algorithm is a machine learning algorithm using
-adaboost on decision stumps.
+A machine learning algorithm using adaboost on decision stumps.
 }
 \details{
+Factors and characters are treated as categorical features.
 Missing values are treated as their own category for categorical,
 and divided randomly on the best split for numeric.
 }
+\keyword{adaboost,}
 \keyword{boost,}
-\keyword{classifier}
+\keyword{classifier,}
+\keyword{decision}
+\keyword{stump}
 \keyword{stump,}

@@ -5,11 +5,11 @@ adaboost <- function(features, ordered_index, outcomes, categorical, iterations)
     .Call('_sboost_adaboost', PACKAGE = 'sboost', features, ordered_index, outcomes, categorical, iterations)
 }
 
-make_predictions <- function(features, classifier) {
-    .Call('_sboost_make_predictions', PACKAGE = 'sboost', features, classifier)
+predict <- function(features, classifier) {
+    .Call('_sboost_predict', PACKAGE = 'sboost', features, classifier)
 }
 
-find_classifier_contingency <- function(features, outcomes, classifier) {
-    .Call('_sboost_find_classifier_contingency', PACKAGE = 'sboost', features, outcomes, classifier)
+assess <- function(features, outcomes, classifier) {
+    .Call('_sboost_assess', PACKAGE = 'sboost', features, outcomes, classifier)
 }
 

@@ -7,7 +7,7 @@ using namespace Rcpp;
 // Param: feature matrix, corresponding outcomes, classifier
 // Return: contingency table information for each level of the classifier
 // [[Rcpp::export]]
-NumericVector make_predictions(const NumericMatrix& features, const List& classifier) {
+NumericVector predict(const NumericMatrix& features, const List& classifier) {
   Assessment classifier_assessment(features.nrow());
   Stump classifier_stump;
   NumericVector temp;
@@ -28,7 +28,7 @@ NumericVector make_predictions(const NumericMatrix& features, const List& classi
 // Param: feature matrix, corresponding outcomes, classifier
 // Return: contingency table information for each level of the classifier
 // [[Rcpp::export]]
-NumericMatrix find_classifier_contingency(NumericMatrix& features, NumericVector& outcomes, List& classifier) {
+NumericMatrix assess(const NumericMatrix& features, const NumericVector& outcomes, const List& classifier) {
   NumericMatrix contingencies(classifier.size(), 4);
   Assessment classifier_assessment(outcomes.size());
   Stump classifier_stump;

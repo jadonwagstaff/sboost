@@ -4,11 +4,11 @@
 using namespace Rcpp;
 
 
-// adaboost_class is the central function for adaptive boosting of decision stumps
+// adaboost is the central function for adaptive boosting of decision stumps
 // Param: feature matrix, corresponding outcomes, weights for each row of feature matrix
 // Return: classifier as stumps with a vote
 // [[Rcpp::export]]
-List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVector& outcomes, NumericVector& categorical, int iterations) {
+List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index, const NumericVector& outcomes, const NumericVector& categorical, int iterations) {
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
@@ -22,14 +22,15 @@ List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVect
     weights(i) = double(1) / outcomes.size();
   }
 
-  // feature, split, direction, vote
   std::vector<Stump> classifier(iterations);
   List output(iterations);
 
 
+
   for (int k = 0; k < iterations; k++) {
-  // FIND BEST DECISION STUMP
-  // --------------------------------------------------------------------------------
+
+    // FIND BEST DECISION STUMP
+    // --------------------------------------------------------------------------------
     classifier[k].find_stump(features, ordered_index, outcomes, weights, categorical);
 
 
@@ -95,6 +96,8 @@ List adaboost(NumericMatrix& features, NumericMatrix& ordered_index, NumericVect
       weights(i) = weights(i) / weight_sum;
     }
   }
+
+
 
   // CREATE CLASSIFIER OUTPUT
   // --------------------------------------------------------------------------------

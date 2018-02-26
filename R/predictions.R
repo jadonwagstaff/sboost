@@ -1,12 +1,15 @@
-#' predictions makes predictions for a feature set
+#` sboost Prediction Function`
 #'
+#' Make predictions for a feature set based on an sboost classifier.
+#'
+#' See sboost documentation for more details.
 #' @param features feature set data.frame
 #' @param outcome_possibilities possible values of outcomes in a vector
 #' @param classifier classifier output from sboost
 #' @return predictions in the form of a vector
-#' @keywords stump, boost, classifier
+#' @keywords predictions, predict
 #' @export
-classifier_predictions <- function(features, outcome_possibilities, classifier) {
+predictions <- function(features, outcome_possibilities, classifier) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -27,7 +30,7 @@ classifier_predictions <- function(features, outcome_possibilities, classifier) 
 
   # MAKE PREDICTIONS
   # --------------------------------------------------------------------------------
-  predictions <- make_predictions(features, classifier)
+  predictions <- predict(features, classifier)
   predictions <- dplyr::if_else(predictions < 0, true = outcome_possibilities[[1]], false = outcome_possibilities[[2]])
 
   return(predictions)

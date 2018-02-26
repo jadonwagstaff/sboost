@@ -1,16 +1,14 @@
-#' @useDynLib sboost
-#' @importFrom Rcpp sourceCpp
-NULL
-
-#' sboost learning algorithm validation
+#' sboost Validation Function
 #'
-#' This is a k-fold cross validation algorithm for sboost.
+#' A k-fold cross validation algorithm for sboost.
+#'
+#' See sboost documentation for more details.
 #' @param feature feature set data.frame
 #' @param outcomes outcomes corresponding to the features
-#' @param iterations is the number of boosts
-#' @param k_fold is the number of cross-validation subsets
-#' @return classifier
-#' @keywords stump, boost, validation
+#' @param iterations number of boosts
+#' @param k_fold number of cross-validation subsets
+#' @return Statistics for the test set and the training set.
+#' @keywords validation, validate
 #' @export
 validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
   # PREPARE INPUT

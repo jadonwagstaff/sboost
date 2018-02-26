@@ -1,18 +1,18 @@
-#' assess_model
+#' sboost Assessment Function
 #'
-#' This function finds determines how well a model fits a given dataset
-#' @param feature feature set
-#' @param outcomes index corresponding to the features
+#' Assesses how well a classifier fits the data.
+#'
+#' See sboost documentation for more details.
+#' @param feature feature set data.frame
+#' @param outcomes outcomes corresponding to the features
 #' @param classifier must be output from sboost
-#' @return Assessment after each additional line in the model
+#' @return Assessment after each stump in the classifier.
 #' @keywords assess, assessment, f1, accuracy
 #' @export
-assess_classifier <- function(features, outcomes, classifier) {
+assessment <- function(features, outcomes, classifier) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-
-  # test and prepare features and outcomes
   processed_features <- process_features(features)
   processed_outcomes <- process_outcomes(outcomes, features)
   classifier <- process_classifier(classifier, features, outcomes)
@@ -31,9 +31,9 @@ assess_classifier <- function(features, outcomes, classifier) {
 
 # classifier, features, and outcomes must already be processed
 assess_classifier_internal <- function(features, outcomes, classifier) {
-  classifier_assessment <- find_classifier_contingency(features, outcomes, classifier)
-  colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
+  classifier_assessment <- assess(features, outcomes, classifier)
 
+  colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
   classifier_assessment <- data.frame(classifier_assessment)
   classifier_assessment <- dplyr::mutate(classifier_assessment,
                                          accuracy = (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative),

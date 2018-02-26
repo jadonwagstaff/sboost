@@ -2,24 +2,23 @@
 #' @importFrom Rcpp sourceCpp
 NULL
 
-#' sboost learning algorithm
+#' sboost Learning Algorithm
 #'
-#' This algorithm is a machine learning algorithm using
-#' adaboost on decision stumps.
+#' A machine learning algorithm using adaboost on decision stumps.
 #'
+#' Factors and characters are treated as categorical features.
 #' Missing values are treated as their own category for categorical,
 #' and divided randomly on the best split for numeric.
 #' @param features feature set data.frame
 #' @param outcomes outcomes corresponding to the features
-#' @param iterations is the number of boosts
-#' @return classifier
-#' @keywords stump, boost, classifier
+#' @param iterations number of boosts
+#' @return Classifier where each row is a stump.
+#' @keywords stump, boost, classifier, adaboost, decision stump
 #' @export
 sboost <- function(features, outcomes, iterations = 1) {
+
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-
-  # test and prepare features, outcomes, and categorical
   categorical <- find_categorical(features)
   processed_features <- process_features(features)
   processed_outcomes <- process_outcomes(outcomes, features)
@@ -62,9 +61,6 @@ make_classifier <- function(features, outcomes, categorical, iterations) {
 
 
 
-# TODO: Feature selection
-# TODO: Improve documentation
-# TODO: Deal with missing values
 # TODO: Categorical results
 # TODO: Visualization
 

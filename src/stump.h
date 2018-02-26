@@ -11,12 +11,8 @@ public:
   Stump();
   Stump(NumericVector stump_in);
 
-  void find_stump(NumericMatrix& features, NumericMatrix& outcome_index, NumericVector& outcomes, NumericVector& weights, NumericVector& categorical);
-  void set_feature(int f);
-  void set_direction(int d);
+  void find_stump(const NumericMatrix& features, const NumericMatrix& outcome_index, const NumericVector& outcomes, const NumericVector& weights, const NumericVector& categorical);
   void set_vote(double v);
-  void set_categorical(int c);
-  void add_split(double s);
 
   int get_feature() const;
   int get_direction() const;

@@ -2,25 +2,27 @@
 % Please edit documentation in R/validate.R
 \name{validate}
 \alias{validate}
-\title{sboost learning algorithm validation}
+\title{sboost Validation Function}
 \usage{
 validate(features, outcomes, iterations = 1, k_fold = 6)
 }
 \arguments{
 \item{outcomes}{outcomes corresponding to the features}
 
-\item{iterations}{is the number of boosts}
+\item{iterations}{number of boosts}
 
-\item{k_fold}{is the number of cross-validation subsets}
+\item{k_fold}{number of cross-validation subsets}
 
 \item{feature}{feature set data.frame}
 }
 \value{
-classifier
+Statistics for the test set and the training set.
 }
 \description{
-This is a k-fold cross validation algorithm for sboost.
+A k-fold cross validation algorithm for sboost.
 }
-\keyword{boost,}
-\keyword{stump,}
-\keyword{validation}
+\details{
+See sboost documentation for more details.
+}
+\keyword{validate}
+\keyword{validation,}
