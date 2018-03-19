@@ -11,27 +11,21 @@ public:
   Stump();
   Stump(NumericVector stump_in);
   static void populate_data(const NumericMatrix& f, const NumericVector& o, const NumericMatrix& oi, const NumericVector& c);
+  static void populate_data(const NumericMatrix& f, const NumericVector& o);
+  static void populate_data(const NumericMatrix& f);
 
   void find_stump(const NumericVector& weights);
   void set_vote(double v);
 
-  void update_predictions(NumericVector& predictions) const;
-
-  int get_feature() const;
-  int get_direction() const;
   double get_vote() const;
-  int get_categorical() const;
-  double get_split() const;
-  double get_split(int index) const;
-  int split_size() const;
+  void update_predictions(NumericVector& predictions) const;
+  void new_predictions(NumericVector& predictions) const;
+  NumericVector get_contingencies(const NumericVector& predictions) const;
   NumericVector make_vector() const;
-
-  int get_prediction(double value) const;
 
 private:
   static NumericMatrix features;
   static NumericVector outcomes;
-
   static NumericMatrix ordered_index;
   static NumericVector categorical;
 
@@ -40,7 +34,6 @@ private:
   double vote;
   int is_categorical;
   std::vector<double> split;
-
 };
 
 

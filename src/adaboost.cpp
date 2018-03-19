@@ -21,14 +21,14 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
   double error = 0, vote = 0, weight_sum = 0;
   NumericVector predictions(features.nrow());
 
-  std::vector<Stump> classifier(iterations);
+  Stump classifier;
   List output(iterations);
 
   for (int k = 0; k < iterations; k++) {
 
     // FIND BEST DECISION STUMP
     // --------------------------------------------------------------------------------
-    classifier[k].find_stump(weights);
+    classifier.find_stump(weights);
 
 
     // PERFORM ADABOOST
@@ -37,13 +37,13 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
     // find prediction, error, and vote
     error = 0;
     weight_sum = 0;
-    classifier[k].update_predictions(predictions);
+    classifier.new_predictions(predictions);
     for (int i = 0; i < features.nrow(); i++) {
       error = error + weights(i) * outcomes(i) * predictions(i);
     }
     error = .5 - .5 * error;
     vote = .5 * log((1 - error) / error);
-    classifier[k].set_vote(vote);
+    classifier.set_vote(vote);
 
     // update weights
     for (int i = 0; i < weights.size(); i++) {
@@ -53,14 +53,9 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
     for (int i = 0; i < weights.size(); i++) {
       weights(i) = weights(i) / weight_sum;
     }
-  }
 
-
-
-  // CREATE CLASSIFIER OUTPUT
-  // --------------------------------------------------------------------------------
-  for (int i = 0; i < iterations; i++) {
-    output[i] = classifier[i].make_vector();
+    // create output
+    output[k] = classifier.make_vector();
   }
 
   return output;

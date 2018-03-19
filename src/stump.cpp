@@ -10,6 +10,7 @@ NumericVector Stump::outcomes = NumericVector();
 NumericMatrix Stump::ordered_index = NumericMatrix();
 NumericVector Stump::categorical = NumericVector();
 
+
 Stump::Stump() {
   feature = 0;
   direction = 0;
@@ -17,6 +18,7 @@ Stump::Stump() {
   is_categorical = 0;
   split.push_back(0);
 }
+
 
 Stump::Stump(NumericVector stump_in) {
   feature = stump_in(0);
@@ -28,12 +30,24 @@ Stump::Stump(NumericVector stump_in) {
   }
 }
 
+
 void Stump::populate_data(const NumericMatrix& f, const NumericVector& o, const NumericMatrix& oi, const NumericVector& c) {
   features = f;
   outcomes = o;
 
   ordered_index = oi;
   categorical = c;
+}
+
+
+void Stump::populate_data(const NumericMatrix& f, const NumericVector& o) {
+  features = f;
+  outcomes = o;
+}
+
+
+void Stump::populate_data(const NumericMatrix& f) {
+  features = f;
 }
 
 
@@ -196,9 +210,41 @@ void Stump::find_stump(const NumericVector& weights) {
   }
 }
 
+
+void Stump::set_vote(double v) {
+  vote = v;
+}
+
+
 void Stump::update_predictions(NumericVector& predictions) const {
-  double value = 0;
-  bool positive = false;
+  bool in_split;
+  if (is_categorical == 0) {
+    for (int i = 0; i < features.nrow(); i++) {
+      if (features(i, feature) < split[0]) {
+        predictions(i) += -1 * direction * vote;
+      } else {
+        predictions(i) += direction * vote;
+      }
+    }
+  } else {
+    for (int i = 0; i < features.nrow(); i++) {
+      in_split = false;
+      for (unsigned int j = 0; j < split.size(); j++) {
+        if (features(i, feature) == split[j]) {
+          predictions(i) += vote;
+          in_split = true;
+          break;
+        }
+      }
+      if (in_split == false) {
+        predictions(i) += -1 * vote;
+      }
+    }
+  }
+}
+
+
+void Stump::new_predictions(NumericVector& predictions) const {
   if (is_categorical == 0) {
     for (int i = 0; i < features.nrow(); i++) {
       if (features(i, feature) < split[0]) {
@@ -209,38 +255,37 @@ void Stump::update_predictions(NumericVector& predictions) const {
     }
   } else {
     for (int i = 0; i < features.nrow(); i++) {
-      if (features(ordered_index(i, feature), feature) != value) {
-        value = features(ordered_index(i, feature), feature);
-        positive = false;
-        for (int j = 0; j < split.size(); j++) {
-          if (value == split[j]) {
-            positive = true;
-            break;
-          }
+      predictions(i) = -1;
+      for (unsigned int j = 0; j < split.size(); j++) {
+        if (features(i, feature) == split[j]) {
+          predictions(i) = 1;
+          break;
         }
-      }
-      if (positive == true) {
-        predictions(ordered_index(i, feature)) = 1;
-      } else {
-        predictions(ordered_index(i, feature)) = -1;
       }
     }
   }
 }
 
 
-void Stump::set_vote(double v) {
-  vote = v;
-}
-
-
-int Stump::get_feature() const {
-  return feature;
-}
-
-
-int Stump::get_direction() const{
-  return direction;
+NumericVector Stump::get_contingencies(const NumericVector& predictions) const {
+  // true_positive, false_negative, true_negative, false_positive
+  NumericVector output(4);
+  for (int i = 0; i < features.nrow(); i++) {
+    if (outcomes(i) == 1) {
+      if (predictions(i) >= 0) {
+        output(0)++;
+      } else {
+        output(1)++;
+      }
+    } else {
+      if (predictions(i) < 0) {
+        output(2)++;
+      } else {
+        output(3)++;
+      }
+    }
+  }
+  return output;
 }
 
 
@@ -248,35 +293,10 @@ double Stump::get_vote() const{
   return vote;
 }
 
-int Stump::get_categorical() const {
-  return is_categorical;
-}
-
-
-double Stump::get_split() const {
-  return split[0];
-}
-
-double Stump::get_split(int index) const {
-  return split[index];
-}
-
-int Stump::split_size() const {
-  return split.size();
-}
-
-int Stump::get_prediction(double value) const {
-  if (value < split[0]) {
-    return -1 * direction;
-  } else {
-    return 1 * direction;
-  }
-}
-
 
 NumericVector Stump::make_vector() const{
   NumericVector output = NumericVector::create(double(feature), double(direction), double(vote), double(is_categorical));
-  for (int i = 0; i < split.size(); i++) {
+  for (unsigned int i = 0; i < split.size(); i++) {
     output.push_back(split[i]);
   }
   return(output);
