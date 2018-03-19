@@ -10,9 +10,12 @@ class Stump
 public:
   Stump();
   Stump(NumericVector stump_in);
+  static void populate_data(const NumericMatrix& f, const NumericVector& o, const NumericMatrix& oi, const NumericVector& c);
 
-  void find_stump(const NumericMatrix& features, const NumericMatrix& outcome_index, const NumericVector& outcomes, const NumericVector& weights, const NumericVector& categorical);
+  void find_stump(const NumericVector& weights);
   void set_vote(double v);
+
+  void update_predictions(NumericVector& predictions) const;
 
   int get_feature() const;
   int get_direction() const;
@@ -23,7 +26,15 @@ public:
   int split_size() const;
   NumericVector make_vector() const;
 
+  int get_prediction(double value) const;
+
 private:
+  static NumericMatrix features;
+  static NumericVector outcomes;
+
+  static NumericMatrix ordered_index;
+  static NumericVector categorical;
+
   int feature;
   int direction;
   double vote;

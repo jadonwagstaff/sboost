@@ -4,6 +4,12 @@
 #include <vector>
 using namespace Rcpp;
 
+NumericMatrix Stump::features = NumericMatrix();
+NumericVector Stump::outcomes = NumericVector();
+
+NumericMatrix Stump::ordered_index = NumericMatrix();
+NumericVector Stump::categorical = NumericVector();
+
 Stump::Stump() {
   feature = 0;
   direction = 0;
@@ -22,8 +28,16 @@ Stump::Stump(NumericVector stump_in) {
   }
 }
 
+void Stump::populate_data(const NumericMatrix& f, const NumericVector& o, const NumericMatrix& oi, const NumericVector& c) {
+  features = f;
+  outcomes = o;
 
-void Stump::find_stump(const NumericMatrix& features, const NumericMatrix& ordered_index, const NumericVector& outcomes, const NumericVector& weights, const NumericVector& categorical) {
+  ordered_index = oi;
+  categorical = c;
+}
+
+
+void Stump::find_stump(const NumericVector& weights) {
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
@@ -180,7 +194,38 @@ void Stump::find_stump(const NumericMatrix& features, const NumericMatrix& order
       split = feature_split;
     }
   }
+}
 
+void Stump::update_predictions(NumericVector& predictions) const {
+  double value = 0;
+  bool positive = false;
+  if (is_categorical == 0) {
+    for (int i = 0; i < features.nrow(); i++) {
+      if (features(i, feature) < split[0]) {
+        predictions(i) = -1 * direction;
+      } else {
+        predictions(i) = direction;
+      }
+    }
+  } else {
+    for (int i = 0; i < features.nrow(); i++) {
+      if (features(ordered_index(i, feature), feature) != value) {
+        value = features(ordered_index(i, feature), feature);
+        positive = false;
+        for (int j = 0; j < split.size(); j++) {
+          if (value == split[j]) {
+            positive = true;
+            break;
+          }
+        }
+      }
+      if (positive == true) {
+        predictions(ordered_index(i, feature)) = 1;
+      } else {
+        predictions(ordered_index(i, feature)) = -1;
+      }
+    }
+  }
 }
 
 
@@ -218,6 +263,14 @@ double Stump::get_split(int index) const {
 
 int Stump::split_size() const {
   return split.size();
+}
+
+int Stump::get_prediction(double value) const {
+  if (value < split[0]) {
+    return -1 * direction;
+  } else {
+    return 1 * direction;
+  }
 }
 
 
