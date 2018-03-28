@@ -30,4 +30,4 @@ devtools::install_github("jadonwagstaff/sboost")
 Jadon Wagstaff
 
 ## Licence
-CC0
+MIT
