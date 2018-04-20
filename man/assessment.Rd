@@ -22,6 +22,15 @@ Assesses how well a classifier fits the data.
 \details{
 See sboost documentation for more details.
 }
+\examples{
+# malware
+malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+assessment(malware[-1], malware[1], malware_classifier)
+
+# mushrooms
+mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+assessment(mushrooms[-1], mushrooms[1], mushroom_classifier)
+}
 \keyword{accuracy}
 \keyword{assess,}
 \keyword{assessment,}

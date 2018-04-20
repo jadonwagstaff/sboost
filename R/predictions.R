@@ -8,6 +8,14 @@
 #' @param classifier classifier output from sboost
 #' @return predictions in the form of a vector
 #' @keywords predictions, predict
+#' @examples
+#' # malware
+#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+#' predictions(malware[-1], malware[1], malware_classifier)
+#'
+#' # mushrooms
+#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+#' predictions(mushrooms[-1], mushrooms[1], mushroom_classifier)
 #' @export
 predictions <- function(features, outcome_possibilities, classifier) {
 

@@ -19,5 +19,14 @@ predictions in the form of a vector
 \description{
 See sboost documentation for more details.
 }
+\examples{
+# malware
+malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+predictions(malware[-1], malware[1], malware_classifier)
+
+# mushrooms
+mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+predictions(mushrooms[-1], mushrooms[1], mushroom_classifier)
+}
 \keyword{predict}
 \keyword{predictions,}

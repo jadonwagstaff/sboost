@@ -8,6 +8,14 @@
 #' @param classifier must be output from sboost
 #' @return Assessment after each stump in the classifier.
 #' @keywords assess, assessment, f1, accuracy
+#' @examples
+#' # malware
+#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+#' assessment(malware[-1], malware[1], malware_classifier)
+#'
+#' # mushrooms
+#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+#' assessment(mushrooms[-1], mushrooms[1], mushroom_classifier)
 #' @export
 assessment <- function(features, outcomes, classifier) {
 

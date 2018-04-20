@@ -24,6 +24,13 @@ Factors and characters are treated as categorical features.
 Missing values are treated as their own category for categorical,
 and divided randomly on the best split for numeric.
 }
+\examples{
+# malware
+sboost(malware[-1], malware[1], iterations = 10)
+
+# mushrooms
+sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+}
 \keyword{adaboost,}
 \keyword{boost,}
 \keyword{classifier,}

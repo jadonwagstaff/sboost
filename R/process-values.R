@@ -56,7 +56,7 @@ process_outcomes <- function(outcomes, features) {
     return(NULL)
   }
 
-  return(outcomes)
+  return(as.numeric(outcomes))
 }
 
 

@@ -14,6 +14,12 @@ NULL
 #' @param iterations number of boosts
 #' @return Classifier where each row is a stump.
 #' @keywords stump, boost, classifier, adaboost, decision stump
+#' @examples
+#' # malware
+#' sboost(malware[-1], malware[1], iterations = 10)
+#'
+#' # mushrooms
+#' sboost(mushrooms[-1], mushrooms[1], iterations = 10)
 #' @export
 sboost <- function(features, outcomes, iterations = 1) {
 

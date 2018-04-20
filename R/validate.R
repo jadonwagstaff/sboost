@@ -9,6 +9,12 @@
 #' @param k_fold number of cross-validation subsets
 #' @return Statistics for the test set and the training set.
 #' @keywords validation, validate
+#' @examples
+#' # malware
+#' validate(malware[-1], malware[1], iterations = 10, k_fold = 4)
+#'
+#' # mushrooms
+#' validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4)
 #' @export
 validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
   # PREPARE INPUT
