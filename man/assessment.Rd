@@ -4,12 +4,14 @@
 \alias{assessment}
 \title{sboost Assessment Function}
 \usage{
-assessment(features, outcomes, classifier)
+assessment(features, outcomes, classifier, positive = NULL)
 }
 \arguments{
 \item{outcomes}{outcomes corresponding to the features}
 
 \item{classifier}{must be output from sboost}
+
+\item{positive}{is the positive outcome to test for; if NULL, the first in alphebetacal order will be chosen}
 
 \item{feature}{feature set data.frame}
 }
@@ -25,11 +27,11 @@ See sboost documentation for more details.
 \examples{
 # malware
 malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
-assessment(malware[-1], malware[1], malware_classifier)
+assessment(malware[-1], malware[1], malware_classifier, positive = 1)
 
 # mushrooms
 mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
-assessment(mushrooms[-1], mushrooms[1], mushroom_classifier)
+assessment(mushrooms[-1], mushrooms[1], mushroom_classifier, positive = "p")
 }
 \keyword{accuracy}
 \keyword{assess,}

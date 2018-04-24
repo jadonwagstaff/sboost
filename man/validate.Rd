@@ -4,7 +4,7 @@
 \alias{validate}
 \title{sboost Validation Function}
 \usage{
-validate(features, outcomes, iterations = 1, k_fold = 6)
+validate(features, outcomes, iterations = 1, k_fold = 6, positive = NULL)
 }
 \arguments{
 \item{outcomes}{outcomes corresponding to the features}
@@ -12,6 +12,8 @@ validate(features, outcomes, iterations = 1, k_fold = 6)
 \item{iterations}{number of boosts}
 
 \item{k_fold}{number of cross-validation subsets}
+
+\item{positive}{is the positive outcome to test for; if NULL, the first in alphebetacal order will be chosen}
 
 \item{feature}{feature set data.frame}
 }
@@ -26,10 +28,10 @@ See sboost documentation for more details.
 }
 \examples{
 # malware
-validate(malware[-1], malware[1], iterations = 10, k_fold = 4)
+validate(malware[-1], malware[1], iterations = 10, k_fold = 4, positive = 1)
 
 # mushrooms
-validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4)
+validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4, positive = "p")
 }
 \keyword{validate}
 \keyword{validation,}

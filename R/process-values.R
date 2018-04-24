@@ -130,6 +130,26 @@ process_classifier <- function(classifier, features) {
 
 
 # --------------------------------------------------------------------------------
+# TESTS AND POSITIVE SPECIFICATION
+check_positive <- function(otcm_possibilities, positive) {
+  if (is.null(positive)) {
+    return(TRUE)
+  }
+  otcm_possibilities <- sort(otcm_possibilities)
+  if (!positive %in% otcm_possibilities) {
+    message("ERROR: 'positive' variable must match one of the outcomes.")
+    return(NULL)
+  }
+  if (positive == otcm_possibilities[[1]]) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
+
+
+
+# --------------------------------------------------------------------------------
 # PREPARES CLASSIFIER OUTPUT
 prepare_classifier <- function(classifier, features, outcomes) {
 

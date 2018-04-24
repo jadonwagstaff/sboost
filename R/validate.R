@@ -7,24 +7,30 @@
 #' @param outcomes outcomes corresponding to the features
 #' @param iterations number of boosts
 #' @param k_fold number of cross-validation subsets
+#' @param positive is the positive outcome to test for; if NULL, the first in alphebetacal order will be chosen
 #' @return Statistics for the test set and the training set.
 #' @keywords validation, validate
 #' @examples
 #' # malware
-#' validate(malware[-1], malware[1], iterations = 10, k_fold = 4)
+#' validate(malware[-1], malware[1], iterations = 10, k_fold = 4, positive = 1)
 #'
 #' # mushrooms
-#' validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4)
+#' validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4, positive = "p")
 #' @export
-validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
+validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL) {
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
   categorical <- find_categorical(features)
   features <- process_features(features)
+  if(is.data.frame(outcomes)) {
+    positive_matched <- check_positive(unique(outcomes[[1]]), positive)
+  } else {
+    positive_matched <- check_positive(unique(outcomes), positive)
+  }
   outcomes <- process_outcomes(outcomes, features)
-  if (is.null(outcomes) || is.null(features)) {
+  if (is.null(outcomes) || is.null(features) || is.null(positive_matched)) {
     return(NULL)
   }
 
@@ -50,7 +56,8 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
   for (i in 1:k_fold) {
     assessment_list[[i]] <- assess_classifier_internal(features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
                                                        outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
-                                                       classifier_list[[i]])
+                                                       classifier_list[[i]],
+                                                       positive_matched)
   }
 
   for (i in 1:k_fold) {
@@ -64,7 +71,8 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6) {
   for (i in 1:k_fold) {
     assessment_list[[i]] <- assess_classifier_internal(features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
                                                        outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
-                                                       classifier_list[[i]])
+                                                       classifier_list[[i]],
+                                                       positive_matched)
   }
 
   for (i in 1:k_fold) {

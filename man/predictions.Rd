@@ -4,14 +4,14 @@
 \alias{predictions}
 \title{Make predictions for a feature set based on an sboost classifier.}
 \usage{
-predictions(features, outcome_possibilities, classifier)
+predictions(features, classifier)
 }
 \arguments{
 \item{features}{feature set data.frame}
 
-\item{outcome_possibilities}{possible values of outcomes in a vector}
-
 \item{classifier}{classifier output from sboost}
+
+\item{outcome_possibilities}{possible values of outcomes in a vector}
 }
 \value{
 predictions in the form of a vector
