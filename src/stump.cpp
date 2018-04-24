@@ -231,13 +231,13 @@ void Stump::update_predictions(NumericVector& predictions) const {
       in_split = false;
       for (unsigned int j = 0; j < split.size(); j++) {
         if (features(i, feature) == split[j]) {
-          predictions(i) += vote;
+          predictions(i) += direction * vote;
           in_split = true;
           break;
         }
       }
       if (in_split == false) {
-        predictions(i) += -1 * vote;
+        predictions(i) += -1 * direction * vote;
       }
     }
   }

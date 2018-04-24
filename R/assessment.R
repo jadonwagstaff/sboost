@@ -23,7 +23,7 @@ assessment <- function(features, outcomes, classifier) {
   # --------------------------------------------------------------------------------
   processed_features <- process_features(features)
   processed_outcomes <- process_outcomes(outcomes, features)
-  classifier <- process_classifier(classifier, features, outcomes)
+  classifier <- process_classifier(classifier, features)
   if (is.null(outcomes) || is.null(features) || is.null(classifier)) {
     return(NULL)
   }

@@ -63,7 +63,7 @@ process_outcomes <- function(outcomes, features) {
 
 # --------------------------------------------------------------------------------
 # TESTS AND PREPARES CLASSIFIER INPUT
-process_classifier <- function(classifier, features, outcomes) {
+process_classifier <- function(classifier, features) {
 
   if (!is.data.frame(classifier)) {
     message("ERROR: Classifier must be a data frame.")
@@ -78,18 +78,15 @@ process_classifier <- function(classifier, features, outcomes) {
   new_classifier = list()
 
   # determine outcomes
-  if(is.data.frame(outcomes)) {
-    outcomes <- outcomes[[1]]
-  }
-  otcm_possibilities <- sort(unique(outcomes))
+  otcm_possibilities <- sort(strsplit(classifier$orientation[1], "\\|")[[1]])
 
   for (i in 1:nrow(classifier)) {
     feature <- classifier$feature[i]
     vote <- classifier$vote[i]
-    direction <- classifier$direction[i]
+    orientation <- strsplit(classifier$orientation[i], "\\|")[[1]]
     if (is.na(classifier$split[i])) {
       categorical <- 1
-      split <- strsplit(classifier$categories[i], "; ")[[1]]
+      split <- strsplit(classifier$left_categories[i], "; ")[[1]]
     } else {
       categorical <- 0
       split <- classifier$split[i]
@@ -99,23 +96,17 @@ process_classifier <- function(classifier, features, outcomes) {
     feature <- match(feature, colnames(features))[[1]] - 1
 
     # Change direction
-    if (categorical == TRUE) {
-      direction <- 1
-    } else {
-      if (substr(direction, 1, 2) == "->") {
-        direction <- substr(direction, 4, nchar(direction))
-        if (!is.na(match(otcm_possibilities, direction)[[1]])) {
-          direction <- 1
-        } else {
-          direction <- -1
-        }
+    if (categorical == 1) {
+      if (orientation[[1]] == otcm_possibilities[[1]]) {
+        orientation <- 1
       } else {
-        direction <- substr(direction, 4, nchar(direction))
-        if (match(direction, otcm_possibilities)[[1]] == 1) {
-          direction <- -1
-        } else {
-          direction <- 1
-        }
+        orientation <- -1
+      }
+    } else {
+      if (orientation[[1]] == otcm_possibilities[[2]]) {
+        orientation <- 1
+      } else {
+        orientation <- -1
       }
     }
 
@@ -123,11 +114,13 @@ process_classifier <- function(classifier, features, outcomes) {
     if (categorical == 1) {
       feature_levels <- levels(addNA(factor(features[[feature + 1]])))
       for (j in seq_along(split)) {
-        split[[j]] <- match(split[[j]], feature_levels)
+        if (!is.na(match(split[[j]], feature_levels, nomatch = NA, incomparables = NA))) {
+          split[[j]] <- match(split[[j]], feature_levels)
+        }
       }
     }
 
-    new_classifier[[i]] <- as.numeric(c(feature, direction, vote, categorical, split))
+    new_classifier[[i]] <- as.numeric(c(feature, orientation, vote, categorical, split))
 
   }
 
@@ -142,7 +135,7 @@ prepare_classifier <- function(classifier, features, outcomes) {
 
   # create output data frame
   output <- data.frame(matrix(ncol = 5, nrow = length(classifier)))
-  colnames(output) <- c("feature", "vote", "direction", "split", "categories")
+  colnames(output) <- c("feature", "vote", "orientation", "split", "left_categories")
 
   # determine outcomes
   if(is.data.frame(outcomes)) {
@@ -153,38 +146,39 @@ prepare_classifier <- function(classifier, features, outcomes) {
   # set output values
   for (i in seq_along(classifier)) {
     feature <- classifier[[i]][[1]] + 1
-    direction <- classifier[[i]][[2]]
+    orientation <- classifier[[i]][[2]]
     vote <- classifier[[i]][[3]]
     categorical <- classifier[[i]][[4]]
     split <- classifier[[i]][c(-1, -2, -3, -4)]
 
-    # Change feature name
+    # feature name
     output$feature[i] <- colnames(features)[[feature]]
 
-    # Change vote
+    # vote
     output$vote[i] <- vote
 
-    # Change direction
-    if (categorical == 1) {
-      output$direction[i] <- paste0("categories <- ", otcm_possibilities[[1]])
-    } else if (direction == 1) {
-      output$direction[i] <- paste0("-> ", otcm_possibilities[[1]])
-    } else {
-      output$direction[i] <- paste0("<- ", otcm_possibilities[[1]])
+    if (categorical == 0) {
+      # orientation
+      if (orientation == 1) {
+        output$orientation[i] <- paste0(otcm_possibilities[[2]], "|", otcm_possibilities[[1]])
+      } else {
+        output$orientation[i] <- paste0(otcm_possibilities[[1]], "|", otcm_possibilities[[2]])
+      }
+      # split
+      output$split[i] <- split
+      output$left_categories[i] <- NA
     }
-
-    # change split
     if (categorical == 1) {
+      # orientation
+      output$orientation[i] <- paste0(otcm_possibilities[[1]], "|", otcm_possibilities[[2]])
+      # categories
       temp_split <- rep(NA, length(split))
       feature_levels <- levels(addNA(factor(features[[feature]])))
       for (j in 1:length(split)) {
         temp_split[[j]] <- feature_levels[[split[[j]]]]
       }
-      output$categories[i] <- paste(temp_split, collapse = "; ")
+      output$left_categories[i] <- paste(temp_split, collapse = "; ")
       output$split[i] <- NA
-    } else {
-      output$split[i] <- split
-      output$categories[i] <- NA
     }
   }
 

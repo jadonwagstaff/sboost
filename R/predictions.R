@@ -17,20 +17,13 @@
 #' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
 #' predictions(mushrooms[-1], mushrooms[1], mushroom_classifier)
 #' @export
-predictions <- function(features, outcome_possibilities, classifier) {
+predictions <- function(features, classifier) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-  if(is.data.frame(outcome_possibilities)) {
-    outcome_possibilities <- outcome_possibilities[[1]]
-  }
-  outcome_possibilities <- sort(unique(outcome_possibilities))
-  if (length(outcome_possibilities) != 2) {
-    message("ERROR: There must be two outcome possibilities.")
-    return(NULL)
-  }
+  outcome_possibilities <- sort(strsplit(classifier$orientation[1], "\\|")[[1]])
+  classifier <- process_classifier(classifier, features)
   features <- process_features(features)
-  classifier <- process_classifier(classifier, features, outcome_possibilities)
   if (is.null(features) || is.null(classifier)) {
     return(NULL)
   }
