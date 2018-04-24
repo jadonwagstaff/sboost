@@ -17,7 +17,7 @@
 #' # mushrooms
 #' validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4, positive = "p")
 #' @export
-validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL) {
+validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL, interval = NULL) {
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
 
@@ -59,33 +59,36 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
 
   # training
   for (i in 1:k_fold) {
-    assessment_list[[i]] <- assess_classifier_internal(processed_features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
-                                                       processed_outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
-                                                       classifier_list[[i]],
-                                                       positive_matched)
+    assessment_list[[i]] <- make_assessment(processed_features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
+                                            processed_outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
+                                            classifier_list[[i]],
+                                            positive_matched,
+                                            interval)
   }
 
   for (i in 1:k_fold) {
     assessment_list[[i]] <- dplyr::mutate(assessment_list[[i]],
-                                          number = 1:iterations)
+                                          number = 1:nrow(assessment_list[[i]]))
   }
 
   training <- dplyr::bind_rows(assessment_list)
 
   # testing
   for (i in 1:k_fold) {
-    assessment_list[[i]] <- assess_classifier_internal(processed_features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
-                                                       processed_outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
-                                                       classifier_list[[i]],
-                                                       positive_matched)
+    assessment_list[[i]] <- make_assessment(processed_features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
+                                            processed_outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
+                                            classifier_list[[i]],
+                                            positive_matched,
+                                            interval)
   }
 
   for (i in 1:k_fold) {
     assessment_list[[i]] <- dplyr::mutate(assessment_list[[i]],
-                                          number = 1:iterations)
+                                          number = 1:nrow(assessment_list[[i]]))
   }
 
   testing <- dplyr::bind_rows(assessment_list)
+
 
   # combined
   assessment <- list("training" = training, "testing" = testing)

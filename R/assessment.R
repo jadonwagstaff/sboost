@@ -6,7 +6,8 @@
 #' @param feature feature set data.frame
 #' @param outcomes outcomes corresponding to the features
 #' @param classifier must be output from sboost
-#' @param positive is the positive outcome to test for; if NULL, the first in alphebetacal order will be chosen
+#' @param positive the positive outcome to test for; if NULL, the first in alphebetacal order will be chosen
+#' @param interval what interval to keep test results (e.g. 10 is every 10 stumps); if NULL, only the last will be kept
 #' @return Assessment after each stump in the classifier.
 #' @keywords assess, assessment, f1, accuracy
 #' @examples
@@ -18,7 +19,7 @@
 #' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
 #' assessment(mushrooms[-1], mushrooms[1], mushroom_classifier, positive = "p")
 #' @export
-assessment <- function(features, outcomes, classifier, positive = NULL) {
+assessment <- function(features, outcomes, classifier, positive = NULL, interval = NULL) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ assessment <- function(features, outcomes, classifier, positive = NULL) {
 
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier_assessment <- assess_classifier_internal(processed_features, processed_outcomes, processed_classifier, positive_matched)
+  classifier_assessment <- make_assessment(processed_features, processed_outcomes, processed_classifier, positive_matched, interval)
 
 
   return(classifier_assessment)
@@ -40,8 +41,12 @@ assessment <- function(features, outcomes, classifier, positive = NULL) {
 
 
 # classifier, features, and outcomes must already be processed
-assess_classifier_internal <- function(features, outcomes, classifier, positive_matched) {
-  classifier_assessment <- assess(features, outcomes, classifier)
+make_assessment <- function(features, outcomes, classifier, positive_matched, interval) {
+  if (is.null(interval)) {
+    interval <- length(classifier)
+  }
+
+  classifier_assessment <- assess(features, outcomes, classifier, interval)
 
   if(positive_matched) {
     colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")

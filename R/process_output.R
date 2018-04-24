@@ -3,8 +3,8 @@
 process_classifier_output <- function(classifier, features, outcomes) {
 
   # create output data frame
-  output <- data.frame(matrix(ncol = 5, nrow = length(classifier)))
-  colnames(output) <- c("feature", "vote", "orientation", "split", "left_categories")
+  output <- data.frame(matrix(ncol = 6, nrow = length(classifier)))
+  colnames(output) <- c("stump", "feature", "vote", "orientation", "split", "left_categories")
 
   # determine outcomes
   if(is.data.frame(outcomes)) {
@@ -19,6 +19,9 @@ process_classifier_output <- function(classifier, features, outcomes) {
     vote <- classifier[[i]][[3]]
     categorical <- classifier[[i]][[4]]
     split <- classifier[[i]][c(-1, -2, -3, -4)]
+
+    # stump
+    output$stump[i] <- i
 
     # feature name
     output$feature[i] <- colnames(features)[[feature]]

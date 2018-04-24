@@ -9,7 +9,7 @@ predict <- function(features, classifier) {
     .Call('_sboost_predict', PACKAGE = 'sboost', features, classifier)
 }
 
-assess <- function(features, outcomes, classifier) {
-    .Call('_sboost_assess', PACKAGE = 'sboost', features, outcomes, classifier)
+assess <- function(features, outcomes, classifier, interval) {
+    .Call('_sboost_assess', PACKAGE = 'sboost', features, outcomes, classifier, interval)
 }
 

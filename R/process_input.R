@@ -70,7 +70,7 @@ process_classifier_input <- function(classifier, features) {
     return(NULL)
   }
 
-  if (ncol(classifier) != 5) {
+  if (ncol(classifier) != 6) {
     message("ERROR: Classifier is the wrong format.")
     return(NULL)
   }
