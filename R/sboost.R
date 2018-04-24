@@ -25,17 +25,22 @@ sboost <- function(features, outcomes, iterations = 1) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
+  processed_features <- process_feature_input(features)
+  processed_outcomes <- process_outcome_input(outcomes, features)
   categorical <- find_categorical(features)
-  processed_features <- process_features(features)
-  processed_outcomes <- process_outcomes(outcomes, features)
+
   if (is.null(processed_outcomes) || is.null(processed_features)) {
+    return(NULL)
+  }
+  if (length(unique(processed_outcomes)) < 2) {
+    message("ERROR: There must be two distinct outcomes to use sboost.")
     return(NULL)
   }
 
   # DEVELOP CLASSIFIER
   # --------------------------------------------------------------------------------
   classifier <- make_classifier(processed_features, processed_outcomes, categorical, iterations)
-  classifier <- prepare_classifier(classifier, features, outcomes)
+  classifier <- process_classifier_output(classifier, features, outcomes)
 
   return(classifier)
 }

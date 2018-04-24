@@ -22,15 +22,20 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
+  processed_features <- process_feature_input(features)
+  processed_outcomes <- process_outcome_input(outcomes, features)
   categorical <- find_categorical(features)
-  features <- process_features(features)
+
   if(is.data.frame(outcomes)) {
-    positive_matched <- check_positive(unique(outcomes[[1]]), positive)
+    positive_matched <- check_positive_value(unique(outcomes[[1]]), positive)
   } else {
-    positive_matched <- check_positive(unique(outcomes), positive)
+    positive_matched <- check_positive_value(unique(outcomes), positive)
   }
-  outcomes <- process_outcomes(outcomes, features)
   if (is.null(outcomes) || is.null(features) || is.null(positive_matched)) {
+    return(NULL)
+  }
+  if (length(unique(processed_outcomes)) < 2) {
+    message("ERROR: There must be two distinct outcomes to use sboost.")
     return(NULL)
   }
 
@@ -43,8 +48,8 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
   # DEVELOP CLASSIFIER
   # --------------------------------------------------------------------------------
   for (i in 1:k_fold) {
-    classifier_list[[i]] <- make_classifier(features[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows), ],
-                                            outcomes[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)],
+    classifier_list[[i]] <- make_classifier(processed_features[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows), ],
+                                            processed_outcomes[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)],
                                             categorical,
                                             iterations)
   }
@@ -54,8 +59,8 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
 
   # training
   for (i in 1:k_fold) {
-    assessment_list[[i]] <- assess_classifier_internal(features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
-                                                       outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
+    assessment_list[[i]] <- assess_classifier_internal(processed_features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
+                                                       processed_outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
                                                        classifier_list[[i]],
                                                        positive_matched)
   }
@@ -69,8 +74,8 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
 
   # testing
   for (i in 1:k_fold) {
-    assessment_list[[i]] <- assess_classifier_internal(features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
-                                                       outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
+    assessment_list[[i]] <- assess_classifier_internal(processed_features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
+                                                       processed_outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
                                                        classifier_list[[i]],
                                                        positive_matched)
   }

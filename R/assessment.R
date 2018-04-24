@@ -22,10 +22,10 @@ assessment <- function(features, outcomes, classifier, positive = NULL) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-  processed_features <- process_features(features)
-  processed_outcomes <- process_outcomes(outcomes, features)
-  processed_classifier <- process_classifier(classifier, features)
-  positive_matched <- check_positive(strsplit(classifier$orientation[1], "\\|")[[1]], positive)
+  processed_features <- process_feature_input(features)
+  processed_outcomes <- process_outcome_input(outcomes, features)
+  processed_classifier <- process_classifier_input(classifier, features)
+  positive_matched <- check_positive_value(strsplit(classifier$orientation[1], "\\|")[[1]], positive)
   if (is.null(processed_outcomes) || is.null(processed_features) || is.null(processed_classifier) || is.null(positive_matched)) {
     return(NULL)
   }

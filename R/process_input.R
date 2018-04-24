@@ -1,9 +1,9 @@
 # --------------------------------------------------------------------------------
 # TESTS AND PREPARES FEATURES
-process_features <- function(features) {
+process_feature_input <- function(features) {
 
-  if (!is.data.frame(features) & !is.matrix(features)) {
-    message("ERROR: Features must be data frame or matrix.")
+  if (!is.data.frame(features)) {
+    message("ERROR: Features must be data frame.")
     return(NULL)
   }
 
@@ -27,7 +27,7 @@ process_features <- function(features) {
 
 # --------------------------------------------------------------------------------
 # TESTS AND PREPARES OUTCOMES
-process_outcomes <- function(outcomes, features) {
+process_outcome_input <- function(outcomes, features) {
 
   if (!is.data.frame(outcomes) && !is.vector(outcomes)) {
     message("ERROR: Features must be data frame or vector.")
@@ -43,7 +43,7 @@ process_outcomes <- function(outcomes, features) {
 
   otcm_possibilities <- sort(unique(outcomes))
 
-  if (length(otcm_possibilities) == 2) {
+  if (length(otcm_possibilities) <= 2) {
     for (i in seq_along(outcomes)) {
       if (outcomes[[i]] == otcm_possibilities[1]) {
         outcomes[[i]] <- -1
@@ -52,7 +52,7 @@ process_outcomes <- function(outcomes, features) {
       }
     }
   } else {
-    message("Error: There are not exactly two distinct outcomes\n or outcomes are not numeric.")
+    message("Error: Only two distinct outcomes may be assessed.")
     return(NULL)
   }
 
@@ -63,7 +63,7 @@ process_outcomes <- function(outcomes, features) {
 
 # --------------------------------------------------------------------------------
 # TESTS AND PREPARES CLASSIFIER INPUT
-process_classifier <- function(classifier, features) {
+process_classifier_input <- function(classifier, features) {
 
   if (!is.data.frame(classifier)) {
     message("ERROR: Classifier must be a data frame.")
@@ -131,7 +131,8 @@ process_classifier <- function(classifier, features) {
 
 # --------------------------------------------------------------------------------
 # TESTS AND POSITIVE SPECIFICATION
-check_positive <- function(otcm_possibilities, positive) {
+# Returns true if 'positive' is first outcome, false if not
+check_positive_value <- function(otcm_possibilities, positive) {
   if (is.null(positive)) {
     return(TRUE)
   }
@@ -150,64 +151,6 @@ check_positive <- function(otcm_possibilities, positive) {
 
 
 # --------------------------------------------------------------------------------
-# PREPARES CLASSIFIER OUTPUT
-prepare_classifier <- function(classifier, features, outcomes) {
-
-  # create output data frame
-  output <- data.frame(matrix(ncol = 5, nrow = length(classifier)))
-  colnames(output) <- c("feature", "vote", "orientation", "split", "left_categories")
-
-  # determine outcomes
-  if(is.data.frame(outcomes)) {
-    outcomes <- outcomes[[1]]
-  }
-  otcm_possibilities <- sort(unique(outcomes))
-
-  # set output values
-  for (i in seq_along(classifier)) {
-    feature <- classifier[[i]][[1]] + 1
-    orientation <- classifier[[i]][[2]]
-    vote <- classifier[[i]][[3]]
-    categorical <- classifier[[i]][[4]]
-    split <- classifier[[i]][c(-1, -2, -3, -4)]
-
-    # feature name
-    output$feature[i] <- colnames(features)[[feature]]
-
-    # vote
-    output$vote[i] <- vote
-
-    if (categorical == 0) {
-      # orientation
-      if (orientation == 1) {
-        output$orientation[i] <- paste0(otcm_possibilities[[2]], "|", otcm_possibilities[[1]])
-      } else {
-        output$orientation[i] <- paste0(otcm_possibilities[[1]], "|", otcm_possibilities[[2]])
-      }
-      # split
-      output$split[i] <- split
-      output$left_categories[i] <- NA
-    }
-    if (categorical == 1) {
-      # orientation
-      output$orientation[i] <- paste0(otcm_possibilities[[1]], "|", otcm_possibilities[[2]])
-      # categories
-      temp_split <- rep(NA, length(split))
-      feature_levels <- levels(addNA(factor(features[[feature]])))
-      for (j in 1:length(split)) {
-        temp_split[[j]] <- feature_levels[[split[[j]]]]
-      }
-      output$left_categories[i] <- paste(temp_split, collapse = "; ")
-      output$split[i] <- NA
-    }
-  }
-
-  return(output)
-}
-
-
-
-# --------------------------------------------------------------------------------
 # FIND CATEGORICAL VECTOR
 find_categorical <- function(features) {
   categorical <- rep(0, ncol(features))
@@ -220,7 +163,5 @@ find_categorical <- function(features) {
 
   return(categorical)
 }
-
-
 
 
