@@ -33,16 +33,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // assess
-NumericMatrix assess(const NumericMatrix& features, const NumericVector& outcomes, const List& classifier, int interval);
-RcppExport SEXP _sboost_assess(SEXP featuresSEXP, SEXP outcomesSEXP, SEXP classifierSEXP, SEXP intervalSEXP) {
+NumericMatrix assess(const NumericMatrix& features, const NumericVector& outcomes, const List& classifier);
+RcppExport SEXP _sboost_assess(SEXP featuresSEXP, SEXP outcomesSEXP, SEXP classifierSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type features(featuresSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type outcomes(outcomesSEXP);
     Rcpp::traits::input_parameter< const List& >::type classifier(classifierSEXP);
-    Rcpp::traits::input_parameter< int >::type interval(intervalSEXP);
-    rcpp_result_gen = Rcpp::wrap(assess(features, outcomes, classifier, interval));
+    rcpp_result_gen = Rcpp::wrap(assess(features, outcomes, classifier));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -50,7 +49,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_sboost_adaboost", (DL_FUNC) &_sboost_adaboost, 5},
     {"_sboost_predict", (DL_FUNC) &_sboost_predict, 2},
-    {"_sboost_assess", (DL_FUNC) &_sboost_assess, 4},
+    {"_sboost_assess", (DL_FUNC) &_sboost_assess, 3},
     {NULL, NULL, 0}
 };
 

@@ -4,12 +4,14 @@
 \alias{predictions}
 \title{Make predictions for a feature set based on an sboost classifier.}
 \usage{
-predictions(features, classifier)
+predictions(features, classifier, scores = FALSE)
 }
 \arguments{
 \item{features}{feature set data.frame}
 
 \item{classifier}{classifier output from sboost}
+
+\item{scores}{if true raw scores generated, if false predictions are generated}
 
 \item{outcome_possibilities}{possible values of outcomes in a vector}
 }
@@ -21,11 +23,13 @@ See sboost documentation for more details.
 }
 \examples{
 # malware
-malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
+predictions(malware[-1], malware_classifier, scores = TRUE)
 predictions(malware[-1], malware_classifier)
 
 # mushrooms
-mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
+predictions(mushrooms[-1], mushroom_classifier, scores = TRUE)
 predictions(mushrooms[-1], mushroom_classifier)
 }
 \keyword{predict}

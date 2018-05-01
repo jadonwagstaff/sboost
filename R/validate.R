@@ -17,31 +17,27 @@
 #' # mushrooms
 #' validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4, positive = "p")
 #' @export
-validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL, interval = NULL) {
+validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL) {
+
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
+  if (is.data.frame(outcomes)) {
+    outcomes <- outcomes[[1]]
+  }
   processed_features <- process_feature_input(features)
-  processed_outcomes <- process_outcome_input(outcomes, features)
   categorical <- find_categorical(features)
-
-  if(is.data.frame(outcomes)) {
-    positive_matched <- check_positive_value(unique(outcomes[[1]]), positive)
-  } else {
-    positive_matched <- check_positive_value(unique(outcomes), positive)
-  }
-  if (is.null(outcomes) || is.null(features) || is.null(positive_matched)) {
-    return(NULL)
-  }
-  if (length(unique(processed_outcomes)) < 2) {
-    message("ERROR: There must be two distinct outcomes to use sboost.")
+  otcm_def <- check_positive_value(outcomes, positive)
+  processed_outcomes <- process_outcome_input(outcomes, features, otcm_def)
+  if (is.null(processed_outcomes) || is.null(processed_features) || is.null(otcm_def)) {
     return(NULL)
   }
 
   # create variables
   classifier_list <- list();
-  assessment_list <- list();
+  training_assessments <- list();
+  testing_assessments <- list();
   rows = nrow(features);
 
 
@@ -54,70 +50,33 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
                                             iterations)
   }
 
+
   # TEST CLASSIFIER
   # --------------------------------------------------------------------------------
-
-  # training
   for (i in 1:k_fold) {
-    assessment_list[[i]] <- make_assessment(processed_features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
-                                            processed_outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
-                                            classifier_list[[i]],
-                                            positive_matched,
-                                            interval)
+    training_assessments[[i]] <- make_assessment(processed_features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
+                                                 processed_outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
+                                                 classifier_list[[i]])
   }
-
   for (i in 1:k_fold) {
-    assessment_list[[i]] <- dplyr::mutate(assessment_list[[i]],
-                                          number = 1:nrow(assessment_list[[i]]))
+    testing_assessments[[i]] <- make_assessment(processed_features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
+                                                processed_outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
+                                                classifier_list[[i]])
   }
 
-  training <- dplyr::bind_rows(assessment_list)
-
-  # testing
-  for (i in 1:k_fold) {
-    assessment_list[[i]] <- make_assessment(processed_features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
-                                            processed_outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
-                                            classifier_list[[i]],
-                                            positive_matched,
-                                            interval)
+  # CREATE_OUTPUT
+  # --------------------------------------------------------------------------------
+  for (i in seq_along(classifier_list)) {
+    classifier_list[[i]] <- process_classifier_output(classifier_list[[i]],
+                                                      features[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows), ],
+                                                      outcomes[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)],
+                                                      otcm_def, match.call())
+    training_assessments[[i]] <- process_assessment_output(training_assessments[[i]], classifier_list[[i]], match.call())
+    testing_assessments[[i]] <- process_assessment_output(testing_assessments[[i]], classifier_list[[i]], match.call())
   }
+  validation <- process_validation_output(training_assessments, testing_assessments, classifier_list, k_fold, match.call())
 
-  for (i in 1:k_fold) {
-    assessment_list[[i]] <- dplyr::mutate(assessment_list[[i]],
-                                          number = 1:nrow(assessment_list[[i]]))
-  }
-
-  testing <- dplyr::bind_rows(assessment_list)
-
-
-  # combined
-  assessment <- list("training" = training, "testing" = testing)
-  for (j in 1:2) {
-    assessment[[j]] <- dplyr::group_by(assessment[[j]], number)
-    assessment[[j]] <- dplyr::summarise(assessment[[j]],
-                                   k_fold = k_fold,
-                                   true_positive_mean = mean(true_positive),
-                                   true_positive_sd = sd(true_positive),
-                                   false_negative_mean = mean(false_negative),
-                                   false_negative_sd = sd(false_negative),
-                                   true_negative_mean = mean(true_negative),
-                                   true_negative_sd = sd(true_negative),
-                                   false_positive_mean = mean(false_positive),
-                                   false_negative_sd = sd(false_positive),
-                                   accuracy_mean = mean(accuracy),
-                                   accuracy_sd = sd(accuracy),
-                                   recall_mean = mean(recall),
-                                   recall_sd = sd(recall),
-                                   specificity_mean = mean(specificity),
-                                   specificity_sd = sd(specificity),
-                                   precision_mean = mean(precision),
-                                   precision_sd = sd(precision),
-                                   f1_mean = mean(f1),
-                                   f1_sd = sd(f1))
-  }
-
-
-  return(assessment)
+  return(validation)
 
 }
 

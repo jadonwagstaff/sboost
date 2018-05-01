@@ -6,34 +6,35 @@
 #' @param feature feature set data.frame
 #' @param outcomes outcomes corresponding to the features
 #' @param classifier must be output from sboost
-#' @param positive the positive outcome to test for; if NULL, the first in alphebetacal order will be chosen
-#' @param interval what interval to keep test results (e.g. 10 is every 10 stumps); if NULL, only the last will be kept
 #' @return Assessment after each stump in the classifier.
 #' @keywords assess, assessment, f1, accuracy
 #' @examples
 #' # malware
-#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
-#' assessment(malware[-1], malware[1], malware_classifier, positive = 1)
+#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
+#' assessment(malware[-1], malware[1], malware_classifier)
 #'
 #' # mushrooms
-#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
-#' assessment(mushrooms[-1], mushrooms[1], mushroom_classifier, positive = "p")
+#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
+#' assessment(mushrooms[-1], mushrooms[1], mushroom_classifier)
 #' @export
-assessment <- function(features, outcomes, classifier, positive = NULL, interval = NULL) {
+assessment <- function(features, outcomes, classifier) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
+  if (is.data.frame(outcomes)) {
+    outcomes <- outcomes[[1]]
+  }
   processed_features <- process_feature_input(features)
-  processed_outcomes <- process_outcome_input(outcomes, features)
+  processed_outcomes <- process_outcome_input(outcomes, features, classifier$outcomes)
   processed_classifier <- process_classifier_input(classifier, features)
-  positive_matched <- check_positive_value(strsplit(classifier$orientation[1], "\\|")[[1]], positive)
-  if (is.null(processed_outcomes) || is.null(processed_features) || is.null(processed_classifier) || is.null(positive_matched)) {
+  if (is.null(processed_outcomes) || is.null(processed_features) || is.null(processed_classifier)) {
     return(NULL)
   }
 
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier_assessment <- make_assessment(processed_features, processed_outcomes, processed_classifier, positive_matched, interval)
+  classifier_assessment <- make_assessment(processed_features, processed_outcomes, processed_classifier)
+  classifier_assessment <- process_assessment_output(classifier_assessment, classifier, match.call())
 
 
   return(classifier_assessment)
@@ -41,25 +42,11 @@ assessment <- function(features, outcomes, classifier, positive = NULL, interval
 
 
 # classifier, features, and outcomes must already be processed
-make_assessment <- function(features, outcomes, classifier, positive_matched, interval) {
-  if (is.null(interval)) {
-    interval <- length(classifier)
-  }
+make_assessment <- function(features, outcomes, classifier) {
 
-  classifier_assessment <- assess(features, outcomes, classifier, interval)
-
-  if(positive_matched) {
-    colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
-  } else {
-    colnames(classifier_assessment) <- c("true_negative", "false_positive", "true_positive", "false_negative")
-  }
+  classifier_assessment <- assess(features, outcomes, classifier)
+  colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
   classifier_assessment <- data.frame(classifier_assessment)
-  classifier_assessment <- dplyr::mutate(classifier_assessment,
-                                         accuracy = (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative),
-                                         recall = true_positive / (true_positive + false_negative),
-                                         specificity = true_negative / (true_negative + false_positive),
-                                         precision = true_positive / (true_positive + false_positive),
-                                         f1 = (2 * precision * recall) / (precision + recall))
 
   return(classifier_assessment)
 }

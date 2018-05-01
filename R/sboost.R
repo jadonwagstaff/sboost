@@ -12,35 +12,40 @@ NULL
 #' @param features feature set data.frame
 #' @param outcomes outcomes corresponding to the features
 #' @param iterations number of boosts
-#' @return Classifier where each row is a stump.
+#' @param positive the positive outcome to test for; if NULL, the first outcome in alphebetacal order will be chosen
+#' @return A list:
 #' @keywords stump, boost, classifier, adaboost, decision stump
 #' @examples
 #' # malware
-#' sboost(malware[-1], malware[1], iterations = 10)
+#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+#' malware_classifier
+#' malware_classifier$classifier
 #'
 #' # mushrooms
-#' sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+#' mushroom_classifier
+#' mushroom_classifier$classifier
 #' @export
-sboost <- function(features, outcomes, iterations = 1) {
+sboost <- function(features, outcomes, iterations = 1, positive = NULL) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
+  if (is.data.frame(outcomes)) {
+    outcomes <- outcomes[[1]]
+  }
   processed_features <- process_feature_input(features)
-  processed_outcomes <- process_outcome_input(outcomes, features)
   categorical <- find_categorical(features)
+  otcm_def <- check_positive_value(outcomes, positive)
+  processed_outcomes <- process_outcome_input(outcomes, features, otcm_def)
+  if (is.null(processed_outcomes) || is.null(processed_features) || is.null(otcm_def)) {
+    return(NULL)
+  }
 
-  if (is.null(processed_outcomes) || is.null(processed_features)) {
-    return(NULL)
-  }
-  if (length(unique(processed_outcomes)) < 2) {
-    message("ERROR: There must be two distinct outcomes to use sboost.")
-    return(NULL)
-  }
 
   # DEVELOP CLASSIFIER
   # --------------------------------------------------------------------------------
   classifier <- make_classifier(processed_features, processed_outcomes, categorical, iterations)
-  classifier <- process_classifier_output(classifier, features, outcomes)
+  classifier <- process_classifier_output(classifier, features, outcomes, otcm_def, match.call())
 
   return(classifier)
 }

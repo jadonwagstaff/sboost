@@ -4,7 +4,7 @@
 \alias{sboost}
 \title{sboost Learning Algorithm}
 \usage{
-sboost(features, outcomes, iterations = 1)
+sboost(features, outcomes, iterations = 1, positive = NULL)
 }
 \arguments{
 \item{features}{feature set data.frame}
@@ -12,9 +12,11 @@ sboost(features, outcomes, iterations = 1)
 \item{outcomes}{outcomes corresponding to the features}
 
 \item{iterations}{number of boosts}
+
+\item{positive}{the positive outcome to test for; if NULL, the first outcome in alphebetacal order will be chosen}
 }
 \value{
-Classifier where each row is a stump.
+A list:
 }
 \description{
 A machine learning algorithm using adaboost on decision stumps.
@@ -26,10 +28,14 @@ and divided randomly on the best split for numeric.
 }
 \examples{
 # malware
-sboost(malware[-1], malware[1], iterations = 10)
+malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+malware_classifier
+malware_classifier$classifier
 
 # mushrooms
-sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+mushroom_classifier
+mushroom_classifier$classifier
 }
 \keyword{adaboost,}
 \keyword{boost,}

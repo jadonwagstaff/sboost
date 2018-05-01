@@ -27,33 +27,26 @@ process_feature_input <- function(features) {
 
 # --------------------------------------------------------------------------------
 # TESTS AND PREPARES OUTCOMES
-process_outcome_input <- function(outcomes, features) {
+process_outcome_input <- function(outcomes, features, otcm_def) {
 
-  if (!is.data.frame(outcomes) && !is.vector(outcomes)) {
-    message("ERROR: Features must be data frame or vector.")
+  if (!is.vector(outcomes)) {
+    message("ERROR: Outcomes must be data frame or vector.")
     return(NULL)
-  } else if(is.data.frame(outcomes)) {
-    outcomes <- outcomes[[1]]
   }
-
   if (length(outcomes) != nrow(features)) {
     message("ERROR: All training examples must have an outcome.")
     return(NULL)
   }
-
-  otcm_possibilities <- sort(unique(outcomes))
-
-  if (length(otcm_possibilities) <= 2) {
-    for (i in seq_along(outcomes)) {
-      if (outcomes[[i]] == otcm_possibilities[1]) {
-        outcomes[[i]] <- -1
-      } else {
-        outcomes[[i]] <- 1
-      }
-    }
-  } else {
+  if (length(unique(outcomes)) > 2) {
     message("Error: Only two distinct outcomes may be assessed.")
     return(NULL)
+  }
+  for (i in seq_along(outcomes)) {
+    if (outcomes[[i]] == otcm_def$positive) {
+      outcomes[[i]] <- 1
+    } else {
+      outcomes[[i]] <- -1
+    }
   }
 
   return(as.numeric(outcomes))
@@ -65,31 +58,23 @@ process_outcome_input <- function(outcomes, features) {
 # TESTS AND PREPARES CLASSIFIER INPUT
 process_classifier_input <- function(classifier, features) {
 
-  if (!is.data.frame(classifier)) {
-    message("ERROR: Classifier must be a data frame.")
-    return(NULL)
-  }
-
-  if (ncol(classifier) != 6) {
-    message("ERROR: Classifier is the wrong format.")
+  if (class(classifier) != "sboost_classifier") {
+    message("ERROR: Classifier must be an output from sboost.")
     return(NULL)
   }
 
   new_classifier = list()
 
-  # determine outcomes
-  otcm_possibilities <- sort(strsplit(classifier$orientation[1], "\\|")[[1]])
-
-  for (i in 1:nrow(classifier)) {
-    feature <- classifier$feature[i]
-    vote <- classifier$vote[i]
-    orientation <- strsplit(classifier$orientation[i], "\\|")[[1]]
-    if (is.na(classifier$split[i])) {
+  for (i in 1:nrow(classifier$classifier)) {
+    feature <- classifier$classifier$feature[i]
+    vote <- classifier$classifier$vote[i]
+    orientation <- strsplit(classifier$classifier$orientation[i], "\\|")[[1]]
+    if (is.na(classifier$classifier$split[i])) {
       categorical <- 1
-      split <- strsplit(classifier$left_categories[i], "; ")[[1]]
+      split <- strsplit(classifier$classifier$left_categories[i], "; ")[[1]]
     } else {
       categorical <- 0
-      split <- classifier$split[i]
+      split <- classifier$classifier$split[i]
     }
 
     # Change feature
@@ -97,13 +82,13 @@ process_classifier_input <- function(classifier, features) {
 
     # Change direction
     if (categorical == 1) {
-      if (orientation[[1]] == otcm_possibilities[[1]]) {
+      if (orientation[[1]] == classifier$outcomes$positive) {
         orientation <- 1
       } else {
         orientation <- -1
       }
     } else {
-      if (orientation[[1]] == otcm_possibilities[[2]]) {
+      if (orientation[[1]] == classifier$outcomes$negative) {
         orientation <- 1
       } else {
         orientation <- -1
@@ -131,20 +116,24 @@ process_classifier_input <- function(classifier, features) {
 
 # --------------------------------------------------------------------------------
 # TESTS AND POSITIVE SPECIFICATION
-# Returns true if 'positive' is first outcome, false if not
-check_positive_value <- function(otcm_possibilities, positive) {
-  if (is.null(positive)) {
-    return(TRUE)
+# Returns defined outcome possibilities
+check_positive_value <- function(outcomes, positive) {
+  otcm_p <- sort(unique(outcomes))
+  if (length(otcm_p) < 2) {
+    message("ERROR: There must be two distinct outcomes to use sboost.")
+    return(NULL)
   }
-  otcm_possibilities <- sort(otcm_possibilities)
-  if (!positive %in% otcm_possibilities) {
+  if (is.null(positive)) {
+    return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
+  }
+  if (!positive %in% otcm_p) {
     message("ERROR: 'positive' variable must match one of the outcomes.")
     return(NULL)
   }
-  if (positive == otcm_possibilities[[1]]) {
-    return(TRUE)
+  if (positive == otcm_p[[1]]) {
+    return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
   } else {
-    return(FALSE)
+    return(data.frame(positive = otcm_p[[2]], negative = otcm_p[[1]]))
   }
 }
 

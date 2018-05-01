@@ -6,22 +6,24 @@
 #' @param features feature set data.frame
 #' @param outcome_possibilities possible values of outcomes in a vector
 #' @param classifier classifier output from sboost
+#' @param scores if true raw scores generated, if false predictions are generated
 #' @return predictions in the form of a vector
 #' @keywords predictions, predict
 #' @examples
 #' # malware
-#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
+#' predictions(malware[-1], malware_classifier, scores = TRUE)
 #' predictions(malware[-1], malware_classifier)
 #'
 #' # mushrooms
-#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
+#' predictions(mushrooms[-1], mushroom_classifier, scores = TRUE)
 #' predictions(mushrooms[-1], mushroom_classifier)
 #' @export
-predictions <- function(features, classifier) {
+predictions <- function(features, classifier, scores = FALSE) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-  outcome_possibilities <- sort(strsplit(classifier$orientation[1], "\\|")[[1]])
   processed_classifier <- process_classifier_input(classifier, features)
   processed_features <- process_feature_input(features)
   if (is.null(features) || is.null(classifier)) {
@@ -32,7 +34,10 @@ predictions <- function(features, classifier) {
   # MAKE PREDICTIONS
   # --------------------------------------------------------------------------------
   predictions <- predict(processed_features, processed_classifier)
-  predictions <- dplyr::if_else(predictions < 0, true = outcome_possibilities[[1]], false = outcome_possibilities[[2]])
+  if (scores) return(predictions)
+  predictions <- dplyr::if_else(predictions > 0,
+                                true = as.character(classifier$outcomes$positive),
+                                false = as.character(classifier$outcomes$negative))
 
   return(predictions)
 }
