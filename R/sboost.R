@@ -30,16 +30,11 @@ sboost <- function(features, outcomes, iterations = 1, positive = NULL) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-  if (is.data.frame(outcomes)) {
-    outcomes <- outcomes[[1]]
-  }
+  if (is.data.frame(outcomes)) outcomes <- outcomes[[1]]
   processed_features <- process_feature_input(features)
   categorical <- find_categorical(features)
   otcm_def <- check_positive_value(outcomes, positive)
   processed_outcomes <- process_outcome_input(outcomes, features, otcm_def)
-  if (is.null(processed_outcomes) || is.null(processed_features) || is.null(otcm_def)) {
-    return(NULL)
-  }
 
 
   # DEVELOP CLASSIFIER

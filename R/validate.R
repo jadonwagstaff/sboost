@@ -23,16 +23,11 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
-  if (is.data.frame(outcomes)) {
-    outcomes <- outcomes[[1]]
-  }
+  if (is.data.frame(outcomes)) outcomes <- outcomes[[1]]
   processed_features <- process_feature_input(features)
   categorical <- find_categorical(features)
   otcm_def <- check_positive_value(outcomes, positive)
   processed_outcomes <- process_outcome_input(outcomes, features, otcm_def)
-  if (is.null(processed_outcomes) || is.null(processed_features) || is.null(otcm_def)) {
-    return(NULL)
-  }
 
   # create variables
   classifier_list <- list();
@@ -41,43 +36,28 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
   rows = nrow(features);
 
 
-  # DEVELOP CLASSIFIER
+  # MAIN VALIDATION LOOP
   # --------------------------------------------------------------------------------
   for (i in 1:k_fold) {
-    classifier_list[[i]] <- make_classifier(processed_features[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows), ],
-                                            processed_outcomes[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)],
-                                            categorical,
-                                            iterations)
-  }
+    training <- -(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)
+    testing <- ((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)
 
+    # create classifier
+    classifier_list[[i]] <- make_classifier(processed_features[training, ], processed_outcomes[training], categorical, iterations)
 
-  # TEST CLASSIFIER
-  # --------------------------------------------------------------------------------
-  for (i in 1:k_fold) {
-    training_assessments[[i]] <- make_assessment(processed_features[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows), ],
-                                                 processed_outcomes[-((((i - 1) / k_fold) * rows) + 1):-((i / k_fold) * rows)],
-                                                 classifier_list[[i]])
-  }
-  for (i in 1:k_fold) {
-    testing_assessments[[i]] <- make_assessment(processed_features[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows), ],
-                                                processed_outcomes[((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)],
-                                                classifier_list[[i]])
-  }
+    # test classifier
+    training_assessments[[i]] <- make_assessment(processed_features[training, ], processed_outcomes[training], classifier_list[[i]])
+    testing_assessments[[i]] <- make_assessment(processed_features[testing, ], processed_outcomes[testing], classifier_list[[i]])
 
-  # CREATE_OUTPUT
-  # --------------------------------------------------------------------------------
-  for (i in seq_along(classifier_list)) {
-    classifier_list[[i]] <- process_classifier_output(classifier_list[[i]],
-                                                      features[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows), ],
-                                                      outcomes[-(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)],
-                                                      otcm_def, match.call())
+    # prepare output
+    classifier_list[[i]] <- process_classifier_output(classifier_list[[i]], processed_features[training, ], processed_outcomes[training], otcm_def, match.call())
     training_assessments[[i]] <- process_assessment_output(training_assessments[[i]], classifier_list[[i]], match.call())
     testing_assessments[[i]] <- process_assessment_output(testing_assessments[[i]], classifier_list[[i]], match.call())
   }
+
   validation <- process_validation_output(training_assessments, testing_assessments, classifier_list, k_fold, match.call())
 
   return(validation)
-
 }
 
 

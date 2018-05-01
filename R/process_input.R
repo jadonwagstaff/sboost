@@ -2,10 +2,7 @@
 # TESTS AND PREPARES FEATURES
 process_feature_input <- function(features) {
 
-  if (!is.data.frame(features)) {
-    message("ERROR: Features must be data frame.")
-    return(NULL)
-  }
+  if (!is.data.frame(features)) stop("Features must be data frame.")
 
   for (i in seq_along(features)) {
     if (is.logical(features[[i]]) || is.character(features[[i]])) {
@@ -15,8 +12,7 @@ process_feature_input <- function(features) {
     if (is.factor(features[[i]])) {
       features[[i]] <- as.numeric(addNA(features[[i]]))
     } else if (!is.numeric(features[[i]])) {
-      message(paste("ERROR: Unknown data type in column ", i))
-      return(NULL)
+      stop(paste("Unknown data type in column ", i))
     }
   }
 
@@ -29,18 +25,9 @@ process_feature_input <- function(features) {
 # TESTS AND PREPARES OUTCOMES
 process_outcome_input <- function(outcomes, features, otcm_def) {
 
-  if (!is.vector(outcomes)) {
-    message("ERROR: Outcomes must be data frame or vector.")
-    return(NULL)
-  }
-  if (length(outcomes) != nrow(features)) {
-    message("ERROR: All training examples must have an outcome.")
-    return(NULL)
-  }
-  if (length(unique(outcomes)) > 2) {
-    message("Error: Only two distinct outcomes may be assessed.")
-    return(NULL)
-  }
+  if (!is.vector(outcomes)) stop("Outcomes must be data frame or vector.")
+  if (length(outcomes) != nrow(features)) stop("All training examples must have an outcome.")
+  if (length(unique(outcomes)) > 2) stop("Only two distinct outcomes may be assessed.")
   for (i in seq_along(outcomes)) {
     if (outcomes[[i]] == otcm_def$positive) {
       outcomes[[i]] <- 1
@@ -58,10 +45,7 @@ process_outcome_input <- function(outcomes, features, otcm_def) {
 # TESTS AND PREPARES CLASSIFIER INPUT
 process_classifier_input <- function(classifier, features) {
 
-  if (class(classifier) != "sboost_classifier") {
-    message("ERROR: Classifier must be an output from sboost.")
-    return(NULL)
-  }
+  if (class(classifier) != "sboost_classifier") stop("Classifier must be an output from sboost.")
 
   new_classifier = list()
 
@@ -119,18 +103,12 @@ process_classifier_input <- function(classifier, features) {
 # Returns defined outcome possibilities
 check_positive_value <- function(outcomes, positive) {
   otcm_p <- sort(unique(outcomes))
-  if (length(otcm_p) < 2) {
-    message("ERROR: There must be two distinct outcomes to use sboost.")
-    return(NULL)
-  }
-  if (is.null(positive)) {
-    return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
-  }
+  if (length(otcm_p) < 2) stop("There must be two distinct outcomes to use sboost.")
   if (!positive %in% otcm_p) {
-    message("ERROR: 'positive' variable must match one of the outcomes.")
-    return(NULL)
+    warning("'positive' variable does not match one of the outcomes. The positive value will be the first outcome in alphabetical order.")
+    positive <- NULL
   }
-  if (positive == otcm_p[[1]]) {
+  if (positive == otcm_p[[1]] | is.null(positive)) {
     return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
   } else {
     return(data.frame(positive = otcm_p[[2]], negative = otcm_p[[1]]))

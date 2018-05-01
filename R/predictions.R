@@ -26,9 +26,6 @@ predictions <- function(features, classifier, scores = FALSE) {
   # --------------------------------------------------------------------------------
   processed_classifier <- process_classifier_input(classifier, features)
   processed_features <- process_feature_input(features)
-  if (is.null(features) || is.null(classifier)) {
-    return(NULL)
-  }
 
 
   # MAKE PREDICTIONS
@@ -41,4 +38,5 @@ predictions <- function(features, classifier, scores = FALSE) {
 
   return(predictions)
 }
+
 

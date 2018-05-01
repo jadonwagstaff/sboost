@@ -21,15 +21,10 @@ assessment <- function(features, outcomes, classifier) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-  if (is.data.frame(outcomes)) {
-    outcomes <- outcomes[[1]]
-  }
+  if (is.data.frame(outcomes)) outcomes <- outcomes[[1]]
   processed_features <- process_feature_input(features)
   processed_outcomes <- process_outcome_input(outcomes, features, classifier$outcomes)
   processed_classifier <- process_classifier_input(classifier, features)
-  if (is.null(processed_outcomes) || is.null(processed_features) || is.null(processed_classifier)) {
-    return(NULL)
-  }
 
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
