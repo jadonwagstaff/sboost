@@ -7,6 +7,8 @@
 validate(features, outcomes, iterations = 1, k_fold = 6, positive = NULL)
 }
 \arguments{
+\item{features}{feature set data.frame}
+
 \item{outcomes}{outcomes corresponding to the features}
 
 \item{iterations}{number of boosts}
@@ -14,8 +16,6 @@ validate(features, outcomes, iterations = 1, k_fold = 6, positive = NULL)
 \item{k_fold}{number of cross-validation subsets}
 
 \item{positive}{is the positive outcome to test for; if NULL, the first in alphebetacal order will be chosen}
-
-\item{feature}{feature set data.frame}
 }
 \value{
 Statistics for the test set and the training set.

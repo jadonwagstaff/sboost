@@ -7,11 +7,11 @@
 assessment(features, outcomes, classifier)
 }
 \arguments{
+\item{features}{feature set data.frame}
+
 \item{outcomes}{outcomes corresponding to the features}
 
 \item{classifier}{must be output from sboost}
-
-\item{feature}{feature set data.frame}
 }
 \value{
 Assessment after each stump in the classifier.

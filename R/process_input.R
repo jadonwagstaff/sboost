@@ -99,12 +99,12 @@ process_classifier_input <- function(classifier, features) {
 
 
 # --------------------------------------------------------------------------------
-# TESTS AND POSITIVE SPECIFICATION
+# TESTS POSITIVE SPECIFICATION
 # Returns defined outcome possibilities
 check_positive_value <- function(outcomes, positive) {
   otcm_p <- sort(unique(outcomes))
   if (length(otcm_p) < 2) stop("There must be two distinct outcomes to use sboost.")
-  if (!positive %in% otcm_p) {
+  if (!is.null(positive) & !(positive %in% otcm_p)) {
     warning("'positive' variable does not match one of the outcomes. The positive value will be the first outcome in alphabetical order.")
     positive <- NULL
   }

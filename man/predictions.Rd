@@ -12,8 +12,6 @@ predictions(features, classifier, scores = FALSE)
 \item{classifier}{classifier output from sboost}
 
 \item{scores}{if true raw scores generated, if false predictions are generated}
-
-\item{outcome_possibilities}{possible values of outcomes in a vector}
 }
 \value{
 predictions in the form of a vector

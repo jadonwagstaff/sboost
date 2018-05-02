@@ -3,7 +3,7 @@
 #' Assesses how well a classifier fits the data.
 #'
 #' See sboost documentation for more details.
-#' @param feature feature set data.frame
+#' @param features feature set data.frame
 #' @param outcomes outcomes corresponding to the features
 #' @param classifier must be output from sboost
 #' @return Assessment after each stump in the classifier.

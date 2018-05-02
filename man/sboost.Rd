@@ -28,12 +28,12 @@ and divided randomly on the best split for numeric.
 }
 \examples{
 # malware
-malware_classifier <- sboost(malware[-1], malware[1], iterations = 10)
+malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
 malware_classifier
 malware_classifier$classifier
 
 # mushrooms
-mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10)
+mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
 mushroom_classifier
 mushroom_classifier$classifier
 }

@@ -4,7 +4,6 @@
 #'
 #' See sboost documentation for more details.
 #' @param features feature set data.frame
-#' @param outcome_possibilities possible values of outcomes in a vector
 #' @param classifier classifier output from sboost
 #' @param scores if true raw scores generated, if false predictions are generated
 #' @return predictions in the form of a vector

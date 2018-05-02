@@ -3,7 +3,7 @@
 #' A k-fold cross validation algorithm for sboost.
 #'
 #' See sboost documentation for more details.
-#' @param feature feature set data.frame
+#' @param features feature set data.frame
 #' @param outcomes outcomes corresponding to the features
 #' @param iterations number of boosts
 #' @param k_fold number of cross-validation subsets
