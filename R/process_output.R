@@ -1,3 +1,6 @@
+#' @importFrom rlang .data
+#' @importFrom stats sd
+
 # --------------------------------------------------------------------------------
 # PREPARES CLASSIFIER OUTPUT
 process_classifier_output <- function(classifier, features, outcomes, otcm_def, call) {
@@ -85,15 +88,15 @@ process_assessment_output <- function(assessment, classifier, call) {
   # Statistics
   statistics <- dplyr::mutate(assessment,
                               stump = 1:nrow(assessment))
-  statistics <- dplyr::select(statistics, stump, true_positive, false_negative, true_negative, false_positive)
+  statistics <- dplyr::select(statistics, .data$stump, .data$true_positive, .data$false_negative, .data$true_negative, .data$false_positive)
   statistics <- dplyr::mutate(statistics,
-                              prevalence = (true_positive + false_negative) / (true_positive + true_negative + false_positive + false_negative),
-                              accuracy = (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative),
-                              sensitivity = true_positive / (true_positive + false_negative),
-                              specificity = true_negative / (true_negative + false_positive),
-                              ppv = true_positive / (true_positive + false_positive),
-                              npv = true_negative / (true_negative + false_negative),
-                              f1 = (2 * ppv * sensitivity) / (ppv + sensitivity))
+                              prevalence = (.data$true_positive + .data$false_negative) / (.data$true_positive + .data$true_negative + .data$false_positive + .data$false_negative),
+                              accuracy = (.data$true_positive + .data$true_negative) / (.data$true_positive + .data$true_negative + .data$false_positive + .data$false_negative),
+                              sensitivity = .data$true_positive / (.data$true_positive + .data$false_negative),
+                              specificity = .data$true_negative / (.data$true_negative + .data$false_positive),
+                              ppv = .data$true_positive / (.data$true_positive + .data$false_positive),
+                              npv = .data$true_negative / (.data$true_negative + .data$false_negative),
+                              f1 = (2 * .data$ppv * .data$sensitivity) / (.data$ppv + .data$sensitivity))
 
   # Output
   output <- list(statistics = statistics, classifier = classifier, outcomes = classifier$outcomes, call = call)
@@ -140,34 +143,34 @@ process_validation_output <- function(training_assessments, testing_assessments,
     testing_statistics <- rbind(testing_statistics, testing_assessments[[i]]$statistics)
   }
 
-  training_statistics <- dplyr::group_by(training_statistics, stump)
+  training_statistics <- dplyr::group_by(training_statistics, .data$stump)
   training_statistics <- dplyr::summarise(training_statistics,
-                                          accuracy_mean = mean(accuracy),
-                                          accuracy_sd = sd(accuracy),
-                                          sensitivity_mean = mean(sensitivity),
-                                          sensitivity_sd = sd(sensitivity),
-                                          specificity_mean = mean(specificity),
-                                          specificity_sd = sd(specificity),
-                                          ppv_mean = mean(ppv),
-                                          ppv_sd = sd(ppv),
-                                          npv_mean = mean(npv),
-                                          npv_sd = sd(npv),
-                                          f1_mean = mean(f1),
-                                          f1_sd = sd(f1))
-  testing_statistics <- dplyr::group_by(testing_statistics, stump)
+                                          accuracy_mean = mean(.data$accuracy),
+                                          accuracy_sd = sd(.data$accuracy),
+                                          sensitivity_mean = mean(.data$sensitivity),
+                                          sensitivity_sd = sd(.data$sensitivity),
+                                          specificity_mean = mean(.data$specificity),
+                                          specificity_sd = sd(.data$specificity),
+                                          ppv_mean = mean(.data$ppv),
+                                          ppv_sd = sd(.data$ppv),
+                                          npv_mean = mean(.data$npv),
+                                          npv_sd = sd(.data$npv),
+                                          f1_mean = mean(.data$f1),
+                                          f1_sd = sd(.data$f1))
+  testing_statistics <- dplyr::group_by(testing_statistics, .data$stump)
   testing_statistics <- dplyr::summarise(testing_statistics,
-                                         accuracy_mean = mean(accuracy),
-                                         accuracy_sd = sd(accuracy),
-                                         sensitivity_mean = mean(sensitivity),
-                                         sensitivity_sd = sd(sensitivity),
-                                         specificity_mean = mean(specificity),
-                                         specificity_sd = sd(specificity),
-                                         ppv_mean = mean(ppv),
-                                         ppv_sd = sd(ppv),
-                                         npv_mean = mean(npv),
-                                         npv_sd = sd(npv),
-                                         f1_mean = mean(f1),
-                                         f1_sd = sd(f1))
+                                         accuracy_mean = mean(.data$accuracy),
+                                         accuracy_sd = sd(.data$accuracy),
+                                         sensitivity_mean = mean(.data$sensitivity),
+                                         sensitivity_sd = sd(.data$sensitivity),
+                                         specificity_mean = mean(.data$specificity),
+                                         specificity_sd = sd(.data$specificity),
+                                         ppv_mean = mean(.data$ppv),
+                                         ppv_sd = sd(.data$ppv),
+                                         npv_mean = mean(.data$npv),
+                                         npv_sd = sd(.data$npv),
+                                         f1_mean = mean(.data$f1),
+                                         f1_sd = sd(.data$f1))
 
   output <- list(training_statistics = training_statistics,
                  testing_statistics = testing_statistics,
