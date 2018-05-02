@@ -62,16 +62,16 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
 }
 
 #' @export
-print.sboost_classifier <- function(c) {
+print.sboost_classifier <- function(x, ...) {
   cat("SBOOST CLASSIFIER SUMMARY\n")
   cat(" ----------------------- \n")
-  cat("Number of stumps trained: ", c$training$stumps, "\n", sep = "")
-  cat("Number of training features: ", c$training$features, "\n\n", sep = "")
+  cat("Number of stumps trained: ", x$training$stumps, "\n", sep = "")
+  cat("Number of training features: ", x$training$features, "\n\n", sep = "")
 
-  cat("Number of training instances: ", c$training$instances, "\n", sep = "")
-  cat("Positive outcome: ", as.character(c$outcomes$positive), "\n", sep = "")
-  cat("Positive prevalence: ", c$training$positive_prevalence, "\n", sep = "")
-  cat("Negative outcome: ", as.character(c$outcomes$negative), "\n", sep = "")
+  cat("Number of training instances: ", x$training$instances, "\n", sep = "")
+  cat("Positive outcome: ", as.character(x$outcomes$positive), "\n", sep = "")
+  cat("Positive prevalence: ", x$training$positive_prevalence, "\n", sep = "")
+  cat("Negative outcome: ", as.character(x$outcomes$negative), "\n", sep = "")
 }
 
 
@@ -103,24 +103,24 @@ process_assessment_output <- function(assessment, classifier, call) {
 }
 
 #' @export
-print.sboost_assessment <- function(a) {
-  last <- nrow(a$statistics)
+print.sboost_assessment <- function(x, ...) {
+  last <- nrow(x$statistics)
 
   cat("SBOOST ASSESSMENT SUMMARY\n", sep = "")
   cat(" ----------------------- \n", sep = "")
-  cat("Number of classifier stumps used: ", a$statistics$stump[last], "\n", sep = "")
-  cat("Number of instances assessed: ", a$statistics$true_positive[last] + a$statistics$false_negative[last] + a$statistics$true_negative[last] + a$statistics$false_positive[last], "\n\n", sep = "")
+  cat("Number of classifier stumps used: ", x$statistics$stump[last], "\n", sep = "")
+  cat("Number of instances assessed: ", x$statistics$true_positive[last] + x$statistics$false_negative[last] + x$statistics$true_negative[last] + x$statistics$false_positive[last], "\n\n", sep = "")
 
-  cat("Positive outcome: ", as.character(a$outcomes$positive), "\n", sep = "")
-  cat("Prevalence: ", a$statistics$prevalence[last], "\n", sep = "")
-  cat("Negative outcome: ", as.character(a$outcomes$negative), "\n\n", sep = "")
+  cat("Positive outcome: ", as.character(x$outcomes$positive), "\n", sep = "")
+  cat("Prevalence: ", x$statistics$prevalence[last], "\n", sep = "")
+  cat("Negative outcome: ", as.character(x$outcomes$negative), "\n\n", sep = "")
 
-  cat("Accuracy: ", a$statistics$accuracy[last], "\n", sep = "")
-  cat("Sensitivity: ", a$statistics$sensitivity[last], "\n", sep = "")
-  cat("Specificity: ", a$statistics$specificity[last], "\n", sep = "")
-  cat("PPV: ", a$statistics$ppv[last], "\n", sep = "")
-  cat("NPV: ", a$statistics$npv[last], "\n", sep = "")
-  cat("F1: ", a$statistics$f1[last], "\n", sep = "")
+  cat("Accuracy: ", x$statistics$accuracy[last], "\n", sep = "")
+  cat("Sensitivity: ", x$statistics$sensitivity[last], "\n", sep = "")
+  cat("Specificity: ", x$statistics$specificity[last], "\n", sep = "")
+  cat("PPV: ", x$statistics$ppv[last], "\n", sep = "")
+  cat("NPV: ", x$statistics$npv[last], "\n", sep = "")
+  cat("F1: ", x$statistics$f1[last], "\n", sep = "")
 }
 
 
@@ -183,38 +183,38 @@ process_validation_output <- function(training_assessments, testing_assessments,
 }
 
 #' @export
-print.sboost_validation <- function(v) {
-  last <- nrow(v$training_statistics)
+print.sboost_validation <- function(x, ...) {
+  last <- nrow(x$training_statistics)
 
   cat("SBOOST VALIDATION SUMMARY\n", sep = "")
   cat(" ----------------------- \n", sep = "")
-  cat("Number of validation steps: ", v$k_fold, "\n", sep = "")
-  cat("Number of training features: ", v$classifier_list[[1]]$training$features, "\n", sep = "")
-  cat("Number of stumps per training set: ", v$classifier_list[[1]]$training$stumps, "\n", sep = "")
+  cat("Number of validation steps: ", x$k_fold, "\n", sep = "")
+  cat("Number of training features: ", x$classifier_list[[1]]$training$features, "\n", sep = "")
+  cat("Number of stumps per training set: ", x$classifier_list[[1]]$training$stumps, "\n", sep = "")
 
-  cat("Approximate instances per training set: ", v$classifier_list[[1]]$training$instances, "\n", sep = "")
-  cat("Approximate instances per testing set: ", floor(v$classifier_list[[1]]$training$instances / (v$k_fold - 1)), "\n", sep = "")
-  cat("Positive outcome: ", as.character(v$outcomes$positive), "\n", sep = "")
-  cat("Negative outcome: ", as.character(v$outcomes$negative), "\n\n", sep = "")
+  cat("Approximate instances per training set: ", x$classifier_list[[1]]$training$instances, "\n", sep = "")
+  cat("Approximate instances per testing set: ", floor(x$classifier_list[[1]]$training$instances / (x$k_fold - 1)), "\n", sep = "")
+  cat("Positive outcome: ", as.character(x$outcomes$positive), "\n", sep = "")
+  cat("Negative outcome: ", as.character(x$outcomes$negative), "\n\n", sep = "")
 
   cat("Mean accuracy (SD)\n")
-  cat(" Training: ", v$training_statistics$accuracy_mean[last], " (", v$training_statistics$accuracy_sd[last], ")\n", sep = "")
-  cat(" Testing: ", v$testing_statistics$accuracy_mean[last], " (", v$testing_statistics$accuracy_sd[last], ")\n", sep = "")
+  cat(" Training: ", x$training_statistics$accuracy_mean[last], " (", x$training_statistics$accuracy_sd[last], ")\n", sep = "")
+  cat(" Testing: ", x$testing_statistics$accuracy_mean[last], " (", x$testing_statistics$accuracy_sd[last], ")\n", sep = "")
   cat("Mean sensitivity (SD)\n")
-  cat(" Training: ", v$training_statistics$sensitivity_mean[last], " (", v$training_statistics$sensitivity_sd[last], ")\n", sep = "")
-  cat(" Testing: ", v$testing_statistics$sensitivity_mean[last], " (", v$testing_statistics$sensitivity_sd[last], ")\n", sep = "")
+  cat(" Training: ", x$training_statistics$sensitivity_mean[last], " (", x$training_statistics$sensitivity_sd[last], ")\n", sep = "")
+  cat(" Testing: ", x$testing_statistics$sensitivity_mean[last], " (", x$testing_statistics$sensitivity_sd[last], ")\n", sep = "")
   cat("Mean specificity (SD)\n")
-  cat(" Training: ", v$training_statistics$specificity_mean[last], " (", v$training_statistics$specificity_sd[last], ")\n", sep = "")
-  cat(" Testing: ", v$testing_statistics$specificity_mean[last], " (", v$testing_statistics$specificity_sd[last], ")\n", sep = "")
+  cat(" Training: ", x$training_statistics$specificity_mean[last], " (", x$training_statistics$specificity_sd[last], ")\n", sep = "")
+  cat(" Testing: ", x$testing_statistics$specificity_mean[last], " (", x$testing_statistics$specificity_sd[last], ")\n", sep = "")
   cat("Mean PPV (SD)\n")
-  cat(" Training: ", v$training_statistics$ppv_mean[last], " (", v$training_statistics$ppv_sd[last], ")\n", sep = "")
-  cat(" Testing: ", v$testing_statistics$ppv_mean[last], " (", v$testing_statistics$ppv_sd[last], ")\n", sep = "")
+  cat(" Training: ", x$training_statistics$ppv_mean[last], " (", x$training_statistics$ppv_sd[last], ")\n", sep = "")
+  cat(" Testing: ", x$testing_statistics$ppv_mean[last], " (", x$testing_statistics$ppv_sd[last], ")\n", sep = "")
   cat("Mean NPV (SD)\n")
-  cat(" Training: ", v$training_statistics$npv_mean[last], " (", v$training_statistics$npv_sd[last], ")\n", sep = "")
-  cat(" Testing: ", v$testing_statistics$npv_mean[last], " (", v$testing_statistics$npv_sd[last], ")\n", sep = "")
+  cat(" Training: ", x$training_statistics$npv_mean[last], " (", x$training_statistics$npv_sd[last], ")\n", sep = "")
+  cat(" Testing: ", x$testing_statistics$npv_mean[last], " (", x$testing_statistics$npv_sd[last], ")\n", sep = "")
   cat("Mean F1 (SD)\n")
-  cat(" Training: ", v$training_statistics$f1_mean[last], " (", v$training_statistics$f1_sd[last], ")\n", sep = "")
-  cat(" Testing: ", v$testing_statistics$f1_mean[last], " (", v$testing_statistics$f1_sd[last], ")\n", sep = "")
+  cat(" Training: ", x$training_statistics$f1_mean[last], " (", x$training_statistics$f1_sd[last], ")\n", sep = "")
+  cat(" Testing: ", x$testing_statistics$f1_mean[last], " (", x$testing_statistics$f1_sd[last], ")\n", sep = "")
 }
 
 
