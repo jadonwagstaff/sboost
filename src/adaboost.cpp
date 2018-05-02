@@ -24,6 +24,8 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
   Stump classifier;
   List output(iterations);
 
+  // BOOST OVER EACH ITERATION
+  // --------------------------------------------------------------------------------
   for (int k = 0; k < iterations; k++) {
 
     // FIND BEST DECISION STUMP

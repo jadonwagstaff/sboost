@@ -1,14 +1,17 @@
 #include "stump.h"
 #include <Rcpp.h>
-#include <cmath>
 #include <vector>
 using namespace Rcpp;
 
+
+// static variables
 NumericMatrix Stump::features = NumericMatrix();
 NumericVector Stump::outcomes = NumericVector();
 
 NumericMatrix Stump::ordered_index = NumericMatrix();
 NumericVector Stump::categorical = NumericVector();
+
+
 
 
 Stump::Stump() {
@@ -18,6 +21,7 @@ Stump::Stump() {
   is_categorical = 0;
   split.push_back(0);
 }
+
 
 
 Stump::Stump(NumericVector stump_in) {
@@ -31,6 +35,7 @@ Stump::Stump(NumericVector stump_in) {
 }
 
 
+
 void Stump::populate_data(const NumericMatrix& f, const NumericVector& o, const NumericMatrix& oi, const NumericVector& c) {
   features = f;
   outcomes = o;
@@ -40,10 +45,12 @@ void Stump::populate_data(const NumericMatrix& f, const NumericVector& o, const 
 }
 
 
+
 void Stump::populate_data(const NumericMatrix& f, const NumericVector& o) {
   features = f;
   outcomes = o;
 }
+
 
 
 void Stump::populate_data(const NumericMatrix& f) {
@@ -51,6 +58,9 @@ void Stump::populate_data(const NumericMatrix& f) {
 }
 
 
+
+// Param: weights that are updated by a boosting algorithm
+// Return: updates internal parameters of stump
 void Stump::find_stump(const NumericVector& weights) {
 
   // CREATE VARIABLES
@@ -70,16 +80,23 @@ void Stump::find_stump(const NumericVector& weights) {
   int feature_categorical = 0;
 
 
-
+  // SEARCH THROUGH EACH FEATURE
+  // --------------------------------------------------------------------------------
   for (int j = 0; j < features.ncol(); j++) {
+    checkUserInterrupt();
     feature_split.clear();
     feature_gain = 0;
 
+    // IF CATEGORICAL FEATURE
+    // --------------------------------------------------------------------------------
     if (categorical(j) > 1) {
-      // Categorical
+
+      // clear variables
       feature_categorical = 1;
       positive.clear();
       negative.clear();
+
+      // initialize vectors with length of number of categories
       for (int k = 0; k < categorical(j); k++) {
         negative.push_back(0);
         positive.push_back(0);
@@ -89,9 +106,9 @@ void Stump::find_stump(const NumericVector& weights) {
       } else {
         negative[0] += weights(ordered_index(0, j));
       }
-      index = 0;
+      index = 0; // index increments with new categories
 
-
+      // calculate weighted positive and negative sums for each category
       for (int i = 1; i < features.nrow(); i++) {
         if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j)) {
           index++;
@@ -103,6 +120,7 @@ void Stump::find_stump(const NumericVector& weights) {
         }
       }
 
+      // add positive gains to feature split and calculate feature gain
       for (int k = 0; k < categorical(j); k++) {
         if (positive[k] > negative[k]) {
           feature_gain += positive[k];
@@ -111,15 +129,19 @@ void Stump::find_stump(const NumericVector& weights) {
           feature_gain += negative[k];
         }
       }
+
+      // if all categories are mostly positive or all mostly negative, gain is 0
       if (feature_split.size() == 0 || feature_split.size() == categorical(j)) {
         feature_gain =  0;
       }
+
       feature_direction = 1;
 
-
+    // IF CONTINUOUS FEATURE
+    // --------------------------------------------------------------------------------
     } else if (categorical(j) < 1) {
 
-      // Continuous
+      // clear variables
       feature_categorical = 0;
       gain = 0;
       feature_split.push_back(0);
@@ -127,6 +149,8 @@ void Stump::find_stump(const NumericVector& weights) {
       negative_behind = 0;
       positive_ahead = 0;
       negative_ahead = 0;
+
+      // start with all instances as ahead
       for (int i = 0; i < features.nrow(); i++) {
         if (outcomes(ordered_index(i, j)) == 1) {
           positive_ahead += weights(ordered_index(i, j));
@@ -134,8 +158,10 @@ void Stump::find_stump(const NumericVector& weights) {
           negative_ahead += weights(ordered_index(i, j));
         }
       }
-      // find best gain for this features
+
+      // transfer low values to behind incrementally and test the split
       for (int i = 1; i < features.nrow(); i++) {
+
         // update counting variables
         if (outcomes(ordered_index(i - 1, j)) == 1) {
           positive_behind += weights(ordered_index(i - 1, j));
@@ -149,7 +175,7 @@ void Stump::find_stump(const NumericVector& weights) {
         if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j) ) {
 
           // deal with NA: randomly distribute over best split
-          if (std::isnan(features(ordered_index(i, j), j))) {
+          if (ISNAN(features(ordered_index(i, j), j))) {
             if (gain != 0) {
               for (int newi = i; newi < features.nrow(); newi++) {
                 if (rand() % 2 == 0) {
@@ -199,7 +225,8 @@ void Stump::find_stump(const NumericVector& weights) {
       }
     }
 
-    // if this features gain is the best, update maxGain and best Feature
+    // TEST FEATURE
+    // --------------------------------------------------------------------------------
     if (feature_gain > max_gain) {
       max_gain = feature_gain;
       feature = j;
@@ -211,11 +238,15 @@ void Stump::find_stump(const NumericVector& weights) {
 }
 
 
+
 void Stump::set_vote(double v) {
   vote = v;
 }
 
 
+
+// Param: current predictions which may have been updated by other stumps (same length as features)
+// Return: predictions are changed to reflect the weighted influence of this stump
 void Stump::update_predictions(NumericVector& predictions) const {
   bool in_split;
   if (is_categorical == 0) {
@@ -244,6 +275,9 @@ void Stump::update_predictions(NumericVector& predictions) const {
 }
 
 
+
+// Param: vector of same length as features
+// Return: unweighted predictions for this stump (-1 or 1 for each prediction)
 void Stump::new_predictions(NumericVector& predictions) const {
   if (is_categorical == 0) {
     for (int i = 0; i < features.nrow(); i++) {
@@ -267,20 +301,27 @@ void Stump::new_predictions(NumericVector& predictions) const {
 }
 
 
+
+// Param: predictions
+// Return: contingencies based on accuracy of predictions
 NumericVector Stump::get_contingencies(const NumericVector& predictions) const {
   // true_positive, false_negative, true_negative, false_positive
   NumericVector output(4);
   for (int i = 0; i < features.nrow(); i++) {
     if (outcomes(i) == 1) {
       if (predictions(i) >= 0) {
+        // true_positive
         output(0)++;
       } else {
+        // false_negative
         output(1)++;
       }
     } else {
       if (predictions(i) < 0) {
+        // true_negative
         output(2)++;
       } else {
+        // false_positive
         output(3)++;
       }
     }
@@ -294,7 +335,10 @@ double Stump::get_vote() const{
 }
 
 
+// Param: none
+// Return: vector: feature, direction, vote, categorical, split...
 NumericVector Stump::make_vector() const{
+
   NumericVector output = NumericVector::create(double(feature), double(direction), double(vote), double(is_categorical));
   for (unsigned int i = 0; i < split.size(); i++) {
     output.push_back(split[i]);

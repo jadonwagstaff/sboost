@@ -10,8 +10,12 @@ class Stump
 public:
   Stump();
   Stump(NumericVector stump_in);
+
+  // populate data for sboost
   static void populate_data(const NumericMatrix& f, const NumericVector& o, const NumericMatrix& oi, const NumericVector& c);
+  // populate data for assess
   static void populate_data(const NumericMatrix& f, const NumericVector& o);
+  // populate data for predict
   static void populate_data(const NumericMatrix& f);
 
   void find_stump(const NumericVector& weights);

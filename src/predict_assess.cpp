@@ -1,10 +1,9 @@
 #include "stump.h"
 #include <Rcpp.h>
-#include <cmath>
 using namespace Rcpp;
 
-// Param: feature matrix, corresponding outcomes, classifier
-// Return: contingency table information for each level of the classifier
+// Param: feature matrix, classifier
+// Return: prediction scores based on classifier
 // [[Rcpp::export]]
 NumericVector predict(const NumericMatrix& features, const List& classifier) {
   Stump::populate_data(features);
