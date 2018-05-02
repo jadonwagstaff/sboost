@@ -12,11 +12,8 @@
 #'
 #' Data used for kaggle competition: https://www.kaggle.com/c/ml-fall2016-android-malware
 #'
-#' @format A data frame with 7597 rows and 361 variables:
-#' \describe{
-#'   \item{outcomes}{1 if malware, 0 if not.}
-#'   \item{X1... X360}{System calls.}
-#' }
+#' @format A data frame with 7597 rows and 361 variables: \emph{outcomes} 1 if malware, 0 if not.
+#' \emph{X1... X360} system calls.
 "malware"
 
 
