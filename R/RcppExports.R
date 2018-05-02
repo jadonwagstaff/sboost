@@ -2,14 +2,14 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 adaboost <- function(features, ordered_index, outcomes, categorical, iterations) {
-    .Call('_sboost_adaboost', PACKAGE = 'sboost', features, ordered_index, outcomes, categorical, iterations)
+    .Call(`_sboost_adaboost`, features, ordered_index, outcomes, categorical, iterations)
 }
 
 predict <- function(features, classifier) {
-    .Call('_sboost_predict', PACKAGE = 'sboost', features, classifier)
+    .Call(`_sboost_predict`, features, classifier)
 }
 
 assess <- function(features, outcomes, classifier) {
-    .Call('_sboost_assess', PACKAGE = 'sboost', features, outcomes, classifier)
+    .Call(`_sboost_assess`, features, outcomes, classifier)
 }
 

@@ -1,12 +1,13 @@
 Package: sboost
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Machine Learning using AdaBoost on Decision Stumps
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: person("Jadon", "Wagstaff", email = "jadonw@gmail.com", role = c("aut", "cre"))
+Description: Creates classifier for binary outcomes using Adaptive Boosting (AdaBoost)
+    on decision stumps. Feature vectors for instances may be a combination of 
+    continuous (numeric), or categorical (string, factor) elements. Methods for 
+    classifier assessment and validation also included.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp

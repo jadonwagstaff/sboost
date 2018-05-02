@@ -45,15 +45,3 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-
-static const R_CallMethodDef CallEntries[] = {
-    {"_sboost_adaboost", (DL_FUNC) &_sboost_adaboost, 5},
-    {"_sboost_predict", (DL_FUNC) &_sboost_predict, 2},
-    {"_sboost_assess", (DL_FUNC) &_sboost_assess, 3},
-    {NULL, NULL, 0}
-};
-
-RcppExport void R_init_sboost(DllInfo *dll) {
-    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
-    R_useDynamicSymbols(dll, FALSE);
-}
