@@ -50,7 +50,7 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
     testing_assessments[[i]] <- make_assessment(processed_features[testing, ], processed_outcomes[testing], classifier_list[[i]])
 
     # prepare output
-    classifier_list[[i]] <- process_classifier_output(classifier_list[[i]], processed_features[training, ], processed_outcomes[training], otcm_def, match.call())
+    classifier_list[[i]] <- process_classifier_output(classifier_list[[i]], features[training, ], outcomes[training], otcm_def, match.call())
     training_assessments[[i]] <- process_assessment_output(training_assessments[[i]], classifier_list[[i]], match.call())
     testing_assessments[[i]] <- process_assessment_output(testing_assessments[[i]], classifier_list[[i]], match.call())
   }
