@@ -104,14 +104,17 @@ process_classifier_input <- function(classifier, features) {
 check_positive_value <- function(outcomes, positive) {
   otcm_p <- sort(unique(outcomes))
   if (length(otcm_p) < 2) stop("There must be two distinct outcomes to use sboost.")
-  if (!is.null(positive) & !(positive %in% otcm_p)) {
-    warning("'positive' variable does not match one of the outcomes. The positive value will be the first outcome in alphabetical order.")
-    positive <- NULL
-  }
-  if (positive == otcm_p[[1]] | is.null(positive)) {
-    return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
+  if (!is.null(positive)) {
+    if (!(positive %in% otcm_p)) {
+      warning("'positive' variable does not match one of the outcomes. The positive value will be the first outcome in alphabetical order.")
+      positive <- NULL
+    } else if (positive == otcm_p[[1]]) {
+      return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
+    } else {
+      return(data.frame(positive = otcm_p[[2]], negative = otcm_p[[1]]))
+    }
   } else {
-    return(data.frame(positive = otcm_p[[2]], negative = otcm_p[[1]]))
+    return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
   }
 }
 
