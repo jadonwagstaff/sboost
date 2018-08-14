@@ -191,7 +191,7 @@ print.sboost_validation <- function(x, ...) {
 
   cat("SBOOST VALIDATION SUMMARY\n", sep = "")
   cat(" ----------------------- \n", sep = "")
-  cat("Number of validation steps: ", x$k_fold, "\n", sep = "")
+  cat("Number of validation sets: ", x$k_fold, "\n", sep = "")
   cat("Number of training features: ", x$classifier_list[[1]]$training$features, "\n", sep = "")
   cat("Number of stumps per training set: ", x$classifier_list[[1]]$training$stumps, "\n", sep = "")
 

@@ -7,17 +7,20 @@
 predictions(features, classifier, scores = FALSE)
 }
 \arguments{
-\item{features}{feature set data.frame}
+\item{features}{feature set data.frame.}
 
-\item{classifier}{classifier output from sboost}
+\item{classifier}{\emph{sboost_classifier} S3 object output from sboost.}
 
-\item{scores}{if true raw scores generated, if false predictions are generated}
+\item{scores}{if true, raw scores generated; if false, predictions are generated.}
 }
 \value{
-predictions in the form of a vector
+Predictions in the form of a vector, or scores in the form of a vector.
+  The index of the vector aligns the predictions or scores with the rows of
+  the features. Scores represent the sum of all votes for the positive outcome
+  minus the sum of all votes for the negative outcome.
 }
 \description{
-See sboost documentation for more details.
+Make predictions for a feature set based on an sboost classifier.
 }
 \examples{
 # malware
@@ -30,5 +33,6 @@ mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, posi
 predictions(mushrooms[-1], mushroom_classifier, scores = TRUE)
 predictions(mushrooms[-1], mushroom_classifier)
 }
-\keyword{predict}
-\keyword{predictions,}
+\seealso{
+\code{\link{sboost}} documentation.
+}

@@ -1,19 +1,21 @@
 Package: sboost
 Type: Package
-Title: Machine Learning using AdaBoost on Decision Stumps
+Title: Machine Learning with AdaBoost on Decision Stumps
 Version: 0.1.0
 Authors@R: person("Jadon", "Wagstaff", email = "jadonw@gmail.com", role = c("aut", "cre"))
 Description: Creates classifier for binary outcomes using Adaptive Boosting (AdaBoost)
-    on decision stumps. Feature vectors for instances may be a combination of 
-    continuous (numeric), or categorical (string, factor) elements. Methods for 
-    classifier assessment and validation also included.
+    on decision stumps. Feature vectors may be a combination of continuous (numeric), 
+    or categorical (string, factor) elements. Methods for classifier assessment,
+    predictions, and cross-validation also included.
 License: MIT + file LICENSE
+URL: https://github.com/jadonwagstaff/sboost
+BugReports: https://github.com/jadonwagstaff/sboost/issues
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 2.10)
-LinkingTo: Rcpp
-Imports: Rcpp,
-  dplyr,
-  rlang,
-  stats
+Depends: R (>= 3.5.0)
+LinkingTo: Rcpp (>= 0.12.17)
+Imports: dplyr (>= 0.7.6), 
+  rlang (>= 0.2.1),
+  Rcpp (>= 0.12.17),
+  stats (>= 3.5.1)
 RoxygenNote: 6.1.0

@@ -2,12 +2,14 @@
 #'
 #' Make predictions for a feature set based on an sboost classifier.
 #'
-#' See sboost documentation for more details.
-#' @param features feature set data.frame
-#' @param classifier classifier output from sboost
-#' @param scores if true raw scores generated, if false predictions are generated
-#' @return predictions in the form of a vector
-#' @keywords predictions, predict
+#' @param features feature set data.frame.
+#' @param classifier \emph{sboost_classifier} S3 object output from sboost.
+#' @param scores if true, raw scores generated; if false, predictions are generated.
+#' @return Predictions in the form of a vector, or scores in the form of a vector.
+#'   The index of the vector aligns the predictions or scores with the rows of
+#'   the features. Scores represent the sum of all votes for the positive outcome
+#'   minus the sum of all votes for the negative outcome.
+#' @seealso \code{\link{sboost}} documentation.
 #' @examples
 #' # malware
 #' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
