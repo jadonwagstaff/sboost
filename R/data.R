@@ -8,12 +8,12 @@
 #' "Evaluation of Android Malware Detection Based on System Calls,"
 #' in Proceedings of the International Workshop on Security and Privacy Analytics (IWSPA), 2016.
 #'
-#' Source: https://zenodo.org/record/154737#.WtoA1IjwaUl
-#'
 #' Data used for kaggle competition: https://www.kaggle.com/c/ml-fall2016-android-malware
 #'
 #' @format A data frame with 7597 rows and 361 variables: \emph{outcomes} 1 if malware, 0 if not.
 #' \emph{X1... X360} system calls.
+#'
+#' @source \url{https://zenodo.org/record/154737#.WtoA1IjwaUl}
 "malware"
 
 
@@ -26,8 +26,6 @@
 #'
 #' Mushroom records drawn from The Audubon Society Field Guide to North American Mushrooms (1981).
 #' G. H. Lincoff (Pres.), New York: Alfred A. Knopf
-#'
-#' Source: https://archive.ics.uci.edu/ml/datasets/mushroom
 #'
 #' @format A data frame with 7597 rows and 361 variables:
 #' \describe{
@@ -55,4 +53,6 @@
 #'   \item{population}{abundant=a, clustered=c, numerous=n, scattered=s, several=v, solitary=y}
 #'   \item{habitat}{grasses=g, leaves=l, meadows=m, paths=p, urban=u, waste=w, woods=d}
 #' }
+#'
+#' @source \url{https://archive.ics.uci.edu/ml/datasets/mushroom}
 "mushrooms"

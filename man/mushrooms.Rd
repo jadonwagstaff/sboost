@@ -30,6 +30,9 @@
   \item{population}{abundant=a, clustered=c, numerous=n, scattered=s, several=v, solitary=y}
   \item{habitat}{grasses=g, leaves=l, meadows=m, paths=p, urban=u, waste=w, woods=d}
 }}
+\source{
+\url{https://archive.ics.uci.edu/ml/datasets/mushroom}
+}
 \usage{
 mushrooms
 }
@@ -41,7 +44,5 @@ Data gathered from:
 
 Mushroom records drawn from The Audubon Society Field Guide to North American Mushrooms (1981).
 G. H. Lincoff (Pres.), New York: Alfred A. Knopf
-
-Source: https://archive.ics.uci.edu/ml/datasets/mushroom
 }
 \keyword{datasets}
