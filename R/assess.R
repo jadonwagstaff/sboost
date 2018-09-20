@@ -2,9 +2,9 @@
 #'
 #' Assesses how well an sboost classifier classifies the data.
 #'
+#' @param object \emph{sboost_classifier} S3 object output from sboost.
 #' @param features feature set data.frame.
 #' @param outcomes outcomes corresponding to the features.
-#' @param classifier \emph{sboost_classifier} S3 object output from sboost.
 #' @return An \emph{sboost_assessment} S3 object containing:
 #' \describe{
 #'   \item{\emph{statistics}}{\emph{stump} - the index of the last decision stump added to the assessment.}
@@ -27,35 +27,41 @@
 #' @examples
 #' # malware
 #' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
-#' assess(malware[-1], malware[1], malware_classifier)
+#' assess(malware_classifier, malware[-1], malware[1])
 #'
 #' # mushrooms
 #' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
 #' assess(mushrooms[-1], mushrooms[1], mushroom_classifier)
 #' @export
-assess <- function(features, outcomes, classifier) {
+assess <- function(object, ...) {
+  UseMethod("assess")
+}
+
+#' @export
+assess.sboost_classifier <- function(object, features, outcomes) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
   if (is.data.frame(outcomes)) outcomes <- outcomes[[1]]
   processed_features <- process_feature_input(features)
-  processed_outcomes <- process_outcome_input(outcomes, features, classifier$outcomes)
-  processed_classifier <- process_classifier_input(classifier, features)
+  processed_outcomes <- process_outcome_input(outcomes, features, object$outcomes)
+  processed_classifier <- process_classifier_input(object, features)
 
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier_assessment <- make_assessment(processed_features, processed_outcomes, processed_classifier)
-  classifier_assessment <- process_assessment_output(classifier_assessment, classifier, match.call())
+  classifier_assessment <- contingency(processed_features, processed_outcomes, processed_classifier)
+  classifier_assessment <- process_assessment_output(classifier_assessment, object, match.call())
 
 
   return(classifier_assessment)
 }
 
 
+# calls cpp-code for contingency table
 # classifier, features, and outcomes must already be processed
-make_assessment <- function(features, outcomes, classifier) {
+contingency <- function(features, outcomes, classifier) {
 
-  classifier_assessment <- assess(features, outcomes, classifier)
+  classifier_assessment <- contingency_cpp(features, outcomes, classifier)
   colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
   classifier_assessment <- data.frame(classifier_assessment)
 

@@ -27,7 +27,7 @@ NumericVector predict_cpp(const NumericMatrix& features, const List& classifier)
 // Param: feature matrix, corresponding outcomes, classifier
 // Return: contingency table information for each level of the classifier
 // [[Rcpp::export]]
-NumericMatrix assess(const NumericMatrix& features, const NumericVector& outcomes, const List& classifier) {
+NumericMatrix contingency_cpp(const NumericMatrix& features, const NumericVector& outcomes, const List& classifier) {
   Stump::populate_data(features, outcomes);
   NumericVector predictions(features.nrow());
 

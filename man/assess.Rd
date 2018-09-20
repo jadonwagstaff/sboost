@@ -4,14 +4,14 @@
 \alias{assess}
 \title{sboost Assessment Function}
 \usage{
-assess(features, outcomes, classifier)
+assess(object, ...)
 }
 \arguments{
+\item{object}{\emph{sboost_classifier} S3 object output from sboost.}
+
 \item{features}{feature set data.frame.}
 
 \item{outcomes}{outcomes corresponding to the features.}
-
-\item{classifier}{\emph{sboost_classifier} S3 object output from sboost.}
 }
 \value{
 An \emph{sboost_assessment} S3 object containing:
@@ -39,7 +39,7 @@ Assesses how well an sboost classifier classifies the data.
 \examples{
 # malware
 malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
-assess(malware[-1], malware[1], malware_classifier)
+assess(malware_classifier, malware[-1], malware[1])
 
 # mushrooms
 mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")

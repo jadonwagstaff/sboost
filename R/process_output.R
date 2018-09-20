@@ -72,9 +72,9 @@ print.sboost_classifier <- function(x, ...) {
   cat("Number of training features: ", x$training$features, "\n\n", sep = "")
 
   cat("Number of training instances: ", x$training$instances, "\n", sep = "")
-  cat("Positive outcome: ", as.character(x$outcomes$positive), "\n", sep = "")
+  cat("Positive outcome: ", as.character(x$outcomes["positive"]), "\n", sep = "")
   cat("Positive prevalence: ", x$training$positive_prevalence, "\n", sep = "")
-  cat("Negative outcome: ", as.character(x$outcomes$negative), "\n", sep = "")
+  cat("Negative outcome: ", as.character(x$outcomes["negative"]), "\n", sep = "")
 }
 
 
@@ -114,9 +114,9 @@ print.sboost_assessment <- function(x, ...) {
   cat("Number of classifier stumps used: ", x$statistics$stump[last], "\n", sep = "")
   cat("Number of instances assessed: ", x$statistics$true_positive[last] + x$statistics$false_negative[last] + x$statistics$true_negative[last] + x$statistics$false_positive[last], "\n\n", sep = "")
 
-  cat("Positive outcome: ", as.character(x$outcomes$positive), "\n", sep = "")
+  cat("Positive outcome: ", as.character(x$outcomes["positive"]), "\n", sep = "")
   cat("Prevalence: ", x$statistics$prevalence[last], "\n", sep = "")
-  cat("Negative outcome: ", as.character(x$outcomes$negative), "\n\n", sep = "")
+  cat("Negative outcome: ", as.character(x$outcomes["negative"]), "\n\n", sep = "")
 
   cat("Accuracy: ", x$statistics$accuracy[last], "\n", sep = "")
   cat("Sensitivity: ", x$statistics$sensitivity[last], "\n", sep = "")
@@ -197,8 +197,8 @@ print.sboost_validation <- function(x, ...) {
 
   cat("Approximate instances per training set: ", x$classifier_list[[1]]$training$instances, "\n", sep = "")
   cat("Approximate instances per testing set: ", floor(x$classifier_list[[1]]$training$instances / (x$k_fold - 1)), "\n", sep = "")
-  cat("Positive outcome: ", as.character(x$outcomes$positive), "\n", sep = "")
-  cat("Negative outcome: ", as.character(x$outcomes$negative), "\n\n", sep = "")
+  cat("Positive outcome: ", as.character(x$outcomes["positive"]), "\n", sep = "")
+  cat("Negative outcome: ", as.character(x$outcomes["negative"]), "\n\n", sep = "")
 
   cat("Mean accuracy (SD)\n")
   cat(" Training: ", x$training_statistics$accuracy_mean[last], " (", x$training_statistics$accuracy_sd[last], ")\n", sep = "")

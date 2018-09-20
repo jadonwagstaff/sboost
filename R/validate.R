@@ -27,12 +27,12 @@
 #' @seealso \code{\link{sboost}} documentation.
 #' @examples
 #' # malware
-#' sboost_validate(malware[-1], malware[1], iterations = 10, k_fold = 4, positive = 1)
+#' validate(malware[-1], malware[1], iterations = 10, k_fold = 4, positive = 1)
 #'
 #' # mushrooms
-#' sboost_validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4, positive = "p")
+#' validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4, positive = "p")
 #' @export
-sboost_validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL) {
+validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -61,8 +61,8 @@ sboost_validate <- function(features, outcomes, iterations = 1, k_fold = 6, posi
     classifier_list[[i]] <- make_classifier(processed_features[training, ], processed_outcomes[training], categorical, iterations)
 
     # test classifier
-    training_assessments[[i]] <- make_assessment(processed_features[training, ], processed_outcomes[training], classifier_list[[i]])
-    testing_assessments[[i]] <- make_assessment(processed_features[testing, ], processed_outcomes[testing], classifier_list[[i]])
+    training_assessments[[i]] <- contingency(processed_features[training, ], processed_outcomes[training], classifier_list[[i]])
+    testing_assessments[[i]] <- contingency(processed_features[testing, ], processed_outcomes[testing], classifier_list[[i]])
 
     # prepare output
     classifier_list[[i]] <- process_classifier_output(classifier_list[[i]], features[training, ], outcomes[training], otcm_def, match.call())
