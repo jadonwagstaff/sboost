@@ -22,9 +22,9 @@ devtools::install_github("jadonwagstaff/sboost")
 
 *validate* - Uses k-fold cross validation on a training set to validate the classifier.
 
-*assessment* - Shows performance of a classifier on a testing or training set.
+*assess* - Shows performance of a classifier on a testing or training set.
 
-*predictions* - Outputs predictions of a classifier on feature vectors.
+*predict* - Outputs predictions of a classifier on feature vectors.
 
 ## Author
 Jadon Wagstaff
