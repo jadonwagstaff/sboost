@@ -7,7 +7,8 @@
 #' @param outcomes outcomes corresponding to the features.
 #' @return An \emph{sboost_assessment} S3 object containing:
 #' \describe{
-#'   \item{\emph{statistics}}{\emph{stump} - the index of the last decision stump added to the assessment.}
+#'   \item{\emph{performance}}{Last row of cumulative statistics (i.e. when all stumps are included in assessment).}
+#'   \item{\emph{cumulative_statistics}}{\emph{stump} - the index of the last decision stump added to the assessment.}
 #'     \item{}{\emph{true_positive} - number of true positive predictions.}
 #'     \item{}{\emph{false_negative} - number of false negative predictions.}
 #'     \item{}{\emph{true_negative} - number of true negative predictions.}
@@ -49,10 +50,9 @@ assess.sboost_classifier <- function(object, features, outcomes) {
 
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier_assessment <- list(
-    contingency = get_contingency(processed_classifier, processed_features, processed_outcomes),
-    feature_scores = score_classifier_features(object, processed_classifier, processed_features))
-  #classifier_assessment <- process_assessment_output(classifier_assessment, object, match.call())
+  cumulative_statistics = get_cumulative_statistics(object, processed_classifier, processed_features, processed_outcomes)
+  feature_scores = score_classifier_features(object, processed_classifier, processed_features)
+  classifier_assessment <- process_assessment_output(cumulative_statistics, feature_scores, object, match.call())
 
 
   return(classifier_assessment)
@@ -61,15 +61,28 @@ assess.sboost_classifier <- function(object, features, outcomes) {
 
 # calls cpp-code for contingency table
 # classifier, features, and outcomes must already be processed
-get_contingency <- function(classifier, features, outcomes) {
+get_cumulative_statistics <- function(object, classifier, features, outcomes) {
 
   # CALL C++ CODE TO GET CONTINGENCY TABLE
   # --------------------------------------------------------------------------------
-  contingency <- get_contingency_cpp(features, outcomes, classifier)
-  colnames(contingency) <- c("true_positive", "false_negative", "true_negative", "false_positive")
-  contingency <- data.frame(contingency)
+  statistics <- get_contingency_cpp(features, outcomes, classifier)
+  colnames(statistics) <- c("true_positive", "false_negative", "true_negative", "false_positive")
 
-  return(contingency)
+  # CALCULATE STATISTICS
+  # --------------------------------------------------------------------------------
+  statistics <- data.frame(statistics)
+  statistics <- dplyr::mutate(statistics, next_stump = object$classifier$stump)
+  statistics <- dplyr::select(statistics, .data$next_stump, .data$true_positive, .data$false_negative, .data$true_negative, .data$false_positive)
+  statistics <- dplyr::mutate(statistics,
+                              prevalence = (.data$true_positive + .data$false_negative) / (.data$true_positive + .data$true_negative + .data$false_positive + .data$false_negative),
+                              accuracy = (.data$true_positive + .data$true_negative) / (.data$true_positive + .data$true_negative + .data$false_positive + .data$false_negative),
+                              sensitivity = .data$true_positive / (.data$true_positive + .data$false_negative),
+                              specificity = .data$true_negative / (.data$true_negative + .data$false_positive),
+                              ppv = .data$true_positive / (.data$true_positive + .data$false_positive),
+                              npv = .data$true_negative / (.data$true_negative + .data$false_negative),
+                              f1 = (2 * .data$ppv * .data$sensitivity) / (.data$ppv + .data$sensitivity))
+
+  return(statistics)
 }
 
 

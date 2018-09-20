@@ -84,22 +84,28 @@ print.sboost_classifier <- function(x, ...) {
 
 # --------------------------------------------------------------------------------
 # PREPARE ASSESSMENT OUTPUT
-process_assessment_output <- function(assessment, classifier, call) {
-  # Statistics
-  statistics <- dplyr::mutate(assessment,
-                              stump = 1:nrow(assessment))
-  statistics <- dplyr::select(statistics, .data$stump, .data$true_positive, .data$false_negative, .data$true_negative, .data$false_positive)
-  statistics <- dplyr::mutate(statistics,
-                              prevalence = (.data$true_positive + .data$false_negative) / (.data$true_positive + .data$true_negative + .data$false_positive + .data$false_negative),
-                              accuracy = (.data$true_positive + .data$true_negative) / (.data$true_positive + .data$true_negative + .data$false_positive + .data$false_negative),
-                              sensitivity = .data$true_positive / (.data$true_positive + .data$false_negative),
-                              specificity = .data$true_negative / (.data$true_negative + .data$false_positive),
-                              ppv = .data$true_positive / (.data$true_positive + .data$false_positive),
-                              npv = .data$true_negative / (.data$true_negative + .data$false_negative),
-                              f1 = (2 * .data$ppv * .data$sensitivity) / (.data$ppv + .data$sensitivity))
+process_assessment_output <- function(cumulative_statistics, feature_scores, object, call) {
+  # Performance
+  performance <- c(
+    "true_positive" = cumulative_statistics$true_positive[nrow(cumulative_statistics)],
+    "false_negative" = cumulative_statistics$false_negative[nrow(cumulative_statistics)],
+    "true_negative" = cumulative_statistics$true_negative[nrow(cumulative_statistics)],
+    "false_positive" = cumulative_statistics$false_positive[nrow(cumulative_statistics)],
+    "prevalence" = cumulative_statistics$prevalence[nrow(cumulative_statistics)],
+    "accuracy" = cumulative_statistics$accuracy[nrow(cumulative_statistics)],
+    "sensitivity" = cumulative_statistics$sensitivity[nrow(cumulative_statistics)],
+    "specificity" = cumulative_statistics$specificity[nrow(cumulative_statistics)],
+    "ppv" = cumulative_statistics$ppv[nrow(cumulative_statistics)],
+    "npv" = cumulative_statistics$npv[nrow(cumulative_statistics)],
+    "f1" = cumulative_statistics$f1[nrow(cumulative_statistics)])
 
   # Output
-  output <- list(statistics = statistics, classifier = classifier, outcomes = classifier$outcomes, call = call)
+  output <- list(performance = performance,
+                 cumulalative_statistics = cumulative_statistics,
+                 feature_scores = feature_scores,
+                 sboost_classifier = object,
+                 outcomes = object$outcomes,
+                 call = call)
   class(output) <- "sboost_assessment"
 
   return(output)
@@ -107,23 +113,21 @@ process_assessment_output <- function(assessment, classifier, call) {
 
 #' @export
 print.sboost_assessment <- function(x, ...) {
-  last <- nrow(x$statistics)
-
   cat("SBOOST ASSESSMENT SUMMARY\n", sep = "")
   cat(" ----------------------- \n", sep = "")
-  cat("Number of classifier stumps used: ", x$statistics$stump[last], "\n", sep = "")
-  cat("Number of instances assessed: ", x$statistics$true_positive[last] + x$statistics$false_negative[last] + x$statistics$true_negative[last] + x$statistics$false_positive[last], "\n\n", sep = "")
+  cat("Number of classifier stumps used: ", nrow(x$cumulative_statistics), "\n", sep = "")
+  cat("Number of instances assessed: ", x$performance["true_positive"] + x$performance["false_negative"] + x$performance["true_negative"] + x$performance["false_positive"], "\n\n", sep = "")
 
   cat("Positive outcome: ", as.character(x$outcomes["positive"]), "\n", sep = "")
-  cat("Prevalence: ", x$statistics$prevalence[last], "\n", sep = "")
+  cat("Prevalence: ", x$performance["prevalence"], "\n", sep = "")
   cat("Negative outcome: ", as.character(x$outcomes["negative"]), "\n\n", sep = "")
 
-  cat("Accuracy: ", x$statistics$accuracy[last], "\n", sep = "")
-  cat("Sensitivity: ", x$statistics$sensitivity[last], "\n", sep = "")
-  cat("Specificity: ", x$statistics$specificity[last], "\n", sep = "")
-  cat("PPV: ", x$statistics$ppv[last], "\n", sep = "")
-  cat("NPV: ", x$statistics$npv[last], "\n", sep = "")
-  cat("F1: ", x$statistics$f1[last], "\n", sep = "")
+  cat("Accuracy: ", x$performance["accuracy"], "\n", sep = "")
+  cat("Sensitivity: ", x$performance["sensitivity"], "\n", sep = "")
+  cat("Specificity: ", x$performance["specificity"], "\n", sep = "")
+  cat("PPV: ", x$performance["ppv"], "\n", sep = "")
+  cat("NPV: ", x$performance["npv"], "\n", sep = "")
+  cat("F1: ", x$performance["f1"], "\n", sep = "")
 }
 
 
@@ -134,48 +138,109 @@ print.sboost_assessment <- function(x, ...) {
 
 # --------------------------------------------------------------------------------
 # PREPARE VALIDATION OUTPUT
-process_validation_output <- function(training_assessments, testing_assessments, classifier_list, k_fold, call) {
+process_validation_output <- function(training_statistics, testing_statistics, classifier_list, k_fold, call) {
 
-  training_statistics <- training_assessments[[1]]$statistics
-  testing_statistics <- testing_assessments[[1]]$statistics
-  for (i in seq_along(training_assessments)) {
-    training_statistics <- rbind(training_statistics, training_assessments[[i]]$statistics)
-    testing_statistics <- rbind(testing_statistics, testing_assessments[[i]]$statistics)
+  last_row <- nrow(training_statistics[[1]])
+  training_summary_statistics <- training_statistics[[1]]
+  testing_summary_statistics <- testing_statistics[[1]]
+  for (i in seq_along(training_statistics)) {
+    training_summary_statistics <- rbind(training_summary_statistics, training_statistics[[i]])
+    testing_summary_statistics <- rbind(testing_summary_statistics, testing_statistics[[i]])
   }
 
-  training_statistics <- dplyr::group_by(training_statistics, .data$stump)
-  training_statistics <- dplyr::summarise(training_statistics,
-                                          accuracy_mean = mean(.data$accuracy),
-                                          accuracy_sd = sd(.data$accuracy),
-                                          sensitivity_mean = mean(.data$sensitivity),
-                                          sensitivity_sd = sd(.data$sensitivity),
-                                          specificity_mean = mean(.data$specificity),
-                                          specificity_sd = sd(.data$specificity),
-                                          ppv_mean = mean(.data$ppv),
-                                          ppv_sd = sd(.data$ppv),
-                                          npv_mean = mean(.data$npv),
-                                          npv_sd = sd(.data$npv),
-                                          f1_mean = mean(.data$f1),
-                                          f1_sd = sd(.data$f1))
-  testing_statistics <- dplyr::group_by(testing_statistics, .data$stump)
-  testing_statistics <- dplyr::summarise(testing_statistics,
-                                         accuracy_mean = mean(.data$accuracy),
-                                         accuracy_sd = sd(.data$accuracy),
-                                         sensitivity_mean = mean(.data$sensitivity),
-                                         sensitivity_sd = sd(.data$sensitivity),
-                                         specificity_mean = mean(.data$specificity),
-                                         specificity_sd = sd(.data$specificity),
-                                         ppv_mean = mean(.data$ppv),
-                                         ppv_sd = sd(.data$ppv),
-                                         npv_mean = mean(.data$npv),
-                                         npv_sd = sd(.data$npv),
-                                         f1_mean = mean(.data$f1),
-                                         f1_sd = sd(.data$f1))
+  training_summary_statistics <- dplyr::group_by(training_summary_statistics, .data$next_stump)
+  training_summary_statistics <- dplyr::summarise(training_summary_statistics,
+                                                  true_positive_mean = mean(.data$true_positive),
+                                                  true_positive_sd = sd(.data$true_positive),
+                                                  false_negative_mean = mean(.data$false_negative),
+                                                  false_negative_sd = sd(.data$false_negative),
+                                                  true_negative_mean = mean(.data$true_negative),
+                                                  true_negative_sd = sd(.data$true_negative),
+                                                  false_positive_mean = mean(.data$false_positive),
+                                                  false_positive_sd = sd(.data$false_positive),
+                                                  accuracy_mean = mean(.data$accuracy),
+                                                  accuracy_sd = sd(.data$accuracy),
+                                                  sensitivity_mean = mean(.data$sensitivity),
+                                                  sensitivity_sd = sd(.data$sensitivity),
+                                                  specificity_mean = mean(.data$specificity),
+                                                  specificity_sd = sd(.data$specificity),
+                                                  ppv_mean = mean(.data$ppv),
+                                                  ppv_sd = sd(.data$ppv),
+                                                  npv_mean = mean(.data$npv),
+                                                  npv_sd = sd(.data$npv),
+                                                  f1_mean = mean(.data$f1),
+                                                  f1_sd = sd(.data$f1))
+  testing_summary_statistics <- dplyr::group_by(testing_summary_statistics, .data$next_stump)
+  testing_summary_statistics <- dplyr::summarise(testing_summary_statistics,
+                                                 true_positive_mean = mean(.data$true_positive),
+                                                 true_positive_sd = sd(.data$true_positive),
+                                                 false_negative_mean = mean(.data$false_negative),
+                                                 false_negative_sd = sd(.data$false_negative),
+                                                 true_negative_mean = mean(.data$true_negative),
+                                                 true_negative_sd = sd(.data$true_negative),
+                                                 false_positive_mean = mean(.data$false_positive),
+                                                 false_positive_sd = sd(.data$false_positive),
+                                                 accuracy_mean = mean(.data$accuracy),
+                                                 accuracy_sd = sd(.data$accuracy),
+                                                 sensitivity_mean = mean(.data$sensitivity),
+                                                 sensitivity_sd = sd(.data$sensitivity),
+                                                 specificity_mean = mean(.data$specificity),
+                                                 specificity_sd = sd(.data$specificity),
+                                                 ppv_mean = mean(.data$ppv),
+                                                 ppv_sd = sd(.data$ppv),
+                                                 npv_mean = mean(.data$npv),
+                                                 npv_sd = sd(.data$npv),
+                                                 f1_mean = mean(.data$f1),
+                                                 f1_sd = sd(.data$f1))
 
-  output <- list(training_statistics = training_statistics,
+  performance <- data.frame(
+    row.names = c("true_positive", "false_negative", "true_negative", "false_positive", "accuracy", "sensitivity", "specificity", "ppv", "npv", "f1"),
+    training_mean = c(training_summary_statistics$true_positive_mean[last_row],
+                      training_summary_statistics$false_negative_mean[last_row],
+                      training_summary_statistics$true_negative_mean[last_row],
+                      training_summary_statistics$false_positive_mean[last_row],
+                      training_summary_statistics$accuracy_mean[last_row],
+                      training_summary_statistics$sensitivity_mean[last_row],
+                      training_summary_statistics$specificity_mean[last_row],
+                      training_summary_statistics$ppv_mean[last_row],
+                      training_summary_statistics$npv_mean[last_row],
+                      training_summary_statistics$f1_mean[last_row]),
+    training_sd = c(training_summary_statistics$true_positive_sd[last_row],
+                    training_summary_statistics$false_negative_sd[last_row],
+                    training_summary_statistics$true_negative_sd[last_row],
+                    training_summary_statistics$false_positive_sd[last_row],
+                    training_summary_statistics$accuracy_sd[last_row],
+                    training_summary_statistics$sensitivity_sd[last_row],
+                    training_summary_statistics$specificity_sd[last_row],
+                    training_summary_statistics$ppv_sd[last_row],
+                    training_summary_statistics$npv_sd[last_row],
+                    training_summary_statistics$f1_sd[last_row]),
+    testing_mean = c(testing_summary_statistics$true_positive_mean[last_row],
+                     testing_summary_statistics$false_negative_mean[last_row],
+                     testing_summary_statistics$true_negative_mean[last_row],
+                     testing_summary_statistics$false_positive_mean[last_row],
+                     testing_summary_statistics$accuracy_mean[last_row],
+                     testing_summary_statistics$sensitivity_mean[last_row],
+                     testing_summary_statistics$specificity_mean[last_row],
+                     testing_summary_statistics$ppv_mean[last_row],
+                     testing_summary_statistics$npv_mean[last_row],
+                     testing_summary_statistics$f1_mean[last_row]),
+    testing_sd = c(testing_summary_statistics$true_positive_sd[last_row],
+                   testing_summary_statistics$false_negative_sd[last_row],
+                   testing_summary_statistics$true_negative_sd[last_row],
+                   testing_summary_statistics$false_positive_sd[last_row],
+                   testing_summary_statistics$accuracy_sd[last_row],
+                   testing_summary_statistics$sensitivity_sd[last_row],
+                   testing_summary_statistics$specificity_sd[last_row],
+                   testing_summary_statistics$ppv_sd[last_row],
+                   testing_summary_statistics$npv_sd[last_row],
+                   testing_summary_statistics$f1_sd[last_row]))
+
+  output <- list(performance = performance,
+                 training_summary_statistics = training_summary_statistics,
+                 testing_summary_statistics = testing_summary_statistics,
+                 training_statistics = training_statistics,
                  testing_statistics = testing_statistics,
-                 training_assessments = training_assessments,
-                 testing_assessments = testing_assessments,
                  classifier_list = classifier_list,
                  outcomes = classifier_list[[1]]$outcomes,
                  k_fold = k_fold,
@@ -187,8 +252,6 @@ process_validation_output <- function(training_assessments, testing_assessments,
 
 #' @export
 print.sboost_validation <- function(x, ...) {
-  last <- nrow(x$training_statistics)
-
   cat("SBOOST VALIDATION SUMMARY\n", sep = "")
   cat(" ----------------------- \n", sep = "")
   cat("Number of validation sets: ", x$k_fold, "\n", sep = "")
@@ -201,23 +264,11 @@ print.sboost_validation <- function(x, ...) {
   cat("Negative outcome: ", as.character(x$outcomes["negative"]), "\n\n", sep = "")
 
   cat("Mean accuracy (SD)\n")
-  cat(" Training: ", x$training_statistics$accuracy_mean[last], " (", x$training_statistics$accuracy_sd[last], ")\n", sep = "")
-  cat(" Testing: ", x$testing_statistics$accuracy_mean[last], " (", x$testing_statistics$accuracy_sd[last], ")\n", sep = "")
-  cat("Mean sensitivity (SD)\n")
-  cat(" Training: ", x$training_statistics$sensitivity_mean[last], " (", x$training_statistics$sensitivity_sd[last], ")\n", sep = "")
-  cat(" Testing: ", x$testing_statistics$sensitivity_mean[last], " (", x$testing_statistics$sensitivity_sd[last], ")\n", sep = "")
-  cat("Mean specificity (SD)\n")
-  cat(" Training: ", x$training_statistics$specificity_mean[last], " (", x$training_statistics$specificity_sd[last], ")\n", sep = "")
-  cat(" Testing: ", x$testing_statistics$specificity_mean[last], " (", x$testing_statistics$specificity_sd[last], ")\n", sep = "")
-  cat("Mean PPV (SD)\n")
-  cat(" Training: ", x$training_statistics$ppv_mean[last], " (", x$training_statistics$ppv_sd[last], ")\n", sep = "")
-  cat(" Testing: ", x$testing_statistics$ppv_mean[last], " (", x$testing_statistics$ppv_sd[last], ")\n", sep = "")
-  cat("Mean NPV (SD)\n")
-  cat(" Training: ", x$training_statistics$npv_mean[last], " (", x$training_statistics$npv_sd[last], ")\n", sep = "")
-  cat(" Testing: ", x$testing_statistics$npv_mean[last], " (", x$testing_statistics$npv_sd[last], ")\n", sep = "")
+  cat(" Training: ", x$performance["accuracy", "training_mean"], " (", x$performance["accuracy", "training_sd"], ")\n", sep = "")
+  cat(" Testing: ", x$performance["accuracy", "testing_mean"], " (", x$performance["accuracy", "testing_sd"], ")\n", sep = "")
   cat("Mean F1 (SD)\n")
-  cat(" Training: ", x$training_statistics$f1_mean[last], " (", x$training_statistics$f1_sd[last], ")\n", sep = "")
-  cat(" Testing: ", x$testing_statistics$f1_mean[last], " (", x$testing_statistics$f1_sd[last], ")\n", sep = "")
+  cat(" Training: ", x$performance["f1", "training_mean"], " (", x$performance["f1", "training_sd"], ")\n", sep = "")
+  cat(" Testing: ", x$performance["f1", "testing_mean"], " (", x$performance["f1", "testing_sd"], ")\n", sep = "")
 }
 
 

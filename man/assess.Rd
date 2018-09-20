@@ -16,7 +16,8 @@ assess(object, ...)
 \value{
 An \emph{sboost_assessment} S3 object containing:
 \describe{
-  \item{\emph{statistics}}{\emph{stump} - the index of the last decision stump added to the assessment.}
+  \item{\emph{performance}}{Last row of cumulative statistics (i.e. when all stumps are included in assessment).}
+  \item{\emph{cumulative_statistics}}{\emph{stump} - the index of the last decision stump added to the assessment.}
     \item{}{\emph{true_positive} - number of true positive predictions.}
     \item{}{\emph{false_negative} - number of false negative predictions.}
     \item{}{\emph{true_negative} - number of true negative predictions.}
