@@ -1,9 +1,9 @@
-#` sboost Prediction Function`
+#` sboost Prediction Function
 #'
 #' Make predictions for a feature set based on an sboost classifier.
 #'
+#' @param object \emph{sboost_classifier} S3 object output from sboost.
 #' @param features feature set data.frame.
-#' @param classifier \emph{sboost_classifier} S3 object output from sboost.
 #' @param scores if true, raw scores generated; if false, predictions are generated.
 #' @return Predictions in the form of a vector, or scores in the form of a vector.
 #'   The index of the vector aligns the predictions or scores with the rows of
@@ -13,31 +13,31 @@
 #' @examples
 #' # malware
 #' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
-#' predictions(malware[-1], malware_classifier, scores = TRUE)
-#' predictions(malware[-1], malware_classifier)
+#' predict(malware_classifier, malware[-1], scores = TRUE)
+#' predict(malware_classifier, malware[-1])
 #'
 #' # mushrooms
 #' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
-#' predictions(mushrooms[-1], mushroom_classifier, scores = TRUE)
-#' predictions(mushrooms[-1], mushroom_classifier)
+#' predict(mushroom_classifier, mushrooms[-1], scores = TRUE)
+#' predict(mushroom_classifier, mushrooms[-1])
 #' @export
-predictions <- function(features, classifier, scores = FALSE) {
+predict.sboost_classifier <- function(object, features, scores = FALSE) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-  processed_classifier <- process_classifier_input(classifier, features)
+  processed_classifier <- process_classifier_input(object, features)
   processed_features <- process_feature_input(features)
 
 
   # MAKE PREDICTIONS
   # --------------------------------------------------------------------------------
-  predictions <- predict(processed_features, processed_classifier)
+  predictions <- predict_cpp(processed_features, processed_classifier)
   if (scores) return(predictions)
   predictions <- dplyr::if_else(predictions > 0,
-                                true = as.character(classifier$outcomes$positive),
-                                false = as.character(classifier$outcomes$negative))
+                                object$outcomes["positive"],
+                                object$outcomes["negative"])
 
-  return(predictions)
+  return(unname(predictions))
 }
 
 

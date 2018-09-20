@@ -5,7 +5,7 @@ using namespace Rcpp;
 // Param: feature matrix, classifier
 // Return: prediction scores based on classifier
 // [[Rcpp::export]]
-NumericVector predict(const NumericMatrix& features, const List& classifier) {
+NumericVector predict_cpp(const NumericMatrix& features, const List& classifier) {
   Stump::populate_data(features);
   NumericVector predictions(features.nrow());
   Stump classifier_stump;

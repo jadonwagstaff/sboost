@@ -5,8 +5,8 @@ adaboost <- function(features, ordered_index, outcomes, categorical, iterations)
     .Call(`_sboost_adaboost`, features, ordered_index, outcomes, categorical, iterations)
 }
 
-predict <- function(features, classifier) {
-    .Call(`_sboost_predict`, features, classifier)
+predict_cpp <- function(features, classifier) {
+    .Call(`_sboost_predict_cpp`, features, classifier)
 }
 
 assess <- function(features, outcomes, classifier) {

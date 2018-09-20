@@ -29,9 +29,9 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
     if (categorical == 0) {
       # orientation
       if (orientation == 1) {
-        clfr$orientation[i] <- paste0(otcm_def$negative, "|", otcm_def$positive)
+        clfr$orientation[i] <- paste0(otcm_def["negative"], "|", otcm_def["positive"])
       } else {
-        clfr$orientation[i] <- paste0(otcm_def$positive, "|", otcm_def$negative)
+        clfr$orientation[i] <- paste0(otcm_def["positive"], "|", otcm_def["negative"])
       }
       # split
       clfr$split[i] <- split
@@ -39,7 +39,7 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
     }
     if (categorical == 1) {
       # orientation
-      clfr$orientation[i] <- paste0(otcm_def$positive, "|", otcm_def$negative)
+      clfr$orientation[i] <- paste0(otcm_def["positive"], "|", otcm_def["negative"])
       # categories
       temp_split <- rep(NA, length(split))
       feature_levels <- levels(addNA(factor(features[[feature]])))
@@ -55,7 +55,7 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
   training = data.frame(stumps = nrow(clfr),
                         features = ncol(features),
                         instances = nrow(features),
-                        positive_prevalence = sum(outcomes == otcm_def$positive) / length(outcomes))
+                        positive_prevalence = sum(outcomes == otcm_def["positive"]) / length(outcomes))
 
   # Assessment
   output <- list(classifier = clfr, outcomes = otcm_def, training = training, call = call)

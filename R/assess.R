@@ -1,6 +1,6 @@
 #' sboost Assessment Function
 #'
-#' Assesses how well a classifier fits the data.
+#' Assesses how well an sboost classifier classifies the data.
 #'
 #' @param features feature set data.frame.
 #' @param outcomes outcomes corresponding to the features.
@@ -27,13 +27,13 @@
 #' @examples
 #' # malware
 #' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
-#' assessment(malware[-1], malware[1], malware_classifier)
+#' assess(malware[-1], malware[1], malware_classifier)
 #'
 #' # mushrooms
 #' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
-#' assessment(mushrooms[-1], mushrooms[1], mushroom_classifier)
+#' assess(mushrooms[-1], mushrooms[1], mushroom_classifier)
 #' @export
-assessment <- function(features, outcomes, classifier) {
+assess <- function(features, outcomes, classifier) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------

@@ -1,21 +1,26 @@
 #' @useDynLib sboost, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 NULL
+.onUnload <- function (libpath) {
+  library.dynam.unload("sboost", libpath)
+}
 
 #' sboost Learning Algorithm
 #'
-#' A machine learning algorithm using adaboost on decision stumps.
+#' A machine learning algorithm using AdaBoost on decision stumps.
 #'
 #' Factors and characters are treated as categorical features.
 #' Missing values are treated as their own category for categorical,
 #' and divided randomly on the best split for numeric.
+#'
+#' See \url{https://jadonwagstaff.github.io/sboost.html} for a description
+#' of the algorithm.
 #'
 #' For original paper describing AdaBoost see:
 #'
 #' Freund, Y., Schapire, R.E.: A decision-theoretic generalization of on-line
 #' learning and an application to boosting. Journal of Computer and System Sciences
 #' 55(1), 119–139 (1997)
-#' @keywords stump, boost, classifier, adaboost, decision stump, machine learning
 #' @param features feature set data.frame.
 #' @param outcomes outcomes corresponding to the features.
 #' @param iterations number of boosts.
@@ -45,9 +50,9 @@ NULL
 #'   \item{\emph{call}}{Shows the parameters that were used to build the classifier.}
 #' }
 #' @seealso
-#'   \code{\link{predictions}} - to get predictions from the classifier.
+#'   \code{\link{predict.sboost_classifier}} - to get predictions from the classifier.
 #'
-#'   \code{\link{assessment}} - to evaluate the performance of the classifier.
+#'   \code{\link{assess}} - to evaluate the performance of the classifier.
 #'
 #'   \code{\link{validate}} - to perform cross validation for the classifier training.
 #' @examples
@@ -105,8 +110,4 @@ make_classifier <- function(features, outcomes, categorical, iterations) {
   return(classifier)
 }
 
-
-
-# TODO: Categorical results
-# TODO: Visualization
 

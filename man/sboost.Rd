@@ -42,12 +42,15 @@ An \emph{sboost_classifier} S3 object containing:
 }
 }
 \description{
-A machine learning algorithm using adaboost on decision stumps.
+A machine learning algorithm using AdaBoost on decision stumps.
 }
 \details{
 Factors and characters are treated as categorical features.
 Missing values are treated as their own category for categorical,
 and divided randomly on the best split for numeric.
+
+See \url{https://jadonwagstaff.github.io/sboost.html} for a description
+of the algorithm.
 
 For original paper describing AdaBoost see:
 
@@ -67,16 +70,9 @@ mushroom_classifier
 mushroom_classifier$classifier
 }
 \seealso{
-\code{\link{predictions}} - to get predictions from the classifier.
+\code{\link{predict.sboost_classifier}} - to get predictions from the classifier.
 
-  \code{\link{assessment}} - to evaluate the performance of the classifier.
+  \code{\link{assess}} - to evaluate the performance of the classifier.
 
   \code{\link{validate}} - to perform cross validation for the classifier training.
 }
-\keyword{adaboost,}
-\keyword{boost,}
-\keyword{classifier,}
-\keyword{decision}
-\keyword{learning}
-\keyword{machine}
-\keyword{stump,}

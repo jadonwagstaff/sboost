@@ -20,15 +20,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// predict
-NumericVector predict(const NumericMatrix& features, const List& classifier);
-RcppExport SEXP _sboost_predict(SEXP featuresSEXP, SEXP classifierSEXP) {
+// predict_cpp
+NumericVector predict_cpp(const NumericMatrix& features, const List& classifier);
+RcppExport SEXP _sboost_predict_cpp(SEXP featuresSEXP, SEXP classifierSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type features(featuresSEXP);
     Rcpp::traits::input_parameter< const List& >::type classifier(classifierSEXP);
-    rcpp_result_gen = Rcpp::wrap(predict(features, classifier));
+    rcpp_result_gen = Rcpp::wrap(predict_cpp(features, classifier));
     return rcpp_result_gen;
 END_RCPP
 }

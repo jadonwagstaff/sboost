@@ -29,7 +29,7 @@ process_outcome_input <- function(outcomes, features, otcm_def) {
   if (length(outcomes) != nrow(features)) stop("All training examples must have an outcome.")
   if (length(unique(outcomes)) > 2) stop("Only two distinct outcomes may be assessed.")
   for (i in seq_along(outcomes)) {
-    if (outcomes[[i]] == otcm_def$positive) {
+    if (outcomes[[i]] == otcm_def["positive"]) {
       outcomes[[i]] <- 1
     } else {
       outcomes[[i]] <- -1
@@ -45,7 +45,7 @@ process_outcome_input <- function(outcomes, features, otcm_def) {
 # TESTS AND PREPARES CLASSIFIER INPUT
 process_classifier_input <- function(classifier, features) {
 
-  if (class(classifier) != "sboost_classifier") stop("Classifier must be an output from sboost.")
+  if (!("sboost_classifier" %in% class(classifier))) stop("Classifier must be an output from sboost.")
 
   new_classifier = list()
 
@@ -66,13 +66,13 @@ process_classifier_input <- function(classifier, features) {
 
     # Change direction
     if (categorical == 1) {
-      if (orientation[[1]] == classifier$outcomes$positive) {
+      if (orientation[[1]] == classifier$outcomes["positive"]) {
         orientation <- 1
       } else {
         orientation <- -1
       }
     } else {
-      if (orientation[[1]] == classifier$outcomes$negative) {
+      if (orientation[[1]] == classifier$outcomes["negative"]) {
         orientation <- 1
       } else {
         orientation <- -1
@@ -109,12 +109,12 @@ check_positive_value <- function(outcomes, positive) {
       warning("'positive' variable does not match one of the outcomes. The positive value will be the first outcome in alphabetical order.")
       positive <- NULL
     } else if (positive == otcm_p[[1]]) {
-      return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
+      return(c(positive = otcm_p[[1]], negative = otcm_p[[2]]))
     } else {
-      return(data.frame(positive = otcm_p[[2]], negative = otcm_p[[1]]))
+      return(c(positive = otcm_p[[2]], negative = otcm_p[[1]]))
     }
   } else {
-    return(data.frame(positive = otcm_p[[1]], negative = otcm_p[[2]]))
+    return(c(positive = otcm_p[[1]], negative = otcm_p[[2]]))
   }
 }
 

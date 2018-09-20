@@ -1,4 +1,5 @@
 #include "stump.h"
+#include <R.h>
 #include <Rcpp.h>
 #include <vector>
 using namespace Rcpp;
