@@ -39,7 +39,7 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
     // find prediction, error, and vote
     error = 0;
     weight_sum = 0;
-    classifier.new_predictions(predictions);
+    classifier.new_predictions_integer(predictions);
     for (int i = 0; i < features.nrow(); i++) {
       error = error + weights(i) * outcomes(i) * predictions(i);
     }

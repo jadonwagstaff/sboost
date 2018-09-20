@@ -278,8 +278,34 @@ void Stump::update_predictions(NumericVector& predictions) const {
 
 
 // Param: vector of same length as features
+// Return: votes for this stump
+void Stump::new_predictions(NumericVector& predictions) const{
+  if (is_categorical == 0) {
+    for (int i = 0; i < features.nrow(); i++) {
+      if (features(i, feature) < split[0]) {
+        predictions(i) = -1 * direction * vote;
+      } else {
+        predictions(i) = direction * vote;
+      }
+    }
+  } else {
+    for (int i = 0; i < features.nrow(); i++) {
+      predictions(i) = -1 * vote;
+      for (unsigned int j = 0; j < split.size(); j++) {
+        if (features(i, feature) == split[j]) {
+          predictions(i) = 1 * vote;
+          break;
+        }
+      }
+    }
+  }
+}
+
+
+
+// Param: vector of same length as features
 // Return: unweighted predictions for this stump (-1 or 1 for each prediction)
-void Stump::new_predictions(NumericVector& predictions) const {
+void Stump::new_predictions_integer(NumericVector& predictions) const {
   if (is_categorical == 0) {
     for (int i = 0; i < features.nrow(); i++) {
       if (features(i, feature) < split[0]) {

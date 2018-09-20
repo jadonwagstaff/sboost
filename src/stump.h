@@ -24,6 +24,7 @@ public:
   double get_vote() const;
   void update_predictions(NumericVector& predictions) const;
   void new_predictions(NumericVector& predictions) const;
+  void new_predictions_integer(NumericVector& predictions) const;
   NumericVector get_contingencies(const NumericVector& predictions) const;
   NumericVector make_vector() const;
 

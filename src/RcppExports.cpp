@@ -32,16 +32,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// contingency_cpp
-NumericMatrix contingency_cpp(const NumericMatrix& features, const NumericVector& outcomes, const List& classifier);
-RcppExport SEXP _sboost_contingency_cpp(SEXP featuresSEXP, SEXP outcomesSEXP, SEXP classifierSEXP) {
+// get_contingency_cpp
+NumericMatrix get_contingency_cpp(const NumericMatrix& features, const NumericVector& outcomes, const List& classifier);
+RcppExport SEXP _sboost_get_contingency_cpp(SEXP featuresSEXP, SEXP outcomesSEXP, SEXP classifierSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type features(featuresSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type outcomes(outcomesSEXP);
     Rcpp::traits::input_parameter< const List& >::type classifier(classifierSEXP);
-    rcpp_result_gen = Rcpp::wrap(contingency_cpp(features, outcomes, classifier));
+    rcpp_result_gen = Rcpp::wrap(get_contingency_cpp(features, outcomes, classifier));
+    return rcpp_result_gen;
+END_RCPP
+}
+// score_classifier_features_cpp
+NumericMatrix score_classifier_features_cpp(const List& classifier, const NumericMatrix& features);
+RcppExport SEXP _sboost_score_classifier_features_cpp(SEXP classifierSEXP, SEXP featuresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type classifier(classifierSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type features(featuresSEXP);
+    rcpp_result_gen = Rcpp::wrap(score_classifier_features_cpp(classifier, features));
     return rcpp_result_gen;
 END_RCPP
 }

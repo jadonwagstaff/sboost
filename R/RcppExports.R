@@ -9,7 +9,11 @@ predict_cpp <- function(features, classifier) {
     .Call(`_sboost_predict_cpp`, features, classifier)
 }
 
-contingency_cpp <- function(features, outcomes, classifier) {
-    .Call(`_sboost_contingency_cpp`, features, outcomes, classifier)
+get_contingency_cpp <- function(features, outcomes, classifier) {
+    .Call(`_sboost_get_contingency_cpp`, features, outcomes, classifier)
+}
+
+score_classifier_features_cpp <- function(classifier, features) {
+    .Call(`_sboost_score_classifier_features_cpp`, classifier, features)
 }
 

@@ -49,8 +49,10 @@ assess.sboost_classifier <- function(object, features, outcomes) {
 
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier_assessment <- contingency(processed_features, processed_outcomes, processed_classifier)
-  classifier_assessment <- process_assessment_output(classifier_assessment, object, match.call())
+  classifier_assessment <- list(
+    contingency = get_contingency(processed_classifier, processed_features, processed_outcomes),
+    feature_scores = score_classifier_features(object, processed_classifier, processed_features))
+  #classifier_assessment <- process_assessment_output(classifier_assessment, object, match.call())
 
 
   return(classifier_assessment)
@@ -59,14 +61,42 @@ assess.sboost_classifier <- function(object, features, outcomes) {
 
 # calls cpp-code for contingency table
 # classifier, features, and outcomes must already be processed
-contingency <- function(features, outcomes, classifier) {
+get_contingency <- function(classifier, features, outcomes) {
 
-  classifier_assessment <- contingency_cpp(features, outcomes, classifier)
-  colnames(classifier_assessment) <- c("true_positive", "false_negative", "true_negative", "false_positive")
-  classifier_assessment <- data.frame(classifier_assessment)
+  # CALL C++ CODE TO GET CONTINGENCY TABLE
+  # --------------------------------------------------------------------------------
+  contingency <- get_contingency_cpp(features, outcomes, classifier)
+  colnames(contingency) <- c("true_positive", "false_negative", "true_negative", "false_positive")
+  contingency <- data.frame(contingency)
 
-  return(classifier_assessment)
+  return(contingency)
 }
 
 
+# calls cpp-code for classifier feature scores
+# object must be sboost_classifier, classifier and features must already be processed
+score_classifier_features <- function(object, classifier, features) {
+
+  # CALL C++ CODE TO SCORE STUMPS
+  # --------------------------------------------------------------------------------
+  cpp_scores <- score_classifier_features_cpp(classifier, features)
+
+  # ADD TOGETHER SCORES OF STUMPS ON THE SAME FEATURES
+  # --------------------------------------------------------------------------------
+  scores <- data.frame(matrix(rep(as.numeric(NA), nrow(features) * length(unique(object$classifier$feature))), nrow = nrow(features)))
+  feature_names <- c()
+  for (i in 1:ncol(cpp_scores)) {
+    if (object$classifier$feature[[i]] %in% feature_names) {
+      # If a stump with this feature has already been added, add this stump score to the score for that feature
+      scores[which(feature_names == object$classifier$feature[[i]])] <- scores[which(feature_names == object$classifier$feature[[i]])] + cpp_scores[,i]
+    } else {
+      # If a stump with this feature has not already been added, add stump scores to next empty column
+      feature_names <- c(feature_names, object$classifier$feature[[i]])
+      scores[length(feature_names)] <- cpp_scores[,i]
+    }
+  }
+  names(scores) <- feature_names
+
+  return(scores)
+}
 
