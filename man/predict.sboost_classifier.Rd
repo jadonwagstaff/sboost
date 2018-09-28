@@ -4,7 +4,8 @@
 \alias{predict.sboost_classifier}
 \title{Make predictions for a feature set based on an sboost classifier.}
 \usage{
-\method{predict}{sboost_classifier}(object, features, scores = FALSE)
+\method{predict}{sboost_classifier}(object, features, scores = FALSE,
+  ...)
 }
 \arguments{
 \item{object}{\emph{sboost_classifier} S3 object output from sboost.}
@@ -12,6 +13,8 @@
 \item{features}{feature set data.frame.}
 
 \item{scores}{if true, raw scores generated; if false, predictions are generated.}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
 Predictions in the form of a vector, or scores in the form of a vector.

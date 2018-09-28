@@ -32,14 +32,9 @@
 #'
 #' # mushrooms
 #' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
-#' assess(mushrooms[-1], mushrooms[1], mushroom_classifier)
+#' assess(mushroom_classifier, mushrooms[-1], mushrooms[1])
 #' @export
-assess <- function(object, ...) {
-  UseMethod("assess")
-}
-
-#' @export
-assess.sboost_classifier <- function(object, features, outcomes) {
+assess <- function(object, features, outcomes) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------

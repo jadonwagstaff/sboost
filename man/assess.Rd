@@ -4,7 +4,7 @@
 \alias{assess}
 \title{sboost Assessment Function}
 \usage{
-assess(object, ...)
+assess(object, features, outcomes)
 }
 \arguments{
 \item{object}{\emph{sboost_classifier} S3 object output from sboost.}
@@ -44,7 +44,7 @@ assess(malware_classifier, malware[-1], malware[1])
 
 # mushrooms
 mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
-assess(mushrooms[-1], mushrooms[1], mushroom_classifier)
+assess(mushroom_classifier, mushrooms[-1], mushrooms[1])
 }
 \seealso{
 \code{\link{sboost}} documentation.
