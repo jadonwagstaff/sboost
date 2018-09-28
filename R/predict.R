@@ -5,6 +5,7 @@
 #' @param object \emph{sboost_classifier} S3 object output from sboost.
 #' @param features feature set data.frame.
 #' @param scores if true, raw scores generated; if false, predictions are generated.
+#' @param ... further arguments passed to or from other methods.
 #' @return Predictions in the form of a vector, or scores in the form of a vector.
 #'   The index of the vector aligns the predictions or scores with the rows of
 #'   the features. Scores represent the sum of all votes for the positive outcome
@@ -21,7 +22,7 @@
 #' predict(mushroom_classifier, mushrooms[-1], scores = TRUE)
 #' predict(mushroom_classifier, mushrooms[-1])
 #' @export
-predict.sboost_classifier <- function(object, features, scores = FALSE) {
+predict.sboost_classifier <- function(object, features, scores = FALSE, ...) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------

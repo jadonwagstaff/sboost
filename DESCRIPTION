@@ -19,3 +19,4 @@ Imports: dplyr (>= 0.7.6),
   Rcpp (>= 0.12.17),
   stats (>= 3.5.1)
 RoxygenNote: 6.1.0
+Suggests: testthat
