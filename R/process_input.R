@@ -10,7 +10,7 @@ process_feature_input <- function(features) {
     }
 
     if (is.factor(features[[i]])) {
-      features[[i]] <- as.numeric(addNA(features[[i]]))
+      features[[i]] <- as.numeric(features[[i]])
     } else if (!is.numeric(features[[i]])) {
       stop(paste("Unknown data type in column ", i))
     }
@@ -127,7 +127,7 @@ find_categorical <- function(features) {
 
   for (i in seq_along(features)) {
     if (is.logical(features[[i]]) || is.character(features[[i]]) || is.factor(features[[i]])) {
-      categorical[[i]] <- length(unique(features[[i]]))
+      categorical[[i]] <- length(unique(features[[i]][!is.na(features[[i]])]))
     }
   }
 

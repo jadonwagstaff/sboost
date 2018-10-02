@@ -69,14 +69,14 @@ void Stump::find_stump(const NumericVector& weights) {
 
   // categorical
   std::vector<double> positive, negative;
-  int index = 0;
+  unsigned int index = 0;
 
   // continous
   double positive_behind = 0, negative_behind = 0, positive_ahead = 0, negative_ahead = 0;
   double gain = 0;
 
   // both
-  double feature_gain = 0, feature_direction = 0, max_gain = 0;
+  double na = 0, feature_gain = 0, feature_direction = 0, max_gain = 0;
   std::vector<double> feature_split;
   int feature_categorical = 0;
 
@@ -87,6 +87,7 @@ void Stump::find_stump(const NumericVector& weights) {
     checkUserInterrupt();
     feature_split.clear();
     feature_gain = 0;
+    na = 0;
 
     // IF CATEGORICAL FEATURE
     // --------------------------------------------------------------------------------
@@ -113,7 +114,16 @@ void Stump::find_stump(const NumericVector& weights) {
       for (int i = 1; i < features.nrow(); i++) {
         if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j)) {
           index++;
+          // if the rest are missing, add 1/2 of remaining weight to "na"
+          if (index == positive.size()) {
+            while (i < features.nrow()) {
+              na += 0.5 * weights(ordered_index(i, j));
+              i++;
+            }
+            break;
+          }
         }
+
         if (outcomes(ordered_index(i, j)) == 1) {
           positive[index] += weights(ordered_index(i, j));
         } else {
@@ -130,6 +140,8 @@ void Stump::find_stump(const NumericVector& weights) {
           feature_gain += negative[k];
         }
       }
+      feature_gain += na;
+
 
       // if all categories are mostly positive or all mostly negative, gain is 0
       if (feature_split.size() == 0 || feature_split.size() == categorical(j)) {
@@ -153,7 +165,9 @@ void Stump::find_stump(const NumericVector& weights) {
 
       // start with all instances as ahead
       for (int i = 0; i < features.nrow(); i++) {
-        if (outcomes(ordered_index(i, j)) == 1) {
+        if (ISNAN(features(ordered_index(i, j), j))) {
+          na += 0.5 * weights(ordered_index(i, j));
+        } else if (outcomes(ordered_index(i, j)) == 1) {
           positive_ahead += weights(ordered_index(i, j));
         } else {
           negative_ahead += weights(ordered_index(i, j));
@@ -174,42 +188,15 @@ void Stump::find_stump(const NumericVector& weights) {
 
         // find gain if this and the last sample were different for this feature, compare to feature gain
         if (features(ordered_index(i - 1, j), j) != features(ordered_index(i, j), j) ) {
-
-          // deal with NA: randomly distribute over best split
           if (ISNAN(features(ordered_index(i, j), j))) {
-            if (gain != 0) {
-              for (int newi = i; newi < features.nrow(); newi++) {
-                if (rand() % 2 == 0) {
-                  if (outcomes(ordered_index(newi - 1, j)) == 1) {
-                    if (feature_direction != 1) {
-                      feature_gain += weights(ordered_index(newi - 1, j));
-                    }
-                  } else {
-                    if (feature_direction == 1) {
-                      feature_gain += weights(ordered_index(newi - 1, j));
-                    }
-                  }
-                } else {
-                  if (outcomes(ordered_index(newi - 1, j)) == 1) {
-                    if (feature_direction == 1) {
-                      feature_gain += weights(ordered_index(newi - 1, j));
-                    }
-                  } else {
-                    if (feature_direction != 1) {
-                      feature_gain += weights(ordered_index(newi - 1, j));
-                    }
-                  }
-                }
-              }
-            }
             break;
           }
 
           // determine gain
           if (positive_ahead + negative_behind > negative_ahead + positive_behind) {
-            gain = positive_ahead + negative_behind;
+            gain = positive_ahead + negative_behind + na;
           } else {
-            gain = negative_ahead + positive_behind;
+            gain = negative_ahead + positive_behind + na;
           }
 
           // see if gain is best
@@ -252,7 +239,9 @@ void Stump::update_predictions(NumericVector& predictions) const {
   bool in_split;
   if (is_categorical == 0) {
     for (int i = 0; i < features.nrow(); i++) {
-      if (features(i, feature) < split[0]) {
+      if (ISNAN(features(i, feature))) {
+        predictions(i) += 0;
+      } else if (features(i, feature) < split[0]) {
         predictions(i) += -1 * direction * vote;
       } else {
         predictions(i) += direction * vote;
@@ -260,16 +249,20 @@ void Stump::update_predictions(NumericVector& predictions) const {
     }
   } else {
     for (int i = 0; i < features.nrow(); i++) {
-      in_split = false;
-      for (unsigned int j = 0; j < split.size(); j++) {
-        if (features(i, feature) == split[j]) {
-          predictions(i) += direction * vote;
-          in_split = true;
-          break;
+      if (ISNAN(features(i, feature))) {
+        predictions(i) += 0;
+      } else {
+        in_split = false;
+        for (unsigned int j = 0; j < split.size(); j++) {
+          if (features(i, feature) == split[j]) {
+            predictions(i) += direction * vote;
+            in_split = true;
+            break;
+          }
         }
-      }
-      if (in_split == false) {
-        predictions(i) += -1 * direction * vote;
+        if (in_split == false) {
+          predictions(i) += -1 * direction * vote;
+        }
       }
     }
   }
@@ -282,7 +275,9 @@ void Stump::update_predictions(NumericVector& predictions) const {
 void Stump::new_predictions(NumericVector& predictions) const{
   if (is_categorical == 0) {
     for (int i = 0; i < features.nrow(); i++) {
-      if (features(i, feature) < split[0]) {
+      if (ISNAN(features(i, feature))) {
+        predictions(i) = 0;
+      } else if (features(i, feature) < split[0]) {
         predictions(i) = -1 * direction * vote;
       } else {
         predictions(i) = direction * vote;
@@ -290,11 +285,15 @@ void Stump::new_predictions(NumericVector& predictions) const{
     }
   } else {
     for (int i = 0; i < features.nrow(); i++) {
-      predictions(i) = -1 * vote;
-      for (unsigned int j = 0; j < split.size(); j++) {
-        if (features(i, feature) == split[j]) {
-          predictions(i) = 1 * vote;
-          break;
+      if (ISNAN(features(i, feature))) {
+        predictions(i) = 0;
+      } else {
+        predictions(i) = -1 * vote;
+        for (unsigned int j = 0; j < split.size(); j++) {
+          if (features(i, feature) == split[j]) {
+            predictions(i) = 1 * vote;
+            break;
+          }
         }
       }
     }
@@ -308,7 +307,9 @@ void Stump::new_predictions(NumericVector& predictions) const{
 void Stump::new_predictions_integer(NumericVector& predictions) const {
   if (is_categorical == 0) {
     for (int i = 0; i < features.nrow(); i++) {
-      if (features(i, feature) < split[0]) {
+      if (ISNAN(features(i, feature))) {
+        predictions(i) = 0;
+      } else if (features(i, feature) < split[0]) {
         predictions(i) = -1 * direction;
       } else {
         predictions(i) = direction;
@@ -316,11 +317,15 @@ void Stump::new_predictions_integer(NumericVector& predictions) const {
     }
   } else {
     for (int i = 0; i < features.nrow(); i++) {
-      predictions(i) = -1;
-      for (unsigned int j = 0; j < split.size(); j++) {
-        if (features(i, feature) == split[j]) {
-          predictions(i) = 1;
-          break;
+      if (ISNAN(features(i, feature))) {
+        predictions(i) = 0;
+      } else {
+        predictions(i) = -1;
+        for (unsigned int j = 0; j < split.size(); j++) {
+          if (features(i, feature) == split[j]) {
+            predictions(i) = 1;
+            break;
+          }
         }
       }
     }

@@ -46,8 +46,7 @@ A machine learning algorithm using AdaBoost on decision stumps.
 }
 \details{
 Factors and characters are treated as categorical features.
-Missing values are treated as their own category for categorical,
-and divided randomly on the best split for numeric.
+Missing values are supported.
 
 See \url{https://jadonwagstaff.github.io/sboost.html} for a description
 of the algorithm.

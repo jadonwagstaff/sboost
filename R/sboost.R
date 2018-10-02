@@ -10,8 +10,7 @@ NULL
 #' A machine learning algorithm using AdaBoost on decision stumps.
 #'
 #' Factors and characters are treated as categorical features.
-#' Missing values are treated as their own category for categorical,
-#' and divided randomly on the best split for numeric.
+#' Missing values are supported.
 #'
 #' See \url{https://jadonwagstaff.github.io/sboost.html} for a description
 #' of the algorithm.
@@ -70,7 +69,7 @@ sboost <- function(features, outcomes, iterations = 1, positive = NULL) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-  if (is.data.frame(outcomes)) outcomes <- outcomes[[1]]
+  if (is.data.frame(outcomes)) outcomes <- as.vector(outcomes[[1]])
   processed_features <- process_feature_input(features)
   categorical <- find_categorical(features)
   otcm_def <- check_positive_value(outcomes, positive)

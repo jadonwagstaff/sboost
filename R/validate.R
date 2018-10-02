@@ -39,7 +39,7 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
   # --------------------------------------------------------------------------------
 
   # test and prepare features and outcomes
-  if (is.data.frame(outcomes)) outcomes <- outcomes[[1]]
+  if (is.data.frame(outcomes)) outcomes <- as.vector(outcomes[[1]])
   processed_features <- process_feature_input(features)
   categorical <- find_categorical(features)
   otcm_def <- check_positive_value(outcomes, positive)

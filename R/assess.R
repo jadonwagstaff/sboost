@@ -38,7 +38,7 @@ assess <- function(object, features, outcomes) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
-  if (is.data.frame(outcomes)) outcomes <- outcomes[[1]]
+  if (is.data.frame(outcomes)) outcomes <- as.vector(outcomes[[1]])
   processed_features <- process_feature_input(features)
   processed_outcomes <- process_outcome_input(outcomes, features, object$outcomes)
   processed_classifier <- process_classifier_input(object, features)
