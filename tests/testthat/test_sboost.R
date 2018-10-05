@@ -1,4 +1,4 @@
-context("Classifier Build")
+context("sboost Classifier")
 
 num <- sboost(malware[-1], malware[1], 5, 1)
 cat <- sboost(mushrooms[-1], mushrooms[1], 5, "p")
@@ -10,17 +10,10 @@ test_that("Arguments are properly used.", {
   expect_equal(nrow(num$classifier), 5)
   expect_equal(nrow(cat$classifier), 5)
 
-  expect_equal(num$training$stumps, 5)
-  expect_equal(cat$training$stumps, 5)
-
-  expect_equal(num$training$features, 360)
-  expect_equal(cat$training$features, 22)
-
-  expect_equal(num$training$instances, 7597)
-  expect_equal(cat$training$instances, 8124)
-
-  expect_equal(round(num$training$positive_prevalence, digits = 5), 0.33882)
-  expect_equal(round(cat$training$positive_prevalence, digits = 5), 0.48203)
+  expect_equal(round(num$training, digits = 5),
+               data.frame(stumps = 5, features = 360, instances = 7597, positive_prevalence = 0.33882))
+  expect_equal(round(cat$training, digits = 5),
+               data.frame(stumps = 5, features = 22, instances = 8124, positive_prevalence = 0.48203))
 })
 
 test_that("Algorithm is classifying properly.", {
