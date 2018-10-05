@@ -5,8 +5,16 @@ using namespace Rcpp;
 
 
 // adaboost is the central function for adaptive boosting of decision stumps
-// Param: feature matrix, corresponding outcomes, weights for each row of feature matrix
-// Return: classifier as stumps with a vote
+// Param:
+//   features - a matrix where each column is a feature and each row is an instance
+//   ordered_index - a matrix the same size as features where each column is an
+//     index of the corresponding feature column that, when used to index the feature,
+//     puts the feature in numerical order.
+//   outcomes - a vector where with two outcomes, 1 and -1
+//   categorical - a vector with the same length as the number of colums in features,
+//     1 is a categorical feature, 0 is a numeric feature
+//   iterations - the number of stumps to create
+// Return: list of stumps as vectors (see stump::make_vector() for structure)
 // [[Rcpp::export]]
 List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index, const NumericVector& outcomes, const NumericVector& categorical, int iterations) {
 

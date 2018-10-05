@@ -4,6 +4,8 @@ process_feature_input <- function(features) {
 
   if (!is.data.frame(features)) stop("Features must be data frame.")
 
+  # Features which are logical, character, or factors must be changed to numeric
+  #   to function with the C++ code.
   for (i in seq_along(features)) {
     if (is.logical(features[[i]]) || is.character(features[[i]])) {
       features[[i]] <- factor(features[[i]])
@@ -28,6 +30,8 @@ process_outcome_input <- function(outcomes, features, otcm_def) {
   if (!is.vector(outcomes)) stop("Outcomes must be data frame or vector.")
   if (length(outcomes) != nrow(features)) stop("All training examples must have an outcome.")
   if (length(unique(outcomes)) > 2) stop("Only two distinct outcomes may be assessed.")
+
+  # Outcomes must be either 1 or -1 to function with the c++ code.
   for (i in seq_along(outcomes)) {
     if (outcomes[[i]] == otcm_def["positive"]) {
       outcomes[[i]] <- 1
@@ -49,6 +53,16 @@ process_classifier_input <- function(classifier, features) {
 
   new_classifier = list()
 
+  # Classifier must be a list of numeric vectors (one for each stump)to function
+  #   with C++ code. The numeric values must comport with the numeric falues
+  #   generated in process_feature_input.
+  # Vectors are organized as follows:
+  #   1 - feature - feature index (C++ starts at zero so one is subtracted)
+  #   2 - orientation - 1 is positive on the right, -1 is positive on the left
+  #   3 - vote - unchanged
+  #   4 - categorical - 1 if feature is categorical, 0 if numeric
+  #   5 - split position IF numeric ELSE the first category in left_categories
+  #   ... - the rest of the categories in left_categories
   for (i in 1:nrow(classifier$classifier)) {
     feature <- classifier$classifier$feature[i]
     vote <- classifier$classifier$vote[i]
@@ -125,6 +139,9 @@ check_positive_value <- function(outcomes, positive) {
 find_categorical <- function(features) {
   categorical <- rep(0, ncol(features))
 
+  # Produces a vector the same length as the number of features for C++ code
+  #   1 if categorical
+  #   0 if numeric
   for (i in seq_along(features)) {
     if (is.logical(features[[i]]) || is.character(features[[i]]) || is.factor(features[[i]])) {
       categorical[[i]] <- length(unique(features[[i]][!is.na(features[[i]])]))
