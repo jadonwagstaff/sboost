@@ -23,8 +23,11 @@ test_that("Algorithm is classifying properly.", {
   expect_equal(round(num$classifier$vote, digits = 5), c(0.52443, 0.37820, 0.38180, 0.25555, 0.23200))
   expect_equal(round(cat$classifier$vote, digits = 5), c(2.10010, 1.31712, 0.60860, 0.60788, 0.63077))
 
-  expect_equal(num$classifier$orientation, c("1|0", "0|1", "1|0", "0|1", "1|0"))
-  expect_equal(cat$classifier$orientation, c("p|e", "p|e", "p|e", "p|e", "p|e"))
+  expect_equal(num$classifier$left, c(1, 0, 1, 0, 1))
+  expect_equal(cat$classifier$left, c("p", "p", "p", "p", "p"))
+
+  expect_equal(num$classifier$right, c(0, 1, 0, 1, 0))
+  expect_equal(cat$classifier$right, c("e", "e", "e", "e", "e"))
 
   expect_equal(num$classifier$split, c(0.5, 2.5, 79.5, 7.5, 0.5))
   expect_true(all(is.na(cat$classifier$split)))

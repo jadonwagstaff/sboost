@@ -6,8 +6,8 @@
 process_classifier_output <- function(classifier, features, outcomes, otcm_def, call) {
 
   # create classifier data frame
-  clfr <- data.frame(matrix(ncol = 6, nrow = length(classifier)))
-  colnames(clfr) <- c("stump", "feature", "vote", "orientation", "split", "left_categories")
+  clfr <- data.frame(matrix(ncol = 7, nrow = length(classifier)))
+  colnames(clfr) <- c("stump", "feature", "vote", "left", "right", "split", "left_categories")
 
   # set output values
   for (i in seq_along(classifier)) {
@@ -29,9 +29,11 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
     if (categorical == 0) {
       # orientation
       if (orientation == 1) {
-        clfr$orientation[i] <- paste0(otcm_def["negative"], "|", otcm_def["positive"])
+        clfr$left[i] <- otcm_def["negative"]
+        clfr$right[i] <- otcm_def["positive"]
       } else {
-        clfr$orientation[i] <- paste0(otcm_def["positive"], "|", otcm_def["negative"])
+        clfr$left[i] <- otcm_def["positive"]
+        clfr$right[i] <- otcm_def["negative"]
       }
       # split
       clfr$split[i] <- split
@@ -39,7 +41,8 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
     }
     if (categorical == 1) {
       # orientation
-      clfr$orientation[i] <- paste0(otcm_def["positive"], "|", otcm_def["negative"])
+      clfr$left[i] <- otcm_def["positive"]
+      clfr$right[i] <- otcm_def["negative"]
       # categories
       temp_split <- rep(NA, length(split))
       feature_levels <- levels(addNA(factor(features[[feature]])))

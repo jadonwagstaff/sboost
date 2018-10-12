@@ -66,7 +66,7 @@ process_classifier_input <- function(classifier, features) {
   for (i in 1:nrow(classifier$classifier)) {
     feature <- classifier$classifier$feature[i]
     vote <- classifier$classifier$vote[i]
-    orientation <- strsplit(classifier$classifier$orientation[i], "\\|")[[1]]
+    orientation <- classifier$classifier$left[i]
     if (is.na(classifier$classifier$split[i])) {
       categorical <- 1
       split <- strsplit(classifier$classifier$left_categories[i], "; ")[[1]]
