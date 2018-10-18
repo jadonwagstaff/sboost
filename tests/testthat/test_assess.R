@@ -3,8 +3,8 @@ context("Assessment")
 num <- sboost(malware[-1], malware[1], 5, 1)
 cat <- sboost(mushrooms[-1], mushrooms[1], 5, "p")
 
-numass <- assess(num, malware[-1], malware[1])
-catass <- assess(cat, mushrooms[-1], mushrooms[1])
+numass <- assess(num, malware[-1], malware[1], include_scores = TRUE)
+catass <- assess(cat, mushrooms[-1], mushrooms[1], include_scores = TRUE)
 
 test_that("Assessments are correct.", {
   expect_equal(round(numass$performance, digits = 5),

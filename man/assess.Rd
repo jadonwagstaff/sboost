@@ -4,7 +4,7 @@
 \alias{assess}
 \title{sboost Assessment Function}
 \usage{
-assess(object, features, outcomes)
+assess(object, features, outcomes, include_scores = FALSE)
 }
 \arguments{
 \item{object}{\emph{sboost_classifier} S3 object output from sboost.}
@@ -12,27 +12,8 @@ assess(object, features, outcomes)
 \item{features}{feature set data.frame.}
 
 \item{outcomes}{outcomes corresponding to the features.}
-}
-\value{
-An \emph{sboost_assessment} S3 object containing:
-\describe{
-  \item{\emph{performance}}{Last row of cumulative statistics (i.e. when all stumps are included in assessment).}
-  \item{\emph{cumulative_statistics}}{\emph{stump} - the index of the last decision stump added to the assessment.}
-    \item{}{\emph{true_positive} - number of true positive predictions.}
-    \item{}{\emph{false_negative} - number of false negative predictions.}
-    \item{}{\emph{true_negative} - number of true negative predictions.}
-    \item{}{\emph{false_positive} - number of false positive predictions.}
-    \item{}{\emph{prevalence} - true positive / total.}
-    \item{}{\emph{accuracy} - correct predictions / total.}
-    \item{}{\emph{sensitivity} - correct predicted positive / true positive.}
-    \item{}{\emph{specificity} - correct predicted negative / true negative.}
-    \item{}{\emph{ppv} - correct predicted positive / predicted positive.}
-    \item{}{\emph{npv} - correct predicted negative / predicted negative.}
-    \item{}{\emph{f1} - harmonic mean of sensitivity and ppv.}
-  \item{\emph{classifier}}{sboost \emph{sboost_classifier} object used for assessment.}
-  \item{\emph{outcomes}}{Shows which outcome was considered as positive and which negative.}
-  \item{\emph{call}}{Shows the parameters that were used for assessment.}
-}
+
+\item{include_scores}{if true feature_scores are included in output.}
 }
 \description{
 Assesses how well an sboost classifier classifies the data.

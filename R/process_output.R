@@ -103,12 +103,20 @@ process_assessment_output <- function(cumulative_statistics, feature_scores, obj
     "f1" = cumulative_statistics$f1[nrow(cumulative_statistics)])
 
   # Output
-  output <- list(performance = performance,
-                 cumulalative_statistics = cumulative_statistics,
-                 feature_scores = feature_scores,
-                 sboost_classifier = object,
-                 outcomes = object$outcomes,
-                 call = call)
+  if (is.null(feature_scores)) {
+    output <- list(performance = performance,
+                   cumulalative_statistics = cumulative_statistics,
+                   sboost_classifier = object,
+                   outcomes = object$outcomes,
+                   call = call)
+  } else {
+    output <- list(performance = performance,
+                   cumulalative_statistics = cumulative_statistics,
+                   feature_scores = feature_scores,
+                   sboost_classifier = object,
+                   outcomes = object$outcomes,
+                   call = call)
+  }
   class(output) <- "sboost_assessment"
 
   return(output)

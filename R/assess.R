@@ -5,6 +5,7 @@
 #' @param object \emph{sboost_classifier} S3 object output from sboost.
 #' @param features feature set data.frame.
 #' @param outcomes outcomes corresponding to the features.
+#' @param include_scores if true feature_scores are included in output.
 #' @return An \emph{sboost_assessment} S3 object containing:
 #' \describe{
 #'   \item{\emph{performance}}{Last row of cumulative statistics (i.e. when all stumps are included in assessment).}
@@ -20,6 +21,7 @@
 #'     \item{}{\emph{ppv} - correct predicted positive / predicted positive.}
 #'     \item{}{\emph{npv} - correct predicted negative / predicted negative.}
 #'     \item{}{\emph{f1} - harmonic mean of sensitivity and ppv.}
+#'   \item{\emph feature_scores}}{If include_scores is TRUE, for each feature in the classifier lists scores for each row in the feature set.}
 #'   \item{\emph{classifier}}{sboost \emph{sboost_classifier} object used for assessment.}
 #'   \item{\emph{outcomes}}{Shows which outcome was considered as positive and which negative.}
 #'   \item{\emph{call}}{Shows the parameters that were used for assessment.}
@@ -34,7 +36,7 @@
 #' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
 #' assess(mushroom_classifier, mushrooms[-1], mushrooms[1])
 #' @export
-assess <- function(object, features, outcomes) {
+assess <- function(object, features, outcomes, include_scores = FALSE) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -46,7 +48,11 @@ assess <- function(object, features, outcomes) {
   # ASSESS CLASSIFIER
   # --------------------------------------------------------------------------------
   cumulative_statistics = get_cumulative_statistics(object, processed_classifier, processed_features, processed_outcomes)
-  feature_scores = score_classifier_features(object, processed_classifier, processed_features)
+  if (include_scores) {
+    feature_scores <- score_classifier_features(object, processed_classifier, processed_features)
+  } else {
+    feature_scores <- NULL
+  }
   classifier_assessment <- process_assessment_output(cumulative_statistics, feature_scores, object, match.call())
 
 
@@ -107,4 +113,5 @@ score_classifier_features <- function(object, classifier, features) {
 
   return(scores)
 }
+
 
