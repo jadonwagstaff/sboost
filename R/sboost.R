@@ -19,7 +19,7 @@ NULL
 #'
 #' Freund, Y., Schapire, R.E.: A decision-theoretic generalization of on-line
 #' learning and an application to boosting. Journal of Computer and System Sciences
-#' 55(1), 119–139 (1997)
+#' 55(1), 119-139 (1997)
 #' @param features feature set data.frame.
 #' @param outcomes outcomes corresponding to the features.
 #' @param iterations number of boosts.

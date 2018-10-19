@@ -55,7 +55,7 @@ For original paper describing AdaBoost see:
 
 Freund, Y., Schapire, R.E.: A decision-theoretic generalization of on-line
 learning and an application to boosting. Journal of Computer and System Sciences
-55(1), 119–139 (1997)
+55(1), 119-139 (1997)
 }
 \examples{
 # malware
