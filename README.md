@@ -6,10 +6,10 @@ on decision stumps with a fast C++ implementation. Feature vectors may be a
 combination of continuous (numeric) and categorical (string, factor) elements. 
 Methods for classifier assessment, predictions, and cross-validation also included. 
 The advantage of this type of classifier is that it is non-linear but it is more 
-interperetable than random forests, neural-nets, and other non-linear classifiers. 
+interpretable than random forests, neural-nets, and other non-linear classifiers. 
 
 See [jadonwagstaff.github.io/sboost](https://jadonwagstaff.github.io/sboost.html) for a description
-of how the classifier functions, and what makes this classifier more interperetable than others.
+of how the classifier functions, and what makes this classifier more interpretable than others.
 
 For original paper describing AdaBoost see:
 

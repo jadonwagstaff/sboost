@@ -14,7 +14,7 @@ sboost(features, outcomes, iterations = 1, positive = NULL)
 \item{iterations}{number of boosts.}
 
 \item{positive}{the positive outcome to test for; if NULL, the first outcome in
-alphebetacal (or numerical) order will be chosen.}
+alphabetical (or numerical) order will be chosen.}
 }
 \value{
 An \emph{sboost_classifier} S3 object containing:

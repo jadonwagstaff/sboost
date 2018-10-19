@@ -17,7 +17,7 @@ validate(features, outcomes, iterations = 1, k_fold = 6,
 \item{k_fold}{number of cross-validation subsets.}
 
 \item{positive}{is the positive outcome to test for; if NULL, the first in
-alphebetacal order will be chosen}
+alphabetical order will be chosen}
 }
 \value{
 An \emph{sboost_validation} S3 object containing:

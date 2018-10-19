@@ -7,7 +7,7 @@
 #' @param iterations number of boosts.
 #' @param k_fold number of cross-validation subsets.
 #' @param positive is the positive outcome to test for; if NULL, the first in
-#'                 alphebetacal order will be chosen
+#'                 alphabetical order will be chosen
 #' @return An \emph{sboost_validation} S3 object containing:
 #' \describe{
 #'   \item{\emph{performance}}{Final performance statistics for all stumps.}
