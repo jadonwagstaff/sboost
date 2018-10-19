@@ -12,11 +12,11 @@ URL: https://github.com/jadonwagstaff/sboost
 BugReports: https://github.com/jadonwagstaff/sboost/issues
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.4.0)
 LinkingTo: Rcpp (>= 0.12.17)
 Imports: dplyr (>= 0.7.6), 
   rlang (>= 0.2.1),
   Rcpp (>= 0.12.17),
-  stats (>= 3.5.1)
+  stats (>= 3.4)
 RoxygenNote: 6.1.0
 Suggests: testthat
