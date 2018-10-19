@@ -43,10 +43,10 @@ A k-fold cross validation algorithm for sboost.
 }
 \examples{
 # malware
-validate(malware[-1], malware[1], iterations = 10, k_fold = 4, positive = 1)
+validate(malware[-1], malware[1], iterations = 5, k_fold = 3, positive = 1)
 
 # mushrooms
-validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4, positive = "p")
+validate(mushrooms[-1], mushrooms[1], iterations = 5, k_fold = 3, positive = "p")
 }
 \seealso{
 \code{\link{sboost}} documentation.

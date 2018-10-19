@@ -28,10 +28,10 @@
 #' @seealso \code{\link{sboost}} documentation.
 #' @examples
 #' # malware
-#' validate(malware[-1], malware[1], iterations = 10, k_fold = 4, positive = 1)
+#' validate(malware[-1], malware[1], iterations = 5, k_fold = 3, positive = 1)
 #'
 #' # mushrooms
-#' validate(mushrooms[-1], mushrooms[1], iterations = 10, k_fold = 4, positive = "p")
+#' validate(mushrooms[-1], mushrooms[1], iterations = 5, k_fold = 3, positive = "p")
 #' @export
 validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL) {
 

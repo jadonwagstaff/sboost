@@ -56,12 +56,12 @@ NULL
 #'   \code{\link{validate}} - to perform cross validation for the classifier training.
 #' @examples
 #' # malware
-#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
+#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 5, positive = 1)
 #' malware_classifier
 #' malware_classifier$classifier
 #'
 #' # mushrooms
-#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
+#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 5, positive = "p")
 #' mushroom_classifier
 #' mushroom_classifier$classifier
 #' @export

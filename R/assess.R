@@ -21,7 +21,7 @@
 #'     \item{}{\emph{ppv} - correct predicted positive / predicted positive.}
 #'     \item{}{\emph{npv} - correct predicted negative / predicted negative.}
 #'     \item{}{\emph{f1} - harmonic mean of sensitivity and ppv.}
-#'   \item{\emph feature_scores}}{If include_scores is TRUE, for each feature in the classifier lists scores for each row in the feature set.}
+#'   \item{\emph{feature_scores}}{If include_scores is TRUE, for each feature in the classifier lists scores for each row in the feature set.}
 #'   \item{\emph{classifier}}{sboost \emph{sboost_classifier} object used for assessment.}
 #'   \item{\emph{outcomes}}{Shows which outcome was considered as positive and which negative.}
 #'   \item{\emph{call}}{Shows the parameters that were used for assessment.}
@@ -29,11 +29,11 @@
 #' @seealso \code{\link{sboost}} documentation.
 #' @examples
 #' # malware
-#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 10, positive = 1)
+#' malware_classifier <- sboost(malware[-1], malware[1], iterations = 5, positive = 1)
 #' assess(malware_classifier, malware[-1], malware[1])
 #'
 #' # mushrooms
-#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 10, positive = "p")
+#' mushroom_classifier <- sboost(mushrooms[-1], mushrooms[1], iterations = 5, positive = "p")
 #' assess(mushroom_classifier, mushrooms[-1], mushrooms[1])
 #' @export
 assess <- function(object, features, outcomes, include_scores = FALSE) {
