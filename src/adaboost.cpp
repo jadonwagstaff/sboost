@@ -65,7 +65,7 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
     }
 
     // create output
-    output[k] = classifier.make_vector();
+    output[k] = classifier.make_list();
   }
 
   return output;

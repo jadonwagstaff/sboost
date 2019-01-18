@@ -41,6 +41,10 @@ Stump::Stump(List stump_in) {
   for (int i = 0; i < temp.size(); i++) {
     positive_categories.push_back(temp[i]);
   }
+  temp = stump_in[6];
+  for (int i = 0; i < temp.size(); i++) {
+    negative_categories.push_back(temp[i]);
+  }
 }
 
 
@@ -382,7 +386,7 @@ double Stump::get_vote() const{
 
 // Param: none
 // Return: vector: feature, direction, vote, categorical, split...
-List Stump::make_vector() const{
+List Stump::make_list() const{
 
   //NumericVector output = NumericVector::create(double(feature), double(direction), double(vote), double(is_categorical));
   List output(7);

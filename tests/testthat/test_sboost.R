@@ -34,6 +34,9 @@ test_that("Algorithm is classifying properly.", {
 
   expect_true(all(is.na(num$classifier$left_categories)))
   expect_equal(cat$classifier$left_categories, c("c; f; m; p; s; y", "h; r; w", "s; v", "c; f; m; p; s; y", "c; v; y"))
+
+  expect_true(all(is.na(num$classifier$right_categories)))
+  expect_equal(cat$classifier$right_categories, c("a; l; n", "b; k; n; o; u; y", "a; c; n; y", "a; l; n", "a; n; s"))
 })
 
 

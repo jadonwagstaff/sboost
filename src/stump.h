@@ -26,7 +26,7 @@ public:
   void new_predictions(NumericVector& predictions) const;
   void new_predictions_integer(NumericVector& predictions) const;
   NumericVector get_contingencies(const NumericVector& predictions) const;
-  List make_vector() const;
+  List make_list() const;
 
 private:
   static NumericMatrix features;

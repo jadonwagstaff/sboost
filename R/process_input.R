@@ -69,12 +69,14 @@ process_classifier_input <- function(classifier, features) {
     orientation <- classifier$classifier$left[i]
     if (is.na(classifier$classifier$split[i])) {
       categorical <- 1
-      left_categories <- strsplit(classifier$classifier$left_categories[i], "; ")[[1]]
       split <- 0
+      left_categories <- strsplit(classifier$classifier$left_categories[i], "; ")[[1]]
+      right_categories <- strsplit(classifier$classifier$right_categories[i], "; ")[[1]]
     } else {
       categorical <- 0
       split <- classifier$classifier$split[i]
       left_categories <- NULL
+      right_categories <- NULL
     }
 
     # Change feature
@@ -95,12 +97,20 @@ process_classifier_input <- function(classifier, features) {
       }
     }
 
+    feature_levels <- levels(addNA(factor(features[[feature + 1]])))
     # Change left_categories
     if (categorical == 1) {
-      feature_levels <- levels(addNA(factor(features[[feature + 1]])))
       for (j in seq_along(left_categories)) {
         if (!is.na(match(left_categories[[j]], feature_levels, nomatch = NA, incomparables = NA))) {
           left_categories[[j]] <- match(left_categories[[j]], feature_levels)
+        }
+      }
+    }
+    # Change right_categories
+    if (categorical == 1) {
+      for (j in seq_along(right_categories)) {
+        if (!is.na(match(right_categories[[j]], feature_levels, nomatch = NA, incomparables = NA))) {
+          right_categories[[j]] <- match(right_categories[[j]], feature_levels)
         }
       }
     }
@@ -111,7 +121,8 @@ process_classifier_input <- function(classifier, features) {
       as.numeric(vote),
       as.numeric(categorical),
       as.numeric(split),
-      as.numeric(left_categories)
+      as.numeric(left_categories),
+      as.numeric(right_categories)
     )
 
   }
