@@ -15,7 +15,8 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
     orientation <- classifier[[i]][[2]]
     vote <- classifier[[i]][[3]]
     categorical <- classifier[[i]][[4]]
-    split <- classifier[[i]][c(-1, -2, -3, -4)]
+    split <- classifier[[i]][[5]]
+    left_categories <- classifier[[i]][[6]]
 
     # stump
     clfr$stump[i] <- i
@@ -44,12 +45,12 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
       clfr$left[i] <- otcm_def["positive"]
       clfr$right[i] <- otcm_def["negative"]
       # categories
-      temp_split <- rep(NA, length(split))
+      temp_categories <- rep(NA, length(left_categories))
       feature_levels <- levels(addNA(factor(features[[feature]])))
-      for (j in 1:length(split)) {
-        temp_split[[j]] <- feature_levels[[split[[j]]]]
+      for (j in 1:length(left_categories)) {
+        temp_categories[[j]] <- feature_levels[[left_categories[[j]]]]
       }
-      clfr$left_categories[i] <- paste(temp_split, collapse = "; ")
+      clfr$left_categories[i] <- paste(temp_categories, collapse = "; ")
       clfr$split[i] <- NA
     }
   }

@@ -25,17 +25,21 @@ Stump::Stump() {
 
 
 
-Stump::Stump(NumericVector stump_in) {
-  feature = stump_in(0);
-  direction = stump_in(1);
-  vote = stump_in(2);
-  is_categorical = stump_in(3);
-  if (is_categorical == 0) {
-    split = stump_in(4);
-  } else {
-    for (int i = 4; i < stump_in.size(); i++) {
-      positive_categories.push_back(stump_in(i));
-    }
+Stump::Stump(List stump_in) {
+  NumericVector temp;
+  temp = stump_in[0];
+  feature = temp[0];
+  temp = stump_in[1];
+  direction = temp[0];
+  temp = stump_in[2];
+  vote = temp[0];
+  temp = stump_in[3];
+  is_categorical = temp[0];
+  temp = stump_in[4];
+  split = temp[0];
+  temp = stump_in[5];
+  for (int i = 0; i < temp.size(); i++) {
+    positive_categories.push_back(temp[i]);
   }
 }
 
@@ -378,16 +382,28 @@ double Stump::get_vote() const{
 
 // Param: none
 // Return: vector: feature, direction, vote, categorical, split...
-NumericVector Stump::make_vector() const{
+List Stump::make_vector() const{
 
-  NumericVector output = NumericVector::create(double(feature), double(direction), double(vote), double(is_categorical));
-  if (is_categorical == 0) {
-    output.push_back(split);
-  } else {
-    for (unsigned int i = 0; i < positive_categories.size(); i++) {
-      output.push_back(positive_categories[i]);
-    }
+  //NumericVector output = NumericVector::create(double(feature), double(direction), double(vote), double(is_categorical));
+  List output(7);
+  NumericVector temp;
+
+  output[0] = feature;
+  output[1] = direction;
+  output[2] = vote;
+  output[3] = is_categorical;
+  output[4] = split;
+  temp = NumericVector(positive_categories.size());
+  for (unsigned int i = 0; i < positive_categories.size(); i++) {
+    temp[i] = positive_categories[i];
   }
+  output[5] = temp;
+  temp = NumericVector(negative_categories.size());
+  for (unsigned int i = 0; i < negative_categories.size(); i++) {
+    temp[i] = negative_categories[i];
+  }
+  output[6] = temp;
+
   return(output);
 }
 

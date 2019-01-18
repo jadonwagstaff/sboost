@@ -12,7 +12,7 @@ NumericVector predict_cpp(const NumericMatrix& features, const List& classifier)
   NumericVector temp;
 
   for (int i = 0; i < classifier.size(); i++) {
-    NumericVector temp = classifier[i];
+    List temp = classifier[i];
     classifier_stump = Stump(temp);
     if (!std::isnan(classifier_stump.get_vote())) {
       classifier_stump.update_predictions(predictions);
@@ -36,7 +36,7 @@ NumericMatrix get_contingency_cpp(const NumericMatrix& features, const NumericVe
   NumericVector temp;
 
   for (int i = 0; i < classifier.size(); i++) {
-    NumericVector temp = classifier[i];
+    List temp = classifier[i];
     classifier_stump = Stump(temp);
     if (!std::isnan(classifier_stump.get_vote())) {
       classifier_stump.update_predictions(predictions);
@@ -61,7 +61,7 @@ NumericMatrix score_classifier_features_cpp(const List& classifier, const Numeri
   NumericVector temp;
 
   for (int i = 0; i < classifier.size(); i++) {
-    NumericVector temp = classifier[i];
+    List temp = classifier[i];
     classifier_stump = Stump(temp);
     if (!std::isnan(classifier_stump.get_vote())) {
       classifier_stump.new_predictions(predictions);
