@@ -266,9 +266,7 @@ void Stump::update_predictions(NumericVector& predictions) const {
     }
   } else {
     for (int i = 0; i < features.nrow(); i++) {
-      if (ISNAN(features(i, feature))) {
-        predictions(i) += 0;
-      } else {
+      if (!ISNAN(features(i, feature))) {
         in_split = false;
         for (unsigned int j = 0; j < positive_categories.size(); j++) {
           if (features(i, feature) == positive_categories[j]) {
@@ -278,7 +276,12 @@ void Stump::update_predictions(NumericVector& predictions) const {
           }
         }
         if (in_split == false) {
-          predictions(i) += -1 * direction * vote;
+          for (unsigned int j = 0; j < negative_categories.size(); j++) {
+            if (features(i, feature) == negative_categories[j]) {
+              predictions(i) += -1 * direction * vote;
+              break;
+            }
+          }
         }
       }
     }
@@ -290,6 +293,7 @@ void Stump::update_predictions(NumericVector& predictions) const {
 // Param: vector of same length as features
 // Return: votes for this stump
 void Stump::new_predictions(NumericVector& predictions) const{
+  bool in_split;
   if (is_categorical == 0) {
     for (int i = 0; i < features.nrow(); i++) {
       if (ISNAN(features(i, feature))) {
@@ -305,11 +309,24 @@ void Stump::new_predictions(NumericVector& predictions) const{
       if (ISNAN(features(i, feature))) {
         predictions(i) = 0;
       } else {
-        predictions(i) = -1 * vote;
+        in_split = false;
         for (unsigned int j = 0; j < positive_categories.size(); j++) {
           if (features(i, feature) == positive_categories[j]) {
             predictions(i) = 1 * vote;
+            in_split = true;
             break;
+          }
+        }
+        if (in_split == false) {
+          for (unsigned int j = 0; j < negative_categories.size(); j++) {
+            if (features(i, feature) == negative_categories[j]) {
+              predictions(i) = -1 * vote;
+              in_split = true;
+              break;
+            }
+          }
+          if (in_split == false) {
+            predictions(i) = 0;
           }
         }
       }
@@ -322,6 +339,7 @@ void Stump::new_predictions(NumericVector& predictions) const{
 // Param: vector of same length as features
 // Return: unweighted predictions for this stump (-1 or 1 for each prediction)
 void Stump::new_predictions_integer(NumericVector& predictions) const {
+  bool in_split;
   if (is_categorical == 0) {
     for (int i = 0; i < features.nrow(); i++) {
       if (ISNAN(features(i, feature))) {
@@ -337,11 +355,24 @@ void Stump::new_predictions_integer(NumericVector& predictions) const {
       if (ISNAN(features(i, feature))) {
         predictions(i) = 0;
       } else {
-        predictions(i) = -1;
+        in_split = false;
         for (unsigned int j = 0; j < positive_categories.size(); j++) {
           if (features(i, feature) == positive_categories[j]) {
             predictions(i) = 1;
+            in_split = true;
             break;
+          }
+        }
+        if (in_split == false) {
+          for (unsigned int j = 0; j < negative_categories.size(); j++) {
+            if (features(i, feature) == negative_categories[j]) {
+              predictions(i) = -1;
+              in_split = true;
+              break;
+            }
+          }
+          if (in_split == false) {
+            predictions(i) = 0;
           }
         }
       }

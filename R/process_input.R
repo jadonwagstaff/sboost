@@ -106,6 +106,7 @@ process_classifier_input <- function(classifier, features) {
         }
       }
     }
+
     # Change right_categories
     if (categorical == 1) {
       for (j in seq_along(right_categories)) {
@@ -121,8 +122,8 @@ process_classifier_input <- function(classifier, features) {
       as.numeric(vote),
       as.numeric(categorical),
       as.numeric(split),
-      as.numeric(left_categories),
-      as.numeric(right_categories)
+      suppressWarnings(as.numeric(left_categories)),
+      suppressWarnings(as.numeric(right_categories))
     )
 
   }

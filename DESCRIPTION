@@ -1,7 +1,7 @@
 Package: sboost
 Type: Package
 Title: Machine Learning with AdaBoost on Decision Stumps
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Jadon", "Wagstaff", email = "jadonw@gmail.com", role = c("aut", "cre"))
 Description: Creates classifier for binary outcomes using Freund and Schapire's Adaptive 
     Boosting (AdaBoost) algorithm on decision stumps with a fast C++ implementation. 
@@ -20,5 +20,5 @@ Imports: dplyr (>= 0.7.6),
   rlang (>= 0.2.1),
   Rcpp (>= 0.12.17),
   stats (>= 3.4)
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Suggests: testthat

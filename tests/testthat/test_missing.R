@@ -22,10 +22,23 @@ a <- assess(t, f[-1], f[1])
 p <- predict(t, rbind(f[-1], c(NA, NA, NA)))
 ps <- predict(t, rbind(f[-1], c(NA, NA, NA)), scores = TRUE)
 
-test_that("Predicting with missing values are correct.", {
+test_that("Predicting with missing values is correct.", {
   expect_equal(a$cumulalative_statistics$accuracy, c(0.7, 0.8, 0.9))
   expect_equal(p, c("t", "f", "t", "t", "t", "f", "t", "t", "f", "t", "f"))
   expect_equal(round(ps, digits = 5), c(1.12906, -0.59661, 0.42365, 0.42365, 0.70541, -0.28176, 0.70541, 0.25069, -0.42365, 0.28176, 0))
 })
 
+g <- data.frame(
+  output = c("t", "f", "f", "t", "t"),
+  X1 = c(5, 1008, NA, 11, -2989898.2),
+  X2 = c(NA, "a", "d", "b", "d"),
+  x3 = c(NA, NA, "a", NA, NA)
+)
+
+a2 <- assess(t, g[-1], g[1], include_scores = TRUE)
+
+test_that("Assessing unexpected values is correct.", {
+  expect_equal(round(a2$feature_scores$X2, digits = 5), c(0, 0.42365, 0, -0.42365, 0))
+  expect_equal(round(a2$feature_scores$X1, digits = 5), c(0.70541, -0.70541, 0, -0.17296, 0.70541))
+})
 
