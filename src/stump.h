@@ -38,7 +38,9 @@ private:
   int direction;
   double vote;
   int is_categorical;
-  std::vector<double> split;
+  double split;
+  std::vector<int> positive_categories;
+  std::vector<int> negative_categories;
 };
 
 
