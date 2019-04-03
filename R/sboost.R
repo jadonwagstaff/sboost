@@ -25,6 +25,7 @@ NULL
 #' @param iterations number of boosts.
 #' @param positive the positive outcome to test for; if NULL, the first outcome in
 #'                 alphabetical (or numerical) order will be chosen.
+#' @param verbose If true, progress bar will be displayed in console.
 #' @return An \emph{sboost_classifier} S3 object containing:
 #' \describe{
 #'   \item{\emph{classifier}}{\emph{stump} - the index of the decision stump}
@@ -65,7 +66,7 @@ NULL
 #' mushroom_classifier
 #' mushroom_classifier$classifier
 #' @export
-sboost <- function(features, outcomes, iterations = 1, positive = NULL) {
+sboost <- function(features, outcomes, iterations = 1, positive = NULL, verbose = FALSE) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -78,7 +79,7 @@ sboost <- function(features, outcomes, iterations = 1, positive = NULL) {
 
   # DEVELOP CLASSIFIER
   # --------------------------------------------------------------------------------
-  classifier <- make_classifier(processed_features, processed_outcomes, categorical, iterations)
+  classifier <- make_classifier(processed_features, processed_outcomes, categorical, iterations, verbose)
   classifier <- process_classifier_output(classifier, features, outcomes, otcm_def, match.call())
 
   return(classifier)
@@ -93,7 +94,7 @@ sboost <- function(features, outcomes, iterations = 1, positive = NULL) {
 # Param: categorical - a vector representing which features are categorical
 # Param: iterations to call appropriate functions
 # Return: classifier consisting of a linear combination of decision stumps
-make_classifier <- function(features, outcomes, categorical, iterations) {
+make_classifier <- function(features, outcomes, categorical, iterations, verbose) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -104,7 +105,7 @@ make_classifier <- function(features, outcomes, categorical, iterations) {
 
   # CALL C++ CODE
   # --------------------------------------------------------------------------------
-  classifier <- adaboost(features, ordered_index, outcomes, categorical, iterations)
+  classifier <- adaboost(features, ordered_index, outcomes, categorical, iterations, verbose)
 
   return(classifier)
 }

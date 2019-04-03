@@ -4,7 +4,8 @@
 \alias{sboost}
 \title{sboost Learning Algorithm}
 \usage{
-sboost(features, outcomes, iterations = 1, positive = NULL)
+sboost(features, outcomes, iterations = 1, positive = NULL,
+  verbose = FALSE)
 }
 \arguments{
 \item{features}{feature set data.frame.}
@@ -15,6 +16,8 @@ sboost(features, outcomes, iterations = 1, positive = NULL)
 
 \item{positive}{the positive outcome to test for; if NULL, the first outcome in
 alphabetical (or numerical) order will be chosen.}
+
+\item{verbose}{If true, progress bar will be displayed in console.}
 }
 \value{
 An \emph{sboost_classifier} S3 object containing:

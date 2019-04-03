@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // adaboost
-List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index, const NumericVector& outcomes, const NumericVector& categorical, int iterations);
-RcppExport SEXP _sboost_adaboost(SEXP featuresSEXP, SEXP ordered_indexSEXP, SEXP outcomesSEXP, SEXP categoricalSEXP, SEXP iterationsSEXP) {
+List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index, const NumericVector& outcomes, const NumericVector& categorical, int iterations, bool verbose);
+RcppExport SEXP _sboost_adaboost(SEXP featuresSEXP, SEXP ordered_indexSEXP, SEXP outcomesSEXP, SEXP categoricalSEXP, SEXP iterationsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -16,7 +16,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type outcomes(outcomesSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type categorical(categoricalSEXP);
     Rcpp::traits::input_parameter< int >::type iterations(iterationsSEXP);
-    rcpp_result_gen = Rcpp::wrap(adaboost(features, ordered_index, outcomes, categorical, iterations));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(adaboost(features, ordered_index, outcomes, categorical, iterations, verbose));
     return rcpp_result_gen;
 END_RCPP
 }

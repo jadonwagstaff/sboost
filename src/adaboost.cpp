@@ -3,6 +3,25 @@
 #include <cmath>
 using namespace Rcpp;
 
+// progress_bar is used by adaboost to print a progress bar on the screen
+// Param:
+//   progress - an integer used as a measure of progress
+//   total - an integer that represents 100% progress
+// Return: prints a progress bar in the console
+void progress_bar(int progress, int total) {
+    int bar_total = 40;
+    double frac = double(progress) / total;
+    int bar_filled = round(bar_total * frac);
+
+    Rprintf("[");
+    for (int i = 0 ; i < bar_filled; i++) {
+        Rprintf("=");
+    }
+    for (int i = bar_filled ; i < bar_total; i++) {
+        Rprintf(" ");
+    }
+    Rprintf("] %3.0f%%\r", frac * 100);
+}
 
 // adaboost is the central function for adaptive boosting of decision stumps
 // Param:
@@ -16,7 +35,7 @@ using namespace Rcpp;
 //   iterations - the number of stumps to create
 // Return: list of stumps as vectors (see stump::make_vector() for structure)
 // [[Rcpp::export]]
-List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index, const NumericVector& outcomes, const NumericVector& categorical, int iterations) {
+List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index, const NumericVector& outcomes, const NumericVector& categorical, int iterations, bool verbose) {
 
   // CREATE VARIABLES
   // --------------------------------------------------------------------------------
@@ -30,6 +49,7 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
   NumericVector predictions(features.nrow());
 
   Stump classifier;
+  int progress = 0;
   List output(iterations);
 
   // BOOST OVER EACH ITERATION
@@ -41,7 +61,7 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
     classifier.find_stump(weights);
 
 
-    // PERFORM ADABOOST
+    // ADABOOST ALGORITHM
     // --------------------------------------------------------------------------------
 
     // find prediction, error, and vote
@@ -66,6 +86,20 @@ List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index,
 
     // create output
     output[k] = classifier.make_list();
+
+    // UPDATE PROGRESS BAR
+    // --------------------------------------------------------------------------------
+    if (verbose && k - progress >= .01 * iterations) {
+      progress = k;
+      progress_bar(progress + 1, iterations);
+    }
+
+  }
+
+  // final update of progress bar
+  if (verbose) {
+    progress_bar(iterations, iterations);
+    Rprintf("\n");
   }
 
   return output;

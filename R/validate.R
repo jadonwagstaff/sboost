@@ -8,6 +8,7 @@
 #' @param k_fold number of cross-validation subsets.
 #' @param positive is the positive outcome to test for; if NULL, the first in
 #'                 alphabetical order will be chosen
+#' @param verbose If true, progress bars will be displayed in console.
 #' @return An \emph{sboost_validation} S3 object containing:
 #' \describe{
 #'   \item{\emph{performance}}{Final performance statistics for all stumps.}
@@ -33,7 +34,7 @@
 #' # mushrooms
 #' validate(mushrooms[-1], mushrooms[1], iterations = 5, k_fold = 3, positive = "p")
 #' @export
-validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL) {
+validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = NULL, verbose = FALSE) {
 
   # PREPARE INPUT
   # --------------------------------------------------------------------------------
@@ -56,11 +57,12 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
   # MAIN VALIDATION LOOP
   # --------------------------------------------------------------------------------
   for (i in 1:k_fold) {
+    if (verbose) print(paste0("Training classifier ", i, " of ", k_fold, "..."))
     training <- -(((i - 1) / k_fold) * rows):-((i / k_fold) * rows)
     testing <- ((((i - 1) / k_fold) * rows) + 1):((i / k_fold) * rows)
 
     # create classifier
-    raw_classifier_list[[i]] <- make_classifier(processed_features[training, ], processed_outcomes[training], categorical, iterations)
+    raw_classifier_list[[i]] <- make_classifier(processed_features[training, ], processed_outcomes[training], categorical, iterations, verbose)
     classifier_list[[i]] <- process_classifier_output(raw_classifier_list[[i]], features[training, ], outcomes[training], otcm_def, match.call())
 
     # test classifier

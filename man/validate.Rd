@@ -5,7 +5,7 @@
 \title{sboost Validation Function}
 \usage{
 validate(features, outcomes, iterations = 1, k_fold = 6,
-  positive = NULL)
+  positive = NULL, verbose = FALSE)
 }
 \arguments{
 \item{features}{feature set data.frame.}
@@ -18,6 +18,8 @@ validate(features, outcomes, iterations = 1, k_fold = 6,
 
 \item{positive}{is the positive outcome to test for; if NULL, the first in
 alphabetical order will be chosen}
+
+\item{verbose}{If true, progress bars will be displayed in console.}
 }
 \value{
 An \emph{sboost_validation} S3 object containing:
