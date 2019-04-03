@@ -63,7 +63,7 @@ validate <- function(features, outcomes, iterations = 1, k_fold = 6, positive = 
 
     # create classifier
     raw_classifier_list[[i]] <- make_classifier(processed_features[training, ], processed_outcomes[training], categorical, iterations, verbose)
-    classifier_list[[i]] <- process_classifier_output(raw_classifier_list[[i]], features[training, ], outcomes[training], otcm_def, match.call())
+    classifier_list[[i]] <- process_classifier_output(raw_classifier_list[[i]], features, outcomes, otcm_def, match.call(), training)
 
     # test classifier
     training_statistics[[i]] <- get_cumulative_statistics(classifier_list[[i]], raw_classifier_list[[i]], processed_features[training, ], processed_outcomes[training])

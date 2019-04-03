@@ -3,7 +3,7 @@
 
 # --------------------------------------------------------------------------------
 # PREPARES CLASSIFIER OUTPUT
-process_classifier_output <- function(classifier, features, outcomes, otcm_def, call) {
+process_classifier_output <- function(classifier, features, outcomes, otcm_def, call, rows_included = NULL) {
 
   # create classifier data frame
   clfr <- data.frame(matrix(ncol = 8, nrow = length(classifier)))
@@ -67,10 +67,18 @@ process_classifier_output <- function(classifier, features, outcomes, otcm_def, 
   }
 
   # Training set information
-  training = data.frame(stumps = nrow(clfr),
-                        features = ncol(features),
-                        instances = nrow(features),
-                        positive_prevalence = sum(outcomes == otcm_def["positive"]) / length(outcomes))
+  if (is.null(rows_included)) {
+    training = data.frame(stumps = nrow(clfr),
+                          features = ncol(features),
+                          instances = nrow(features),
+                          positive_prevalence = sum(outcomes == otcm_def["positive"]) / length(outcomes))
+  } else {
+    # if rows_included is not null then only a portion of the instances were used in training
+    training = data.frame(stumps = nrow(clfr),
+                          features = ncol(features),
+                          instances = nrow(features[rows_included, ]),
+                          positive_prevalence = sum(outcomes[rows_included] == otcm_def["positive"]) / length(outcomes[rows_included]))
+  }
 
   # Assessment
   output <- list(classifier = clfr, outcomes = otcm_def, training = training, call = call)

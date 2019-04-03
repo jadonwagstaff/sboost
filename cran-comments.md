@@ -1,5 +1,5 @@
 ## Test environments
-* local windows 10, R 3.5.1
+* local windows 10, R 3.5.3
 * local linux mint 19, R 3.4.0
 
 ## R CMD check results
