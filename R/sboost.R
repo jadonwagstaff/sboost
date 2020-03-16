@@ -66,23 +66,28 @@ NULL
 #' mushroom_classifier
 #' mushroom_classifier$classifier
 #' @export
-sboost <- function(features, outcomes, iterations = 1, positive = NULL, verbose = FALSE) {
+sboost <- function(features, outcomes, iterations = 1, positive = NULL, verbose = FALSE,
+                   type = "class") {
 
-  # PREPARE INPUT
-  # --------------------------------------------------------------------------------
-  if (is.data.frame(outcomes)) outcomes <- as.vector(outcomes[[1]])
-  processed_features <- process_feature_input(features)
-  categorical <- find_categorical(features)
-  otcm_def <- check_positive_value(outcomes, positive)
-  processed_outcomes <- process_outcome_input(outcomes, features, otcm_def)
+  if (type == "reg") {
+    sboost_output <- regression(features, outcomes, iterations)
+  } else {
+    # PREPARE INPUT
+    # --------------------------------------------------------------------------------
+    if (is.data.frame(outcomes)) outcomes <- as.vector(outcomes[[1]])
+    processed_features <- process_feature_input(features)
+    categorical <- find_categorical(features)
+    otcm_def <- check_positive_value(outcomes, positive)
+    processed_outcomes <- process_outcome_input(outcomes, features, otcm_def)
 
 
-  # DEVELOP CLASSIFIER
-  # --------------------------------------------------------------------------------
-  classifier <- make_classifier(processed_features, processed_outcomes, categorical, iterations, verbose)
-  classifier <- process_classifier_output(classifier, features, outcomes, otcm_def, match.call())
+    # DEVELOP CLASSIFIER
+    # --------------------------------------------------------------------------------
+    classifier <- make_classifier(processed_features, processed_outcomes, categorical, iterations, verbose)
+    sboost_output <- process_classifier_output(classifier, features, outcomes, otcm_def, match.call())
+  }
 
-  return(classifier)
+  return(sboost_output)
 }
 
 
