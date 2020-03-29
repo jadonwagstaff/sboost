@@ -70,7 +70,8 @@ sboost <- function(features, outcomes, iterations = 1, positive = NULL, verbose 
                    type = "class") {
 
   if (type == "reg") {
-    sboost_output <- regression(features, outcomes, iterations)
+    sboost_output <- data.matrix(regression(features, outcomes, iterations))
+    class(sboost_output) <- c("sboost")
   } else {
     # PREPARE INPUT
     # --------------------------------------------------------------------------------

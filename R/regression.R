@@ -35,7 +35,6 @@ regression <- function(features, outcomes, iterations) {
         as.numeric(outcomes)
       )
     }
-    print(candidates)
 
     stump_feature <- which.min(candidates$error)
     stump_split <- candidates$split[stump_feature]
@@ -46,11 +45,16 @@ regression <- function(features, outcomes, iterations) {
     losses <- (outcomes - predictions)^2
     losses <- losses / max(losses)
     ave_loss <- sum(losses * weights)
-    print(ave_loss)
-    vote = ave_loss / (1 - ave_loss)
+    beta = ave_loss / (1 - ave_loss)
+    vote = log(1 / beta)
 
-    weights = weights * vote^(1 - losses)
+    weights = weights * beta^(1 - losses)
     weights = weights / sum(weights)
+
+    if (ave_loss >= 0.5) {
+      classifier <- classifier[1:(i - 1),]
+      break
+    }
 
     classifier[i,] <- c(stump_feature, vote, stump_split, stump_mean_behind, stump_mean_ahead)
   }
