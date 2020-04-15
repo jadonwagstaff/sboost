@@ -14,6 +14,7 @@ extern SEXP _sboost_adaboost(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _sboost_get_contingency_cpp(SEXP, SEXP, SEXP);
 extern SEXP _sboost_predict_cpp(SEXP, SEXP);
 extern SEXP _sboost_score_classifier_features_cpp(SEXP, SEXP);
+extern SEXP mean_stump_(SEXP, SEXP, SEXP);
 extern SEXP regression_stump_(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -21,6 +22,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sboost_get_contingency_cpp",           (DL_FUNC) &_sboost_get_contingency_cpp,           3},
     {"_sboost_predict_cpp",                   (DL_FUNC) &_sboost_predict_cpp,                   2},
     {"_sboost_score_classifier_features_cpp", (DL_FUNC) &_sboost_score_classifier_features_cpp, 2},
+    {"mean_stump_",                           (DL_FUNC) &mean_stump_,                           3},
     {"regression_stump_",                     (DL_FUNC) &regression_stump_,                     3},
     {NULL, NULL, 0}
 };

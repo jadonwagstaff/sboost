@@ -72,6 +72,9 @@ sboost <- function(features, outcomes, iterations = 1, positive = NULL, verbose 
   if (type == "reg") {
     sboost_output <- data.matrix(regression(features, outcomes, iterations))
     class(sboost_output) <- c("sboost")
+  } else if (type == "mean") {
+    sboost_output <- data.matrix(means(features, outcomes, iterations))
+    class(sboost_output) <- c("sboost")
   } else {
     # PREPARE INPUT
     # --------------------------------------------------------------------------------
