@@ -4,8 +4,14 @@
 \alias{sboost}
 \title{sboost Learning Algorithm}
 \usage{
-sboost(features, outcomes, iterations = 1, positive = NULL,
-  verbose = FALSE)
+sboost(
+  features,
+  outcomes,
+  iterations = 1,
+  positive = NULL,
+  verbose = FALSE,
+  type = "class"
+)
 }
 \arguments{
 \item{features}{feature set data.frame.}

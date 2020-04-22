@@ -54,14 +54,26 @@ predict.sboost <- function(object, features, scores = FALSE, type = "median") {
     "mean" = stats::weighted.mean
   )
 
+
   # Function for predicting an individual observation
-  predict_observation <- function(obs, object) {
-    preds <- apply(object, 1, function(x) {
-               ifelse(obs[x["feature"]] < x["split"],
-                      x["mean_behind"],
-                      x["mean_ahead"])
-             })
-    combine_stumps(preds, object[, "vote"])
+  if (ncol(object) == 5) {
+    predict_observation <- function(obs, object) {
+      preds <- apply(object, 1, function(x) {
+                 ifelse(obs[x["feature"]] < x["split"],
+                        x["mean_behind"],
+                        x["mean_ahead"])
+               })
+      combine_stumps(preds, object[, "vote"])
+    }
+  } else if (ncol(object) == 7) {
+    predict_observation <- function(obs, object) {
+      preds <- apply(object, 1, function(x) {
+        ifelse(obs[x["feature"]] < x["split"],
+               obs[x["feature"]] * x["beta1_behind"] + x["beta0_behind"],
+               obs[x["feature"]] * x["beta1_ahead"] + x["beta0_ahead"])
+      })
+      combine_stumps(preds, object[, "vote"])
+    }
   }
 
   # Predict for all observations

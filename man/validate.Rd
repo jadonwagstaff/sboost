@@ -4,8 +4,14 @@
 \alias{validate}
 \title{sboost Validation Function}
 \usage{
-validate(features, outcomes, iterations = 1, k_fold = 6,
-  positive = NULL, verbose = FALSE)
+validate(
+  features,
+  outcomes,
+  iterations = 1,
+  k_fold = 6,
+  positive = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{features}{feature set data.frame.}
