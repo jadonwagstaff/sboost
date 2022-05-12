@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // adaboost
 List adaboost(const NumericMatrix& features, const NumericMatrix& ordered_index, const NumericVector& outcomes, const NumericVector& categorical, int iterations, bool verbose);
 RcppExport SEXP _sboost_adaboost(SEXP featuresSEXP, SEXP ordered_indexSEXP, SEXP outcomesSEXP, SEXP categoricalSEXP, SEXP iterationsSEXP, SEXP verboseSEXP) {

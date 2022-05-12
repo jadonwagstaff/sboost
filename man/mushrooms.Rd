@@ -4,7 +4,8 @@
 \name{mushrooms}
 \alias{mushrooms}
 \title{Mushroom Classification}
-\format{A data frame with 7597 rows and 361 variables:
+\format{
+A data frame with 7597 rows and 361 variables:
 \describe{
   \item{outcomes}{p=poisonous, e=edible}
   \item{cap_shape}{bell=b, conical=c, convex=x, flat=f, knobbed=k, sunken=s}
@@ -29,7 +30,8 @@
   \item{spore_print_color}{black=k, brown=n, buff=b, chocolate=h, green=r, orange=o, purple=u, white=w, yellow=y}
   \item{population}{abundant=a, clustered=c, numerous=n, scattered=s, several=v, solitary=y}
   \item{habitat}{grasses=g, leaves=l, meadows=m, paths=p, urban=u, waste=w, woods=d}
-}}
+}
+}
 \source{
 \url{https://archive.ics.uci.edu/ml/datasets/mushroom}
 }

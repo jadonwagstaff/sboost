@@ -1,3 +1,9 @@
+# sboost 0.1.2
+
+## Minor Changes
+
+* Documentation is updated to comply with CRAN.
+
 # sboost 0.1.1
 
 ## Major Changes

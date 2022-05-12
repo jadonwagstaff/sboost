@@ -9,18 +9,18 @@
 #' @return An \emph{sboost_assessment} S3 object containing:
 #' \describe{
 #'   \item{\emph{performance}}{Last row of cumulative statistics (i.e. when all stumps are included in assessment).}
-#'   \item{\emph{cumulative_statistics}}{\emph{stump} - the index of the last decision stump added to the assessment.}
-#'     \item{}{\emph{true_positive} - number of true positive predictions.}
-#'     \item{}{\emph{false_negative} - number of false negative predictions.}
-#'     \item{}{\emph{true_negative} - number of true negative predictions.}
-#'     \item{}{\emph{false_positive} - number of false positive predictions.}
-#'     \item{}{\emph{prevalence} - true positive / total.}
-#'     \item{}{\emph{accuracy} - correct predictions / total.}
-#'     \item{}{\emph{sensitivity} - correct predicted positive / true positive.}
-#'     \item{}{\emph{specificity} - correct predicted negative / true negative.}
-#'     \item{}{\emph{ppv} - correct predicted positive / predicted positive.}
-#'     \item{}{\emph{npv} - correct predicted negative / predicted negative.}
-#'     \item{}{\emph{f1} - harmonic mean of sensitivity and ppv.}
+#'   \item{\emph{cumulative_statistics}}{\emph{stump} - the index of the last decision stump added to the assessment.\cr
+#'     \emph{true_positive} - number of true positive predictions.\cr
+#'     \emph{false_negative} - number of false negative predictions.\cr
+#'     \emph{true_negative} - number of true negative predictions.\cr
+#'     \emph{false_positive} - number of false positive predictions.\cr
+#'     \emph{prevalence} - true positive / total.\cr
+#'     \emph{accuracy} - correct predictions / total.\cr
+#'     \emph{sensitivity} - correct predicted positive / true positive.\cr
+#'     \emph{specificity} - correct predicted negative / true negative.\cr
+#'     \emph{ppv} - correct predicted positive / predicted positive.\cr
+#'     \emph{npv} - correct predicted negative / predicted negative.\cr
+#'     \emph{f1} - harmonic mean of sensitivity and ppv.}
 #'   \item{\emph{feature_scores}}{If include_scores is TRUE, for each feature in the classifier lists scores for each row in the feature set.}
 #'   \item{\emph{classifier}}{sboost \emph{sboost_classifier} object used for assessment.}
 #'   \item{\emph{outcomes}}{Shows which outcome was considered as positive and which negative.}

@@ -40,7 +40,6 @@ predict.sboost_classifier <- function(object, features, scores = FALSE, ...) {
   return(unname(predictions))
 }
 
-#' @export
 predict.sboost <- function(object, features, scores = FALSE, type = "median") {
 
   # Function for combining stumps, dependent on "type"
