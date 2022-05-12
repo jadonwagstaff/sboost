@@ -3,15 +3,7 @@
 * local macOS Monterey, R 4.2.0
 
 ## R CMD check results
-No ERRORS, no WARNINGS.
-
-There was 1 NOTE:
-
-* Possibly mis-spelled words in DESCRIPTION:
-  Schapire (8:51)
-  
-  Schapire is verified correct spelling.
-
+No ERRORS, no WARNINGS. no NOTES
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package.

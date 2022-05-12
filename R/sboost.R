@@ -12,7 +12,7 @@ NULL
 #' Factors and characters are treated as categorical features.
 #' Missing values are supported.
 #'
-#' See \url{https://jadonwagstaff.github.io/sboost.html} for a description
+#' See \url{https://jadonwagstaff.github.io/projects/sboost.html} for a description
 #' of the algorithm.
 #'
 #' For original paper describing AdaBoost see:
